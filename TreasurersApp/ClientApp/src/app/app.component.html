@@ -1,10 +1,48 @@
-<div class='container-fluid'>
-  <div class='row'>
-    <div class='col-sm-3'>
-      <app-nav-menu></app-nav-menu>
+<div class="container body-content" style="max-width: 1000px;">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" routerLink="/dashboard">BTA</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <ng-container *ngIf="securityObject.isAuthenticated">
+          <li class="nav-item">
+            <a class="nav-link" *hasClaim="'canAccessCashJournal'" routerLink="/cashjournal">Cash Journal </a>
+          </li>
+        </ng-container>
+        <ng-container *ngIf="securityObject.isAuthenticated">
+          <li class="nav-item" *hasClaim="'canAccessReports'">
+            <a class="nav-link dropdown-toggle" href="#" id="reportsMenu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Reports </a>
+            <div class="dropdown-menu" aria-labelledby="reportsMenu">
+              <a class="dropdown-item" routerLink="/reports/cashjournal">Cash Journal</a>
+              <a class="dropdown-item" routerLink="/reports/cashjournalbydaterange">Cash Journal - By Date Range</a>
+              <a class="dropdown-item" routerLink="/reports/cashjournalbycontributor">Cash Journal - By Contributor</a>
+              <div class="dropdown-divider"><hr /></div>
+              <a class="dropdown-item" routerLink="/reports/voidedchecks">Voided Checks</a>
+              <div class="dropdown-divider"><hr /></div>
+              <a class="dropdown-item" routerLink="/reports/receiptsbycontribution">Receipts - By Contribution</a>
+              <a class="dropdown-item" routerLink="/reports/receiptsbygregorianyear">Receipts - By Gregorian Year</a>
+            </div>
+          </li>
+        </ng-container>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+          <ng-container *ngIf="securityObject.isAuthenticated">
+            <a class="nav-link" *hasClaim="'canPerformAdmin'" routerLink="maintenance">Maintenance</a>
+          </ng-container>
+        </li>
+        <li>
+          <a class="nav-link" routerLink="login" *ngIf="!securityObject.isAuthenticated">
+            Login
+          </a>
+          <a class="nav-link" href="#" (onclick)="logout()" *ngIf="securityObject.isAuthenticated">
+            Logout {{securityObject.userName}}
+          </a>
+        </li>
+      </ul>
     </div>
-    <div class='col-sm-9 body-content'>
-      <router-outlet></router-outlet>
-    </div>
-  </div>
+  </nav>
+  <router-outlet></router-outlet>
 </div>
