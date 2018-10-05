@@ -10,6 +10,7 @@ using TreasurersApp.Database;
 using TreasurersApp.Model;
 using TreasurersApp.Utilities.Reports;
 using TreasurersApp.Models;
+using Microsoft.AspNetCore.Hosting;
 
 namespace TreasurersApp.Controllers
 {
@@ -18,6 +19,10 @@ namespace TreasurersApp.Controllers
     // [Authorize(Policy = "CanAccessReports")]
     public class ReportsController : BaseApiController
     {
+        public ReportsController(IHostingEnvironment env) : base(env)
+        {
+        }
+
         [HttpGet(Name = "GetReports")]
         public IActionResult Get()
         {
@@ -27,7 +32,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BtaDbContext())
+                using (var db = new BtaDbContext(GetDatabasePath()))
                 {
                     if (db.Reports.Count() > 0)
                     {
@@ -56,7 +61,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BtaDbContext())
+                using (var db = new BtaDbContext(GetDatabasePath()))
                 {
                     entity = db.Reports.Find(id);
                     if (entity != null)
@@ -83,7 +88,7 @@ namespace TreasurersApp.Controllers
         {
             ExcelPackage excel = new ExcelPackage();
             excel.Workbook.Worksheets.Add(reportParameters.ReportName);
-            using (var db = new BtaDbContext())
+            using (var db = new BtaDbContext(GetDatabasePath()))
             {
                 var rpt = db.Reports.SingleOrDefault(x => x.Name == reportParameters.ReportName);
                 if (rpt == null)

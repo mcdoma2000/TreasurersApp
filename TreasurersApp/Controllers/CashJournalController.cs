@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TreasurersApp.Database;
@@ -15,6 +16,11 @@ namespace TreasurersApp.Controllers
     [Authorize]
     public class CashJournalController : BaseApiController
     {
+        public CashJournalController(IHostingEnvironment env) : base(env)
+        {
+
+        }
+
         [HttpGet]
         [Authorize(Policy = "CanAccessCashJournal")]
         public IActionResult Get()
@@ -24,7 +30,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BtaDbContext())
+                using (var db = new BtaDbContext(GetDatabasePath()))
                 {
                     if (db.CashJournals.Count() > 0)
                     {
@@ -54,7 +60,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BtaDbContext())
+                using (var db = new BtaDbContext(GetDatabasePath()))
                 {
                     entity = db.CashJournals.Find(id);
                     if (entity != null)
@@ -85,7 +91,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BtaDbContext())
+                using (var db = new BtaDbContext(GetDatabasePath()))
                 {
                     if (entity != null)
                     {
@@ -116,7 +122,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BtaDbContext())
+                using (var db = new BtaDbContext(GetDatabasePath()))
                 {
                     if (entity != null)
                     {

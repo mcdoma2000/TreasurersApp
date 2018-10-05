@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TreasurersApp.Database;
@@ -15,6 +16,10 @@ namespace TreasurersApp.Controllers
     [Authorize]
     public class MaintenanceController : BaseApiController
     {
+        public MaintenanceController(IHostingEnvironment env) : base(env)
+        {
+        }
+
         [HttpGet]
         [Authorize(Policy = "CanPerformAdmin")]
         [Route("users")]
@@ -24,7 +29,7 @@ namespace TreasurersApp.Controllers
             List<AppUserEdit> users = new List<AppUserEdit>();
             try
             {
-                using (var db = new BtaDbContext())
+                using (var db = new BtaDbContext(GetDatabasePath()))
                 {
                     users = db.Users.Select(x => new AppUserEdit()
                     {

@@ -13,9 +13,17 @@ namespace TreasurersApp.Utilities.Security
     public class SecurityManager
     {
         private JwtSettings _settings = null;
-        public SecurityManager(JwtSettings settings)
+        private string _dbPath;
+        public string DbPath
+        {
+            get { return _dbPath; }
+            set { }
+        }
+
+        public SecurityManager(JwtSettings settings, string dbPath)
         {
             _settings = settings;
+            _dbPath = dbPath;
         }
 
         public AppUserAuth ValidateUser(AppUser user)
@@ -23,7 +31,7 @@ namespace TreasurersApp.Utilities.Security
             AppUserAuth ret = new AppUserAuth();
             AppUser authUser = null;
 
-            using (var db = new BtaDbContext())
+            using (var db = new BtaDbContext(DbPath))
             {
                 // Attempt to validate user
                 authUser = db.Users.Where(
@@ -46,7 +54,7 @@ namespace TreasurersApp.Utilities.Security
 
             try
             {
-                using (var db = new BtaDbContext())
+                using (var db = new BtaDbContext(DbPath))
                 {
                     list = db.UserClaims.Where(x => x.UserId == authUser.UserId).ToList();
                 }

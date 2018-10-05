@@ -2,14 +2,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TreasurersApp.Utilities.Security;
 using TreasurersApp.Model;
+using Microsoft.AspNetCore.Hosting;
 
 namespace TreasurersApp.Controllers
 {
   [Route("api/[controller]")]
-  public class SecurityController : Controller
+  public class SecurityController : BaseApiController
   {
     private JwtSettings _settings;
-    public SecurityController(JwtSettings settings)
+    public SecurityController(JwtSettings settings, IHostingEnvironment env) : base(env)
     {
       _settings = settings;
     }
@@ -19,7 +20,7 @@ namespace TreasurersApp.Controllers
     {
       IActionResult ret = null;
       AppUserAuth auth = new AppUserAuth();
-      SecurityManager mgr = new SecurityManager(_settings);
+      SecurityManager mgr = new SecurityManager(_settings, GetDatabasePath());
 
       auth = mgr.ValidateUser(user);
       if (auth.IsAuthenticated)
