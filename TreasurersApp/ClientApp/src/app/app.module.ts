@@ -3,6 +3,15 @@ import { NgModule } from '@angular/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { CalendarModule } from 'primeng/calendar';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { MenubarModule } from 'primeng/menubar';
+import { InputMaskModule } from 'primeng/inputmask';
+import { SliderModule } from 'primeng/slider';
+import { DataViewModule } from 'primeng/dataview';
+import { DataGridModule } from 'primeng/datagrid';
+import { AgGridModule } from 'ag-grid-angular';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations/';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -21,7 +30,9 @@ import { ReportCashJournalByContributorComponent } from './reports/rcjbc/report-
 import { ReportVoidedChecksComponent } from './reports/rvc/report-voided-checks.component';
 import { ReportReceiptsByContributionComponent } from './reports/rrbc/report-receipts-by-contribution.component';
 import { ReportReceiptsByGregorianYearComponent } from './reports/rrbgy/report-receipts-by-gregorian-year.component';
-
+import { StandardReportFormComponent } from './standard-report-form/standard-report-form.component';
+import { AddressMaintenanceComponent } from './maintenance/address-maintenance/address-maintenance.component';
+import { ContributorMaintenanceComponent } from './maintenance/contributor-maintenance/contributor-maintenance.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +48,10 @@ import { ReportReceiptsByGregorianYearComponent } from './reports/rrbgy/report-r
     ReportCashJournalByContributorComponent,
     ReportVoidedChecksComponent,
     ReportReceiptsByContributionComponent,
-    ReportReceiptsByGregorianYearComponent
+    ReportReceiptsByGregorianYearComponent,
+    StandardReportFormComponent,
+    AddressMaintenanceComponent,
+    ContributorMaintenanceComponent,
   ],
   imports: [
     BrowserModule,
@@ -45,9 +59,30 @@ import { ReportReceiptsByGregorianYearComponent } from './reports/rrbgy/report-r
     NgbModule.forRoot(),
     FormsModule,
     HttpClientModule,
-    HttpInterceptorModule
+    HttpInterceptorModule,
+    CalendarModule,
+    MultiSelectModule,
+    MenubarModule,
+    InputMaskModule,
+    SliderModule,
+    DataViewModule,
+    DataGridModule,
+    AgGridModule.withComponents([]),
+    BrowserAnimationsModule
   ],
-  providers: [SecurityService, AuthGuard, LoginComponent],
+  providers: [
+    SecurityService,
+    AuthGuard,
+    LoginComponent,
+    CalendarModule,
+    MultiSelectModule,
+    MenubarModule,
+    InputMaskModule,
+    SliderModule,
+    DataViewModule,
+    DataGridModule,
+    BrowserAnimationsModule
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

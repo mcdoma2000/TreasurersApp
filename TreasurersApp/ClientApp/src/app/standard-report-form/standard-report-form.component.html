@@ -1,0 +1,30 @@
+<div class="container" style="width: 500px; min-width: 500px; max-width: 800px;">
+  <div class="form-row" *ngIf="this.displayStartEndDate">
+    <div class="form-group col-md-6">
+      <label>Start Date</label><br/>
+      <p-calendar [(ngModel)]="this.reportParameters.startDate" placeholder="MM/DD/YYYY"></p-calendar>
+    </div>
+    <div class="form-group col-md-6">
+      <label>End Date</label><br/>
+      <p-calendar [(ngModel)]="this.reportParameters.endDate" placeholder="MM/DD/YYYY"></p-calendar>
+    </div>
+  </div>
+  <div class="form-row" *ngIf="this.displayContributors">
+    <div class="form-group col-md-12">
+      <label>Contributors</label><br/>
+      <p-multiSelect
+        name="msContributors"
+        styleClass="fullWidth"
+        [options]="this.contributors"
+        [(ngModel)]="this.reportParameters.contributors"
+        >
+      </p-multiSelect>
+    </div>
+  </div>
+  <div class="form-row" *ngIf="this.displayGregorianYear">
+    <div class="form-group col-md-12">
+      <label>Gregorian Year: {{reportParameters.gregorianYear}}</label>
+      <p-slider [(ngModel)]="this.reportParameters.gregorianYear" [min]="minGregorianYear" [max]="maxGregorianYear" [step]="1"></p-slider>
+    </div>
+  </div>
+</div>

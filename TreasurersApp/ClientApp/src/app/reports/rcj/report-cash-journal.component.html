@@ -3,11 +3,31 @@
     <div class="row">&nbsp;</div>
     <div class="row">
         <div class="col-md-12">
-            <div class="appReportName">
+            <div class="appCallout">
               Cash Journal - Report
             </div>
         </div>
       </div>
     <div class="row">&nbsp;</div>
+    <div class="row">
+      <div class="col-md-12">
+        <app-standard-report-form #stdRptForm [reportName]="'cashjournal'" ></app-standard-report-form>
+      </div>
+    </div>
     <div class="row">&nbsp;</div>
+    <div class="row">
+      <div class="col-md-4">&nbsp;</div>
+      <div class="col-md-4">
+        <a href="javascript:;" target="_blank" class="btn btn-primary" (click)="executeReport();">View Report</a>
+      </div>
+      <div class="col-md-4">
+        &nbsp;
+        <div style="display:none;">
+          <form ngForm action="http://localhost:5000/reportdownload/report" target="_blank" method="POST" #form>
+            <input id="reportParameters" name="reportParameters" [(ngModel)]="this.reportParameters" />
+            <button id="submitButton" type="submit" (click)="form.submit()" >View Report</button>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>

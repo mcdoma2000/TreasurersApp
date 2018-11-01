@@ -1,0 +1,30 @@
+<div class="container" style="max-width: 1000px;">
+  <div class="row">&nbsp;</div>
+  <div class="row">&nbsp;</div>
+  <div class="row">
+    <div class="col-md-12">
+        <div class="appCallout">
+          Address Maintenance
+        </div>
+    </div>
+  </div>
+  <div class="row">&nbsp;</div>
+  <div class="row">
+    <div class="col-md-12">
+      <ag-grid-angular
+        style="width: 900px; height: 500px; margin: 0 auto;"
+        class="ag-theme-dark"
+        [enableSorting]="true"
+        [enableFilter]="true"
+        rowSelection="multiple"
+        [enableColResize]="true"
+        [enableStatusBar]="true"
+        [pagination]="true"
+        [paginationPageSize]="10"
+        [rowData]="rowData"
+        [columnDefs]="columnDefs">
+      </ag-grid-angular>
+    </div>
+  </div>
+  <div class="row">&nbsp;</div>
+</div>

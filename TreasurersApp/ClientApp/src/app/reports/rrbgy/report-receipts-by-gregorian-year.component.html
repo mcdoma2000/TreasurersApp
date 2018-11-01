@@ -2,12 +2,25 @@
   <div class="row">&nbsp;</div>
   <div class="row">&nbsp;</div>
   <div class="row">
-      <div class="col-md-12">
-          <div class="appReportName">
-            Receipts - By Gregorian Year Report
-          </div>
-      </div>
+    <div class="col-md-12">
+        <div class="appCallout">
+          {{reportDisplayName}}
+        </div>
     </div>
+  </div>
   <div class="row">&nbsp;</div>
-  <div class="row">&nbsp;</div>
+  <div class="row">
+    <div class="col-md-1">&nbsp;</div>
+    <div class="col-md-10">
+        <app-standard-report-form #report [reportName]="reportName" ></app-standard-report-form>
+    </div>
+    <div class="col-md-1">&nbsp;</div>
+  </div>
+  <div class="row">
+    <div class="col-md-5">&nbsp;</div>
+    <div class="col-md-2">
+      <button id="viewReportButton" class="btn btn-primary" (onclick)="onViewReport();">View Report</button>
+    </div>
+    <div class="col-md-5">&nbsp;</div>
+  </div>
 </div>

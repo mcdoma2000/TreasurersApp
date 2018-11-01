@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 
 import { ReportsService } from '../reports.service';
-import { Report } from '../Report';
-import { ReportStatus } from '../ReportStatus';
+import { Report } from '../../models/Report';
+import { ReportStatus } from '../../models/ReportStatus';
 
 @Component({
   selector: 'app-report-cash-journal-by-date-range',

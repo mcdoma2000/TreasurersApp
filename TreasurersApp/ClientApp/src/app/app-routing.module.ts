@@ -14,6 +14,23 @@ import { ReportReceiptsByGregorianYearComponent } from './reports/rrbgy/report-r
 import { AuthGuard } from './security/auth.guard';
 import { MaintenanceComponent } from './maintenance/maintenance.component';
 
+import { NgModule } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
+
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { CashJournalComponent } from './cashjournal/cash-journal.component';
+import { LoginComponent } from './login/login.component';
+import { ReportsComponent } from './reports/reports.component';
+import { ReportCashJournalComponent } from './reports/rcj/report-cash-journal.component';
+import { ReportCashJournalByContributorComponent } from './reports/rcjbc/report-cash-journal-by-contributor.component';
+import { ReportCashJournalByDateRangeComponent } from './reports/rcjbdr/report-cash-journal-by-date-range.component';
+import { ReportVoidedChecksComponent } from './reports/rvc/report-voided-checks.component';
+import { ReportReceiptsByContributionComponent } from './reports/rrbc/report-receipts-by-contribution.component';
+import { ReportReceiptsByGregorianYearComponent } from './reports/rrbgy/report-receipts-by-gregorian-year.component';
+import { AuthGuard } from './security/auth.guard';
+import { AddressMaintenanceComponent } from './maintenance/address-maintenance/address-maintenance.component';
+import { ContributorMaintenanceComponent } from './maintenance/contributor-maintenance/contributor-maintenance.component';
+
 const routes: Routes = [
   {
     path: 'dashboard',
@@ -62,15 +79,21 @@ const routes: Routes = [
     data: { claimType: 'canAccessReports', reportDisplayName: 'Receipts - By Gregorian Year' }
   },
   {
-    path: 'maintenance',
-    component: MaintenanceComponent,
+    path: 'maintenance/address',
+    component: AddressMaintenanceComponent,
     canActivate: [AuthGuard],
-    data: { claimType: 'canPerformAdmin'}
+    data: { claimType: 'canPerformAdmin' }
+  },
+  {
+    path: 'maintenance/contributor',
+    component: ContributorMaintenanceComponent,
+    canActivate: [AuthGuard],
+    data: { claimType: 'canPerformAdmin' }
   },
   {
     path: 'login',
     component: LoginComponent,
-    data: { methodName: 'login'}
+    data: { methodName: 'login' }
   },
   {
     path: 'logout',

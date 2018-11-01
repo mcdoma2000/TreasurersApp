@@ -6,10 +6,16 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./report-receipts-by-gregorian-year.component.css']
 })
 export class ReportReceiptsByGregorianYearComponent implements OnInit {
+  reportName = 'receiptsbygregorianyear';
+  reportDisplayName = 'Receipts - By Gregorian Year';
 
   constructor() { }
 
   ngOnInit() {
+  }
+
+  onViewReport() {
+    console.log('Attempting to view report: Receipts - By Gregorian Year');
   }
 
 }
