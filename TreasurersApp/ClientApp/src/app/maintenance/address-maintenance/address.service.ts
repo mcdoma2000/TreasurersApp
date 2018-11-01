@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Address } from '../../models/Address';
 
-const ADDRESS_API_URL = 'http://localhost:5000/api/address/';
+const ADDRESS_API_URL = 'http://localhost:55000/api/address/';
 
 @Injectable({
   providedIn: 'root'

@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using TreasurersApp.Model;
+using TreasurersApp.Models;
 
 namespace TreasurersApp.Database
 {
-    public class BtaDbContext : DbContext
+    public class TreasurersAppDbContext : DbContext
     {
         private string _dbPath;
         public string DbPath
@@ -12,7 +12,7 @@ namespace TreasurersApp.Database
             set { }
         }
 
-        public BtaDbContext(string dbPath)
+        public TreasurersAppDbContext(string dbPath)
         {
             _dbPath = dbPath;
         }
@@ -21,6 +21,8 @@ namespace TreasurersApp.Database
         public DbSet<AppUserClaim> UserClaims { get; set; }
         public DbSet<AppCashJournal> CashJournals { get; set; }
         public DbSet<Report> Reports { get; set; }
+        public DbSet<AppContributor> Contributors { get; set; }
+        public DbSet<AppAddress> Addresses { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

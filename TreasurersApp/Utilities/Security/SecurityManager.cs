@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using TreasurersApp.Database;
-using TreasurersApp.Model;
+using TreasurersApp.Models;
 
 namespace TreasurersApp.Utilities.Security
 {
@@ -31,7 +31,7 @@ namespace TreasurersApp.Utilities.Security
             AppUserAuth ret = new AppUserAuth();
             AppUser authUser = null;
 
-            using (var db = new BtaDbContext(DbPath))
+            using (var db = new TreasurersAppDbContext(DbPath))
             {
                 // Attempt to validate user
                 authUser = db.Users.Where(
@@ -54,7 +54,7 @@ namespace TreasurersApp.Utilities.Security
 
             try
             {
-                using (var db = new BtaDbContext(DbPath))
+                using (var db = new TreasurersAppDbContext(DbPath))
                 {
                     list = db.UserClaims.Where(x => x.UserId == authUser.UserId).ToList();
                 }

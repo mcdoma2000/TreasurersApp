@@ -7,14 +7,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TreasurersApp.Database;
-using TreasurersApp.Model;
+using TreasurersApp.Models;
 
 namespace TreasurersApp.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
     [Authorize]
-    public class MaintenanceController : BaseApiController
+    public class MaintenanceController : BaseController
     {
         public MaintenanceController(IHostingEnvironment env) : base(env)
         {
@@ -29,7 +29,7 @@ namespace TreasurersApp.Controllers
             List<AppUserEdit> users = new List<AppUserEdit>();
             try
             {
-                using (var db = new BtaDbContext(GetDatabasePath()))
+                using (var db = new TreasurersAppDbContext(GetDatabasePath()))
                 {
                     users = db.Users.Select(x => new AppUserEdit()
                     {

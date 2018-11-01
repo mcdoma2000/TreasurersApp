@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace TreasurersApp.Model
+namespace TreasurersApp.Models
 {
     public class AppUserAuth
     {
@@ -8,6 +8,7 @@ namespace TreasurersApp.Model
         {
             UserName = "Not authorized";
             BearerToken = string.Empty;
+            IsAuthenticated = false;
             Claims = new List<AppUserClaim>();
         }
 

@@ -6,7 +6,7 @@ using System.IO;
 
 namespace TreasurersApp.Controllers
 {
-    public class BaseApiController : Controller
+    public class BaseController : Controller
     {
         private IHostingEnvironment _env;
         public IHostingEnvironment Env
@@ -15,7 +15,7 @@ namespace TreasurersApp.Controllers
             set { }
         }
 
-        public BaseApiController(IHostingEnvironment env)
+        public BaseController(IHostingEnvironment env)
         {
             _env = env;
         }

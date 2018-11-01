@@ -11,7 +11,7 @@ namespace TreasurersApp.Utilities.Reports
         {
             var workSheet = excel.Workbook.Worksheets[reportParameters.ReportName];
             workSheet.Cells[1, 1].Value = "I have successfully processed the report!";
-            BtaDbContext dc = (BtaDbContext)db;
+            TreasurersAppDbContext dc = (TreasurersAppDbContext)db;
             var reports = dc.Reports;
             int whichRow = 2;
             foreach (var rpt in reports)

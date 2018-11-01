@@ -67,7 +67,12 @@ import { ContributorMaintenanceComponent } from './maintenance/contributor-maint
     SliderModule,
     DataViewModule,
     DataGridModule,
-    AgGridModule.withComponents([]),
+    AgGridModule.withComponents(
+      [
+        MaintenanceComponent,
+        ContributorMaintenanceComponent,
+        AddressMaintenanceComponent
+      ]),
     BrowserAnimationsModule
   ],
   providers: [

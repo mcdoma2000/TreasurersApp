@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TreasurersApp.Utilities.Security;
-using TreasurersApp.Model;
+using TreasurersApp.Models;
 using Microsoft.AspNetCore.Hosting;
 
 namespace TreasurersApp.Controllers
 {
   [Route("api/[controller]")]
-  public class SecurityController : BaseApiController
+  public class SecurityController : BaseController
   {
     private JwtSettings _settings;
     public SecurityController(JwtSettings settings, IHostingEnvironment env) : base(env)

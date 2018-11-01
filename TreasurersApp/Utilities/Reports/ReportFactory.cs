@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TreasurersApp.Database;
-using TreasurersApp.Model;
+using TreasurersApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace TreasurersApp.Utilities.Reports
 
         public ReportFactory(DbContext db)
         {
-            var dc = db as BtaDbContext;
+            var dc = db as TreasurersAppDbContext;
             foreach (var rpt in dc.Reports.Where(x => x.Active).OrderBy(x => x.DisplayOrder).ToList())
             {
                 reportsByName.Add(rpt.Name, rpt);

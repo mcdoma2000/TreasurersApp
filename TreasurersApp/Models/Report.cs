@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TreasurersApp.Model
+namespace TreasurersApp.Models
 {
   [Table("Report", Schema = "dbo")]
   public partial class Report

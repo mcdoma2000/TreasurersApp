@@ -7,14 +7,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TreasurersApp.Database;
-using TreasurersApp.Model;
+using TreasurersApp.Models;
 
 namespace TreasurersApp.Controllers
 {
     [Produces("application/json")]
     [Route("api/CashJournal")]
     [Authorize]
-    public class CashJournalController : BaseApiController
+    public class CashJournalController : BaseController
     {
         public CashJournalController(IHostingEnvironment env) : base(env)
         {
@@ -30,7 +30,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BtaDbContext(GetDatabasePath()))
+                using (var db = new TreasurersAppDbContext(GetDatabasePath()))
                 {
                     if (db.CashJournals.Count() > 0)
                     {
@@ -60,7 +60,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BtaDbContext(GetDatabasePath()))
+                using (var db = new TreasurersAppDbContext(GetDatabasePath()))
                 {
                     entity = db.CashJournals.Find(id);
                     if (entity != null)
@@ -91,7 +91,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BtaDbContext(GetDatabasePath()))
+                using (var db = new TreasurersAppDbContext(GetDatabasePath()))
                 {
                     if (entity != null)
                     {
@@ -122,7 +122,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BtaDbContext(GetDatabasePath()))
+                using (var db = new TreasurersAppDbContext(GetDatabasePath()))
                 {
                     if (entity != null)
                     {
