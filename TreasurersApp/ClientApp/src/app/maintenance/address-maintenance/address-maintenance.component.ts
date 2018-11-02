@@ -1,5 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Observable, of, Subscription } from 'rxjs';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 import { Address } from '../../models/Address';
 import { AddressService } from './address.service';
@@ -24,8 +26,33 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   rowData: Address[] = [];
   foundAddress: Address = null;
   getAddresses$: Subscription = null;
+  rowIsSelected = false;
+  selectedAddress: Address = {
+    id: null,
+    addressLine1: null,
+    addressLine2: null,
+    addressLine3: null,
+    city: null,
+    state: null,
+    postalCode: null
+  };
+  addressToEdit: Address = {
+    id: null,
+    addressLine1: null,
+    addressLine2: null,
+    addressLine3: null,
+    city: null,
+    state: null,
+    postalCode: null
+  };
+  private gridApi;
+  private columnApi;
+  private displayEdit = false;
 
-  constructor(private addressService: AddressService) { }
+  constructor(private addressService: AddressService,
+              private confirmationService: ConfirmationService,
+              private messageService: MessageService) {
+  }
 
   ngOnInit() {
     this.getAddresses$ = this.addressService.getAddresses(true).subscribe(resp => { this.rowData = resp; });
@@ -35,6 +62,135 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
     if (this.getAddresses$ !== null) {
       this.getAddresses$.unsubscribe();
     }
+  }
+
+  addAddress() {
+    alert('Add address was clicked');
+  }
+
+  deleteAddress() {
+    console.log(this.selectedAddress);
+    this.confirmDelete();
+  }
+
+  confirmDelete() {
+    this.confirmationService.confirm({
+      message: 'Are you certain that you want to delete this record?',
+      header: 'Delete Confirmation',
+      icon: 'pi pi-info-circle',
+      acceptLabel: "Delete",
+      rejectLabel: "Cancel",
+      accept: () => {
+        this.messageService.add({ severity: "warn", summary: "Service Message", detail: "Deleting address..." });
+      },
+      reject: () => {
+        console.log("Rejected Delete");
+      }
+    });
+  }
+
+  editAddress() {
+    this.displayEdit = true;
+    this.addressToEdit = {
+      id: this.selectedAddress.id,
+      addressLine1: this.selectedAddress.addressLine1,
+      addressLine2: this.selectedAddress.addressLine2,
+      addressLine3: this.selectedAddress.addressLine3,
+      city: this.selectedAddress.city,
+      state: this.selectedAddress.state,
+      postalCode: this.selectedAddress.postalCode
+    };
+  }
+
+  saveEditClick($event) {
+    console.log("Save Edit was clicked");
+    this.displayEdit = false;
+    if (this.shouldSaveEdit()) {
+      console.log("Save edit");
+    } else {
+      console.log("Don't save edit");
+    }
+  }
+
+  private shouldSaveEdit(): boolean {
+    let save = false;
+    if (this.selectedAddress.id !== this.addressToEdit.id ||
+        this.selectedAddress.addressLine1 !== this.addressToEdit.addressLine1 ||
+        this.selectedAddress.addressLine2 !== this.addressToEdit.addressLine2 ||
+        this.selectedAddress.addressLine3 !== this.addressToEdit.addressLine3 ||
+        this.selectedAddress.city !== this.addressToEdit.city ||
+        this.selectedAddress.state !== this.addressToEdit.state ||
+        this.selectedAddress.postalCode !== this.addressToEdit.postalCode) {
+      save = true;
+    }
+    return save;
+  }
+
+  cancelEditClick($event) {
+    console.log("Cancel Edit was clicked");
+    this.displayEdit = false;
+    this.addressToEdit = {
+      id: null,
+      addressLine1: null,
+      addressLine2: null,
+      addressLine3: null,
+      city: null,
+      state: null,
+      postalCode: null
+    };
+  }
+
+  onGridReady(params) {
+    this.gridApi = params.api;
+    this.columnApi = params.columnApi;
+  }
+
+  onSelectionChanged() {
+    const selectedRows = this.gridApi.getSelectedRows();
+    if (selectedRows.length === 0) {
+      this.rowIsSelected = false;
+      this.selectedAddress = null;
+    } else {
+      this.rowIsSelected = true;
+      this.selectedAddress = selectedRows[0];
+    }
+  }
+
+  updateAddressToDB(address: Address): Observable<Address> {
+    if (address.id === null) {
+      console.log("an empty address was passed to saveAddress()");
+      return of(address);
+    }
+    this.addressService.updateAddress(address.id, address).subscribe(
+      (resp) => {
+        return of(this.rowData);
+      },
+      (err) => {
+        console.log(err);
+        this.rowData = [];
+        return of(this.rowData);
+      }
+    );
+  }
+
+  addAddressToDB(address: Address): Observable<Address> {
+    if (address.id === null) {
+      console.log("an empty address was passed to addAddress()");
+      return of(address);
+    }
+    this.addressService.addAddress(address).subscribe(
+      (resp) => {
+        return of(address);
+      },
+      (err) => {
+        console.log(err);
+        return of(address);
+      }
+    );
+  }
+
+  deleteAddressFromDB(address: Address): Observable<Address> {
+    return of(address);
   }
 
   getAddressById(id: number): Observable<Address> {

@@ -18,13 +18,13 @@ namespace TreasurersApp.Controllers
 
     public class ReportDownloadController : BaseController
     {
-        private readonly IOptions<LoggerFactoryOptions> _loggerFactory;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
 
-        public ReportDownloadController(IHostingEnvironment env, IOptions<LoggerFactoryOptions> loggerFactory) : base(env)
+        public ReportDownloadController(IHostingEnvironment env, ILoggerFactory loggerFactory) : base(env)
         {
             _loggerFactory = loggerFactory;
-            _logger = _loggerFactory.Value.LoggerFactory.CreateLogger<ReportDownloadController>();
+            _logger = _loggerFactory.CreateLogger<ReportDownloadController>();
         }
 
         [HttpPost("report", Name = "DownloadReport", Order = 1)]

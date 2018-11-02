@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using TreasurersApp.Database;
 using TreasurersApp.Models;
 
@@ -94,6 +95,7 @@ namespace TreasurersApp.Controllers
 #endif
         public IActionResult Post([FromBody]AppAddress address)
         {
+            string json = JsonConvert.SerializeObject(address);
             return new EmptyResult();
         }
 
@@ -103,6 +105,7 @@ namespace TreasurersApp.Controllers
 #endif
         public IActionResult Put([FromBody]AppAddress address)
         {
+            string json = JsonConvert.SerializeObject(address);
             return new EmptyResult();
         }
 
@@ -110,6 +113,7 @@ namespace TreasurersApp.Controllers
         [Authorize(Policy = "CanPerformAdmin")]
         public IActionResult Delete([FromBody]AppAddress address)
         {
+            string json = JsonConvert.SerializeObject(address);
             return new EmptyResult();
         }
     }

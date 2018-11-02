@@ -5,4 +5,5 @@ export class Address {
   addressLine3: string = null;
   city: string = null;
   state: string = null;
+  postalCode: string = null;
 }

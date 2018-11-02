@@ -7,9 +7,14 @@ import { CalendarModule } from 'primeng/calendar';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { MenubarModule } from 'primeng/menubar';
 import { InputMaskModule } from 'primeng/inputmask';
+import { InputTextModule } from 'primeng/inputtext'
+import { DialogModule } from 'primeng/dialog';
 import { SliderModule } from 'primeng/slider';
 import { DataViewModule } from 'primeng/dataview';
 import { DataGridModule } from 'primeng/datagrid';
+import { ButtonModule } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { AgGridModule } from 'ag-grid-angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations/';
 
@@ -64,6 +69,9 @@ import { ContributorMaintenanceComponent } from './maintenance/contributor-maint
     MultiSelectModule,
     MenubarModule,
     InputMaskModule,
+    InputTextModule,
+    DialogModule,
+    ConfirmDialogModule,
     SliderModule,
     DataViewModule,
     DataGridModule,
@@ -84,6 +92,10 @@ import { ContributorMaintenanceComponent } from './maintenance/contributor-maint
     MenubarModule,
     InputMaskModule,
     SliderModule,
+    ButtonModule,
+    ConfirmDialogModule,
+    ConfirmationService,
+    MessageService,
     DataViewModule,
     DataGridModule,
     BrowserAnimationsModule
