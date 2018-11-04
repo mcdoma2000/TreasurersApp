@@ -4,7 +4,8 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Contributor } from '../../models/Contributor';
 
-const CONTRIBUTOR_API_URL = 'http://localhost:55000/api/contributor/';
+//const CONTRIBUTOR_API_URL = 'http://localhost:55000/api/contributor/';
+const CONTRIBUTOR_API_URL = '/api/contributor/';
 
 @Injectable({
   providedIn: 'root'

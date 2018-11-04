@@ -7,7 +7,8 @@ import { Report } from './Report';
 import { ReportParameters } from './ReportParameters';
 import { ReportStatus } from './ReportStatus';
 
-const API_URL = 'http://localhost:55000/api/reports/';
+//const API_URL = 'http://localhost:55000/api/reports/';
+const API_URL = '/api/reports/';
 
 const httpOptions = {
   headers: new HttpHeaders({

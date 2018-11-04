@@ -15,6 +15,7 @@ import { DataGridModule } from 'primeng/datagrid';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 import { AgGridModule } from 'ag-grid-angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations/';
 
@@ -70,6 +71,7 @@ import { ContributorMaintenanceComponent } from './maintenance/contributor-maint
     MenubarModule,
     InputMaskModule,
     InputTextModule,
+    ToastModule,
     DialogModule,
     ConfirmDialogModule,
     SliderModule,

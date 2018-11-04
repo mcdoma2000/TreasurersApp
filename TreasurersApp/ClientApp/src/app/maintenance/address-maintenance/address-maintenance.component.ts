@@ -5,6 +5,7 @@ import { ToastModule } from 'primeng/toast';
 
 import { Address } from '../../models/Address';
 import { AddressService } from './address.service';
+import { ConfirmationMessage } from '../../models/confirmationMessage';
 
 @Component({
   selector: 'app-address-maintenance',
@@ -27,27 +28,12 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   foundAddress: Address = null;
   getAddresses$: Subscription = null;
   rowIsSelected = false;
-  selectedAddress: Address = {
-    id: null,
-    addressLine1: null,
-    addressLine2: null,
-    addressLine3: null,
-    city: null,
-    state: null,
-    postalCode: null
-  };
-  addressToEdit: Address = {
-    id: null,
-    addressLine1: null,
-    addressLine2: null,
-    addressLine3: null,
-    city: null,
-    state: null,
-    postalCode: null
-  };
-  private gridApi;
-  private columnApi;
-  private displayEdit = false;
+  selectedAddress = new Address(null, null, null, null, null, null, null);
+  addressToEdit = new Address(null, null, null, null, null, null, null);
+  displayEdit = false;
+  displayAdd = false;
+  gridApi = null;
+  columnApi = null;
 
   constructor(private addressService: AddressService,
               private confirmationService: ConfirmationService,
@@ -65,7 +51,9 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   addAddress() {
-    alert('Add address was clicked');
+    this.displayAdd = true;
+    this.addressToEdit = new Address(null, null, null, null, null, null, null);
+
   }
 
   deleteAddress() {
@@ -74,17 +62,32 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   confirmDelete() {
+    const confMsg = new ConfirmationMessage("warn", "Service Message", "Deleting address...");
+    this.showConfirmation('Are you certain that you want to delete this record?', 'Delete Confirmation', 'Delete', confMsg);
+  }
+
+  confirmAdd() {
+    const confMsg = new ConfirmationMessage("warn", "Service Message", "Adding address...");
+    this.showConfirmation("Are you certain that you want to add this record?", "Add Confirmation", "Add", confMsg);
+  }
+
+  confirmUpdate() {
+    const confMsg = new ConfirmationMessage("warn", "Service Message", "Updating address...");
+    this.showConfirmation('Are you certain that you want to update this record?', 'Update Confirmation', 'Update', confMsg);
+  }
+
+  showConfirmation(message: string, header: string, acceptLabel: string, confirmationMessage: ConfirmationMessage) {
     this.confirmationService.confirm({
-      message: 'Are you certain that you want to delete this record?',
-      header: 'Delete Confirmation',
+      message: message,
+      header: header,
       icon: 'pi pi-info-circle',
-      acceptLabel: "Delete",
+      acceptLabel: acceptLabel,
       rejectLabel: "Cancel",
       accept: () => {
-        this.messageService.add({ severity: "warn", summary: "Service Message", detail: "Deleting address..." });
+        this.messageService.add(confirmationMessage);
       },
       reject: () => {
-        console.log("Rejected Delete");
+        console.log("Rejected Update");
       }
     });
   }
@@ -129,7 +132,11 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   cancelEditClick($event) {
     console.log("Cancel Edit was clicked");
     this.displayEdit = false;
-    this.addressToEdit = {
+    this.addressToEdit = this.newAddress();
+  }
+
+  newAddress() {
+    return {
       id: null,
       addressLine1: null,
       addressLine2: null,

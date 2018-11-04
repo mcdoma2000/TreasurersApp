@@ -6,7 +6,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AppUserAuth } from './app-user-auth';
 import { AppUser } from './app-user';
 
-const API_URL = 'http://localhost:55000/api/security/';
+//const API_URL = 'http://localhost:55000/api/security/';
+const API_URL = '/api/security/';
 
 const httpOptions = {
   headers: new HttpHeaders({
