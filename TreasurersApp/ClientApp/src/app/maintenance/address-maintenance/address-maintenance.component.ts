@@ -121,7 +121,7 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
     });
   }
 
-  showConfirmation(message: string, header: string, acceptLabel: string, confirmationMessage: ConfirmationMessage, callback:() => any) {
+  showConfirmation(message: string, header: string, acceptLabel: string, confirmationMessage: ConfirmationMessage, callback:() => void) {
 
     this.confirmationService.confirm({
       message: message,
