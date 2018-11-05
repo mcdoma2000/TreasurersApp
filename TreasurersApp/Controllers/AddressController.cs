@@ -96,7 +96,39 @@ namespace TreasurersApp.Controllers
         public IActionResult Post([FromBody]AppAddress address)
         {
             string json = JsonConvert.SerializeObject(address);
-            return new EmptyResult();
+            var returnResult = new AppAddressActionResult(false, new List<string>(), null);
+            if (address != null)
+            {
+                try
+                {
+                    using (var db = new TreasurersAppDbContext(GetDatabasePath()))
+                    {
+                        var resultAddress = db.Addresses.Add(address);
+                        var entity = resultAddress.Entity;
+                        if (entity != null)
+                        {
+                            returnResult.Success = true;
+                            returnResult.StatusMessages.Add("Successfully added address.");
+                            returnResult.Address = entity;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    returnResult.Success = false;
+                    returnResult.StatusMessages.Add(e.Message);
+                    returnResult.Address = null;
+                }
+            }
+            else
+            {
+                returnResult.Success = false;
+                returnResult.StatusMessages.Add("Empty address posted for add.");
+                returnResult.Address = null;
+            }
+            return returnResult.Success ?
+                StatusCode(StatusCodes.Status200OK, returnResult) :
+                StatusCode(StatusCodes.Status500InternalServerError, returnResult);
         }
 
         [HttpPut(Name = "AddressPut")]
@@ -106,7 +138,45 @@ namespace TreasurersApp.Controllers
         public IActionResult Put([FromBody]AppAddress address)
         {
             string json = JsonConvert.SerializeObject(address);
-            return new EmptyResult();
+            var returnResult = new AppAddressActionResult(false, new List<string>(), null);
+            if (address != null)
+            {
+                try
+                {
+                    using (var db = new TreasurersAppDbContext(GetDatabasePath()))
+                    {
+                        var resultAddress = db.Addresses.SingleOrDefault(x => x.Id == address.Id);
+                        if (resultAddress != null)
+                        {
+                            resultAddress.AddressLine1 = address.AddressLine1;
+                            resultAddress.AddressLine2 = address.AddressLine2;
+                            resultAddress.AddressLine3 = address.AddressLine3;
+                            resultAddress.City = address.City;
+                            resultAddress.State = address.State;
+                            resultAddress.PostalCode = address.PostalCode;
+                            db.SaveChanges();
+                            returnResult.Success = true;
+                            returnResult.Address = resultAddress;
+                            returnResult.StatusMessages.Add("Successfully updated address.");
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    returnResult.Success = false;
+                    returnResult.StatusMessages.Add(e.Message);
+                    returnResult.Address = null;
+                }
+            }
+            else
+            {
+                returnResult.Success = false;
+                returnResult.StatusMessages.Add("Empty address posted for update.");
+                returnResult.Address = null;
+            }
+            return returnResult.Success ?
+                StatusCode(StatusCodes.Status200OK, returnResult) :
+                StatusCode(StatusCodes.Status500InternalServerError, returnResult);
         }
 
         [HttpDelete(Name = "AddressDelete")]
@@ -114,7 +184,40 @@ namespace TreasurersApp.Controllers
         public IActionResult Delete([FromBody]AppAddress address)
         {
             string json = JsonConvert.SerializeObject(address);
-            return new EmptyResult();
+            var returnResult = new AppAddressActionResult(false, new List<string>(), null);
+            if (address != null)
+            {
+                try
+                {
+                    using (var db = new TreasurersAppDbContext(GetDatabasePath()))
+                    {
+                        var resultAddress = db.Addresses.SingleOrDefault(x => x.Id == address.Id);
+                        if (resultAddress != null)
+                        {
+                            db.Addresses.Remove(resultAddress);
+                            db.SaveChanges();
+                            returnResult.Success = true;
+                            returnResult.Address = resultAddress;
+                            returnResult.StatusMessages.Add("Successfully deleted address.");
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    returnResult.Success = false;
+                    returnResult.StatusMessages.Add(e.Message);
+                    returnResult.Address = null;
+                }
+            }
+            else
+            {
+                returnResult.Success = false;
+                returnResult.StatusMessages.Add("Empty address posted for delete.");
+                returnResult.Address = null;
+            }
+            return returnResult.Success ?
+                StatusCode(StatusCodes.Status200OK, returnResult) :
+                StatusCode(StatusCodes.Status500InternalServerError, returnResult);
         }
     }
 }

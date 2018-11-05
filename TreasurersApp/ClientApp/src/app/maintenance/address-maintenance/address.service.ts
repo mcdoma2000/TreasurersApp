@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Address } from '../../models/Address';
+import { AddressActionResult } from '../../models/AddressActionResult';
 
 //const ADDRESS_API_URL = 'http://localhost:55000/api/address/';
 const ADDRESS_API_URL = '/api/address/';
@@ -14,6 +15,18 @@ const ADDRESS_API_URL = '/api/address/';
 export class AddressService {
 
   constructor(private http: HttpClient) { }
+
+  newAddress(): Address {
+    return {
+      id: null,
+      addressLine1: null,
+      addressLine2: null,
+      addressLine3: null,
+      city: null,
+      state: null,
+      postalCode: null
+    };
+  }
 
   getAddresses(forceReload: boolean = false): Observable<Address[]> {
     const options = {
@@ -33,26 +46,58 @@ export class AddressService {
     return this.http.get<Address>(ADDRESS_API_URL, options);
   }
 
-  updateAddress(id: number, address: Address) {
-    const options = {
-      params: new HttpParams()
-        .set('id', id.toString())
-        .set('address', JSON.stringify(address))
-    };
-    return this.http.put<Address>(ADDRESS_API_URL, address, options);
+  validateAddress(address: Address): boolean {
+    if (!address.addressLine1 || !address.city || !address.state || !address.postalCode) {
+      return false;
+    }
+    return true;
   }
 
-  addAddress(address: Address) {
+  updateAddress(address: Address): Observable<AddressActionResult> {
     const options = {
       params: new HttpParams().set('address', JSON.stringify(address))
     };
-    return this.http.post<Address>(ADDRESS_API_URL, address, options);
+    let result = new AddressActionResult(this);
+    this.http.put<Address>(ADDRESS_API_URL, address, options).subscribe(
+      (resp) => {
+        result = resp;
+      },
+      (err) => {
+        result = err;
+      }
+    );
+    return of(result);
   }
 
-  deleteAddress(id: number) {
+  addAddress(address: Address): Observable<AddressActionResult> {
     const options = {
-      params: new HttpParams().set('id', id.toString())
+      params: new HttpParams().set('address', JSON.stringify(address))
     };
-    return this.http.delete<Address>(ADDRESS_API_URL, options);
+    let result = new AddressActionResult(this);
+    this.http.post<Address>(ADDRESS_API_URL, address, options).subscribe(
+      (resp) => {
+        result = resp;
+      },
+      (err) => {
+        result = err;
+      }
+    );
+    return of(result);
+  }
+
+  deleteAddress(address: Address): Observable<AddressActionResult> {
+    const options = {
+      params: new HttpParams().set('address', JSON.stringify(address))
+    };
+    let result: AddressActionResult = null;
+    this.http.delete<AddressActionResult>(ADDRESS_API_URL, options).subscribe(
+      (resp) => {
+        result = resp;
+      },
+      (err) => {
+        result = err;
+      }
+    );
+    return of(result);
   }
 }
