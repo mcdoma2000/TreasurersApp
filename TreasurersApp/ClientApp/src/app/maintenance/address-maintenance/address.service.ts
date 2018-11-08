@@ -14,6 +14,12 @@ const ADDRESS_API_URL = '/api/address/';
 })
 export class AddressService {
 
+  private httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json'
+    })
+  }
+
   constructor(private http: HttpClient) { }
 
   newAddress(): Address {
@@ -54,48 +60,46 @@ export class AddressService {
   }
 
   updateAddress(address: Address): Observable<AddressActionResult> {
-    const options = {
-      params: new HttpParams().set('address', JSON.stringify(address))
-    };
     let result = new AddressActionResult(this);
-    this.http.put<Address>(ADDRESS_API_URL, address, options).subscribe(
+    this.http.put<AddressActionResult>(ADDRESS_API_URL, address, this.httpOptions).subscribe(
       (resp) => {
         result = resp;
       },
       (err) => {
-        result = err;
+        result.success = false;
+        result.statusMessages.push(JSON.stringify(err));
+        result.address = address;
       }
     );
     return of(result);
   }
 
   addAddress(address: Address): Observable<AddressActionResult> {
-    const options = {
-      params: new HttpParams().set('address', JSON.stringify(address))
-    };
     let result = new AddressActionResult(this);
-    this.http.post<Address>(ADDRESS_API_URL, address, options).subscribe(
+    this.http.post<AddressActionResult>(ADDRESS_API_URL, address, this.httpOptions).subscribe(
       (resp) => {
         result = resp;
       },
       (err) => {
-        result = err;
+        result.success = false;
+        result.statusMessages.push(JSON.stringify(err));
+        result.address = address;
       }
     );
     return of(result);
   }
 
-  deleteAddress(address: Address): Observable<AddressActionResult> {
-    const options = {
-      params: new HttpParams().set('address', JSON.stringify(address))
-    };
-    let result: AddressActionResult = null;
-    this.http.delete<AddressActionResult>(ADDRESS_API_URL, options).subscribe(
+  deleteAddress(addressId: number): Observable<AddressActionResult> {
+    let result: AddressActionResult = new AddressActionResult(this);
+    const deleteUrl = `${ADDRESS_API_URL}/${addressId}`;
+    this.http.delete<AddressActionResult>(deleteUrl, this.httpOptions).subscribe(
       (resp) => {
         result = resp;
       },
       (err) => {
-        result = err;
+        result.success = false;
+        result.statusMessages.push(JSON.stringify(err));
+        result.address = this.newAddress();
       }
     );
     return of(result);

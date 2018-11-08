@@ -93,7 +93,7 @@ namespace TreasurersApp.Controllers
 #if RELEASE
         [Authorize(Policy = "CanAccessAddresses")]
 #endif
-        public IActionResult Post([FromBody]AppAddress address)
+        public IActionResult Post(AppAddress address)
         {
             string json = JsonConvert.SerializeObject(address);
             var returnResult = new AppAddressActionResult(false, new List<string>(), null);
@@ -135,7 +135,7 @@ namespace TreasurersApp.Controllers
 #if RELEASE
         [Authorize(Policy = "CanAccessAddresses")]
 #endif
-        public IActionResult Put([FromBody]AppAddress address)
+        public IActionResult Put(AppAddress address)
         {
             string json = JsonConvert.SerializeObject(address);
             var returnResult = new AppAddressActionResult(false, new List<string>(), null);
@@ -181,38 +181,28 @@ namespace TreasurersApp.Controllers
 
         [HttpDelete(Name = "AddressDelete")]
         [Authorize(Policy = "CanPerformAdmin")]
-        public IActionResult Delete([FromBody]AppAddress address)
+        public IActionResult Delete(int id)
         {
-            string json = JsonConvert.SerializeObject(address);
             var returnResult = new AppAddressActionResult(false, new List<string>(), null);
-            if (address != null)
+            try
             {
-                try
+                using (var db = new TreasurersAppDbContext(GetDatabasePath()))
                 {
-                    using (var db = new TreasurersAppDbContext(GetDatabasePath()))
+                    var resultAddress = db.Addresses.SingleOrDefault(x => x.Id == id);
+                    if (resultAddress != null)
                     {
-                        var resultAddress = db.Addresses.SingleOrDefault(x => x.Id == address.Id);
-                        if (resultAddress != null)
-                        {
-                            db.Addresses.Remove(resultAddress);
-                            db.SaveChanges();
-                            returnResult.Success = true;
-                            returnResult.Address = resultAddress;
-                            returnResult.StatusMessages.Add("Successfully deleted address.");
-                        }
+                        db.Addresses.Remove(resultAddress);
+                        db.SaveChanges();
+                        returnResult.Success = true;
+                        returnResult.Address = resultAddress;
+                        returnResult.StatusMessages.Add("Successfully deleted address.");
                     }
                 }
-                catch (Exception e)
-                {
-                    returnResult.Success = false;
-                    returnResult.StatusMessages.Add(e.Message);
-                    returnResult.Address = null;
-                }
             }
-            else
+            catch (Exception e)
             {
                 returnResult.Success = false;
-                returnResult.StatusMessages.Add("Empty address posted for delete.");
+                returnResult.StatusMessages.Add(e.Message);
                 returnResult.Address = null;
             }
             return returnResult.Success ?

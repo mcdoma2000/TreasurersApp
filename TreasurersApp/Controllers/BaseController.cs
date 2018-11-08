@@ -22,7 +22,7 @@ namespace TreasurersApp.Controllers
 
         protected string GetDatabasePath()
         {
-            string dbPath = Path.Combine(Env.WebRootPath, @"Database\BTA.mdf");
+            string dbPath = Path.Combine(Env.WebRootPath, @"Content\Database\BTA.mdf");
             return dbPath;
         }
 

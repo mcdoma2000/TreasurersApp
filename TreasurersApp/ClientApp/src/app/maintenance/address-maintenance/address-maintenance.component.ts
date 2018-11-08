@@ -53,18 +53,26 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   addAddress() {
     this.displayAdd = true;
     this.addressToEdit = new Address(null, null, null, null, null, null, null);
-
   }
 
   deleteAddress() {
     console.log(this.selectedAddress);
+    this.addressToEdit = {
+      id: this.selectedAddress.id,
+      addressLine1: this.selectedAddress.addressLine1,
+      addressLine2: this.selectedAddress.addressLine2,
+      addressLine3: this.selectedAddress.addressLine3,
+      city: this.selectedAddress.city,
+      state: this.selectedAddress.state,
+      postalCode: this.selectedAddress.postalCode
+    };
     this.confirmDelete();
   }
 
   confirmDelete() {
     const confMsg = new ConfirmationMessage("warn", "Address Service Message", "Deleting address...");
     this.showConfirmation('Are you certain that you want to delete this record?', 'Delete Confirmation', 'Delete', confMsg, () => {
-      this.addressService.deleteAddress(this.addressToEdit).subscribe(
+      this.addressService.deleteAddress(this.addressToEdit.id).subscribe(
         (resp) => {
           if (resp.success === true) {
             this.messageService.add({ severity: "success", summary: "Address Maintenance", detail: resp.statusMessages[0] });
@@ -152,13 +160,23 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
     };
   }
 
+  saveAddClick($event) {
+    console.log("Save Add was clicked");
+    this.displayEdit = false;
+    if (this.shouldSaveEdit()) {
+      this.confirmAdd();
+    } else {
+      this.messageService.add({ severity: "info", summary: "Address Maintenance", detail: "No data changed." });
+    }
+  }
+
   saveEditClick($event) {
     console.log("Save Edit was clicked");
     this.displayEdit = false;
     if (this.shouldSaveEdit()) {
-      console.log("Save edit");
+      this.confirmAdd();
     } else {
-      console.log("Don't save edit");
+      this.messageService.add({ severity: "info", summary: "Address Maintenance", detail: "No data changed." });
     }
   }
 
@@ -179,6 +197,12 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   cancelEditClick($event) {
     console.log("Cancel Edit was clicked");
     this.displayEdit = false;
+    this.addressToEdit = this.addressService.newAddress();
+  }
+
+  cancelAddClick($event) {
+    console.log("Cancel Add was clicked");
+    this.displayAdd = false;
     this.addressToEdit = this.addressService.newAddress();
   }
 
@@ -250,7 +274,9 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
     this.addressService.addAddress(address).subscribe(
       (resp) => {
         if (resp.success === true) {
-          this.messageService.add({ severity: "success", summary: "Address Service Message", detail: resp.statusMessages[0] });
+          resp.statusMessages.forEach(function (value) {
+            this.messageService.add({ severity: "success", summary: "Address Service Message", detail: value });
+          });
           return of(resp.address);
         } else {
           this.messageService.add({ severity: "error", summary: "Address Service Message", detail: "An error occurred while attempting to add the address." });
@@ -276,7 +302,7 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
       this.messageService.add({ severity: "error", summary: "Address Service Message", detail: msg });
       return of(address);
     }
-    this.addressService.deleteAddress(address).subscribe(
+    this.addressService.deleteAddress(address.id).subscribe(
       (resp) => {
         if (resp.success === true) {
           this.messageService.add({ severity: "success", summary: "Address Service Message", detail: resp.statusMessages[0] });
