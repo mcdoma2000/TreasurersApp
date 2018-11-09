@@ -16,7 +16,8 @@ export class AddressService {
 
   private httpOptions = {
     headers: new HttpHeaders({
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
     })
   }
 
@@ -24,13 +25,13 @@ export class AddressService {
 
   newAddress(): Address {
     return {
-      id: null,
-      addressLine1: null,
-      addressLine2: null,
-      addressLine3: null,
-      city: null,
-      state: null,
-      postalCode: null
+      Id: 0,
+      AddressLine1: null,
+      AddressLine2: null,
+      AddressLine3: null,
+      City: null,
+      State: null,
+      PostalCode: null
     };
   }
 
@@ -53,7 +54,7 @@ export class AddressService {
   }
 
   validateAddress(address: Address): boolean {
-    if (!address.addressLine1 || !address.city || !address.state || !address.postalCode) {
+    if (!address.AddressLine1 || !address.City || !address.State || !address.PostalCode) {
       return false;
     }
     return true;
@@ -76,6 +77,7 @@ export class AddressService {
 
   addAddress(address: Address): Observable<AddressActionResult> {
     let result = new AddressActionResult(this);
+    address.Id = 0;
     this.http.post<AddressActionResult>(ADDRESS_API_URL, address, this.httpOptions).subscribe(
       (resp) => {
         result = resp;

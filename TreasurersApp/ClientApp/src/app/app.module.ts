@@ -13,6 +13,7 @@ import { SliderModule } from 'primeng/slider';
 import { DataViewModule } from 'primeng/dataview';
 import { DataGridModule } from 'primeng/datagrid';
 import { ButtonModule } from 'primeng/button';
+import { BlockUIModule } from 'primeng/blockui';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
@@ -95,6 +96,7 @@ import { ContributorMaintenanceComponent } from './maintenance/contributor-maint
     InputMaskModule,
     SliderModule,
     ButtonModule,
+    BlockUIModule,
     ConfirmDialogModule,
     ConfirmationService,
     MessageService,

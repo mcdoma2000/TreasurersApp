@@ -16,7 +16,9 @@
     <PackageReference Include="EPPlus" Version="4.5.2.1" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
     <PackageReference Include="Node.js" Version="5.3.0" />
   </ItemGroup>
 
@@ -27,25 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Content\Database\BTA.ldf" />
-    <None Remove="Content\Database\BTA.mdf" />
-    <None Remove="Content\Database\BTA.sql" />
-    <None Remove="Content\Database\BTA_log.ldf" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Content\Database\BTA.ldf">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Content\Database\BTA.mdf">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Content\Database\BTA.sql">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Content\Database\BTA_log.ldf">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
+    <Folder Include="wwwroot\Content\Database\" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

@@ -10,6 +10,9 @@ using TreasurersApp.Database;
 using TreasurersApp.Utilities.Reports;
 using TreasurersApp.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace TreasurersApp.Controllers
 {
@@ -18,7 +21,8 @@ namespace TreasurersApp.Controllers
     // [Authorize(Policy = "CanAccessReports")]
     public class ReportsController : BaseController
     {
-        public ReportsController(IHostingEnvironment env) : base(env)
+        public ReportsController(IConfiguration config, ILogger<ReportsController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
+            : base(config, logger, env, memoryCache)
         {
         }
 
@@ -31,7 +35,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(GetDatabasePath()))
+                using (var db = new TreasurersAppDbContext(DatabasePath))
                 {
                     if (db.Reports.Count() > 0)
                     {
@@ -60,7 +64,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(GetDatabasePath()))
+                using (var db = new TreasurersAppDbContext(DatabasePath))
                 {
                     entity = db.Reports.Find(id);
                     if (entity != null)
@@ -87,7 +91,7 @@ namespace TreasurersApp.Controllers
         {
             ExcelPackage excel = new ExcelPackage();
             excel.Workbook.Worksheets.Add(reportParameters.ReportName);
-            using (var db = new TreasurersAppDbContext(GetDatabasePath()))
+            using (var db = new TreasurersAppDbContext(DatabasePath))
             {
                 var rpt = db.Reports.SingleOrDefault(x => x.Name == reportParameters.ReportName);
                 if (rpt == null)

@@ -3,27 +3,41 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace TreasurersApp.Controllers
 {
     public class BaseController : Controller
     {
-        private IHostingEnvironment _env;
-        public IHostingEnvironment Env
-        {
-            get { return _env; }
-            set { }
-        }
+        private readonly ILogger _logger;
+        private readonly IConfiguration _config;
+        private readonly IHostingEnvironment _env;
+        private readonly IMemoryCache _memoryCache;
+        private readonly string _databasePath;
+        private readonly string _region;
 
-        public BaseController(IHostingEnvironment env)
+        protected ILogger Logger { get { return _logger; } private set { } }
+        protected IConfiguration Config { get { return _config; } private set { } }
+        protected IHostingEnvironment Env { get { return _env; } private set { } }
+        protected IMemoryCache MemoryCache { get { return _memoryCache;  } private set { } }
+        protected string DatabasePath { get { return _databasePath; } private set { } }
+        protected string Region { get { return _region; } private set { } }
+
+        public BaseController(IConfiguration config, ILogger logger, IHostingEnvironment env, IMemoryCache memoryCache)
         {
             _env = env;
-        }
-
-        protected string GetDatabasePath()
-        {
-            string dbPath = Path.Combine(Env.WebRootPath, @"Content\Database\BTA.mdf");
-            return dbPath;
+            _config = config;
+            _logger = logger;
+            _memoryCache = memoryCache;
+            _region = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            string dbLoc = string.Format("Database:{0}:DatabaseDirectory", Region);
+            _databasePath = Config[dbLoc] ?? "";
+            if (string.IsNullOrEmpty(_databasePath))
+            {
+                throw new InvalidDataException("Database path is missing.");
+            }
         }
 
         protected IActionResult HandleException(Exception ex, string msg)

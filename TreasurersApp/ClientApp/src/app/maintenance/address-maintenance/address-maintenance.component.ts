@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Observable, of, Subscription } from 'rxjs';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
 
 import { Address } from '../../models/Address';
 import { AddressService } from './address.service';
@@ -58,13 +57,13 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   deleteAddress() {
     console.log(this.selectedAddress);
     this.addressToEdit = {
-      id: this.selectedAddress.id,
-      addressLine1: this.selectedAddress.addressLine1,
-      addressLine2: this.selectedAddress.addressLine2,
-      addressLine3: this.selectedAddress.addressLine3,
-      city: this.selectedAddress.city,
-      state: this.selectedAddress.state,
-      postalCode: this.selectedAddress.postalCode
+      Id: this.selectedAddress.Id,
+      AddressLine1: this.selectedAddress.AddressLine1,
+      AddressLine2: this.selectedAddress.AddressLine2,
+      AddressLine3: this.selectedAddress.AddressLine3,
+      City: this.selectedAddress.City,
+      State: this.selectedAddress.State,
+      PostalCode: this.selectedAddress.PostalCode
     };
     this.confirmDelete();
   }
@@ -72,7 +71,7 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   confirmDelete() {
     const confMsg = new ConfirmationMessage("warn", "Address Service Message", "Deleting address...");
     this.showConfirmation('Are you certain that you want to delete this record?', 'Delete Confirmation', 'Delete', confMsg, () => {
-      this.addressService.deleteAddress(this.addressToEdit.id).subscribe(
+      this.addressService.deleteAddress(this.addressToEdit.Id).subscribe(
         (resp) => {
           if (resp.success === true) {
             this.messageService.add({ severity: "success", summary: "Address Maintenance", detail: resp.statusMessages[0] });
@@ -92,18 +91,12 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   confirmAdd() {
     const confMsg = new ConfirmationMessage("warn", "Address Maintenance", "Adding address...");
     this.showConfirmation("Are you certain that you want to add this record?", "Add Confirmation", "Add", confMsg, () => {
-      this.addressService.addAddress(this.addressToEdit).subscribe(
+      this.addAddressToDB(this.addressToEdit).subscribe(
         (resp) => {
-          if (resp.success === true) {
-            this.messageService.add({ severity: "success", summary: "Address Maintenance", detail: resp.statusMessages[0] });
-          } else {
-            resp.statusMessages.forEach(function (msg) {
-              this.messageService.add({ severity: "error", summary: "Address Maintenance", detail: msg });
-            });
-          }
+          console.log(resp);
         },
         (err) => {
-          this.messageService.add({ severity: "error", summary: "Address Maintenance", detail: JSON.stringify(err) });
+          console.log(err);
         }
       );
     });
@@ -150,23 +143,23 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   editAddress() {
     this.displayEdit = true;
     this.addressToEdit = {
-      id: this.selectedAddress.id,
-      addressLine1: this.selectedAddress.addressLine1,
-      addressLine2: this.selectedAddress.addressLine2,
-      addressLine3: this.selectedAddress.addressLine3,
-      city: this.selectedAddress.city,
-      state: this.selectedAddress.state,
-      postalCode: this.selectedAddress.postalCode
+      Id: this.selectedAddress.Id,
+      AddressLine1: this.selectedAddress.AddressLine1,
+      AddressLine2: this.selectedAddress.AddressLine2,
+      AddressLine3: this.selectedAddress.AddressLine3,
+      City: this.selectedAddress.City,
+      State: this.selectedAddress.State,
+      PostalCode: this.selectedAddress.PostalCode
     };
   }
 
   saveAddClick($event) {
     console.log("Save Add was clicked");
     this.displayEdit = false;
-    if (this.shouldSaveEdit()) {
+    if (this.shouldSaveAdd()) {
       this.confirmAdd();
     } else {
-      this.messageService.add({ severity: "info", summary: "Address Maintenance", detail: "No data changed." });
+      this.messageService.add({ severity: "info", summary: "Address Maintenance: Add", detail: "No data changed." });
     }
   }
 
@@ -176,19 +169,27 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
     if (this.shouldSaveEdit()) {
       this.confirmAdd();
     } else {
-      this.messageService.add({ severity: "info", summary: "Address Maintenance", detail: "No data changed." });
+      this.messageService.add({ severity: "info", summary: "Address Maintenance: Edit", detail: "No data changed." });
     }
+  }
+
+  private shouldSaveAdd(): boolean {
+    let save = false;
+    if (this.addressToEdit.AddressLine1 && this.addressToEdit.City && this.addressToEdit.State && this.addressToEdit.PostalCode) {
+      save = true;
+    }
+    return save;
   }
 
   private shouldSaveEdit(): boolean {
     let save = false;
-    if (this.selectedAddress.id !== this.addressToEdit.id ||
-        this.selectedAddress.addressLine1 !== this.addressToEdit.addressLine1 ||
-        this.selectedAddress.addressLine2 !== this.addressToEdit.addressLine2 ||
-        this.selectedAddress.addressLine3 !== this.addressToEdit.addressLine3 ||
-        this.selectedAddress.city !== this.addressToEdit.city ||
-        this.selectedAddress.state !== this.addressToEdit.state ||
-        this.selectedAddress.postalCode !== this.addressToEdit.postalCode) {
+    if (this.selectedAddress.Id !== this.addressToEdit.Id ||
+        this.selectedAddress.AddressLine1 !== this.addressToEdit.AddressLine1 ||
+        this.selectedAddress.AddressLine2 !== this.addressToEdit.AddressLine2 ||
+        this.selectedAddress.AddressLine3 !== this.addressToEdit.AddressLine3 ||
+        this.selectedAddress.City !== this.addressToEdit.City ||
+        this.selectedAddress.State !== this.addressToEdit.State ||
+        this.selectedAddress.PostalCode !== this.addressToEdit.PostalCode) {
       save = true;
     }
     return save;
@@ -223,14 +224,14 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   validateAddress(address: Address): boolean {
-    if (!address.addressLine1 || !address.city || !address.state || !address.postalCode) {
+    if (!address.AddressLine1 || !address.City || !address.State || !address.PostalCode) {
       return false;
     }
     return true;
   }
 
   updateAddressToDB(address: Address): Observable<Address> {
-    if (address.id === null) {
+    if (address.Id === null) {
       const msg = "An incomplete address was passed to update address";
       console.log(msg);
       this.messageService.add({ severity: "error", summary: "Address Service Message", detail: msg });
@@ -288,7 +289,7 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
       },
       (err) => {
         console.log(err);
-        this.messageService.add({ severity: "error", summary: "Address Service Message", detail: "An error occurred while attempting to add the address." });
+        this.messageService.add({ severity: "error", summary: "Address Service Message", detail: "An exception occurred while attempting to add the address." });
         this.messageService.add({ severity: "error", summary: "Address Service Message", detail: JSON.stringify(err) });
         return of(this.addressService.newAddress());
       }
@@ -296,13 +297,13 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   deleteAddressFromDB(address: Address): Observable<Address> {
-    if (address.id === null) {
+    if (address.Id === null) {
       const msg = "An incomplete address was passed to delete address";
       console.log(msg);
       this.messageService.add({ severity: "error", summary: "Address Service Message", detail: msg });
       return of(address);
     }
-    this.addressService.deleteAddress(address.id).subscribe(
+    this.addressService.deleteAddress(address.Id).subscribe(
       (resp) => {
         if (resp.success === true) {
           this.messageService.add({ severity: "success", summary: "Address Service Message", detail: resp.statusMessages[0] });
@@ -326,7 +327,7 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
 
   getAddressById(id: number): Observable<Address> {
     if (this.rowData.length > 0) {
-      this.foundAddress = this.rowData.find(x => x.id === id);
+      this.foundAddress = this.rowData.find(x => x.Id === id);
     }
     if (this.foundAddress) {
       return of(this.foundAddress);

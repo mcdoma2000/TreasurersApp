@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using TreasurersApp.Database;
 using TreasurersApp.Models;
 
@@ -16,7 +19,8 @@ namespace TreasurersApp.Controllers
     [Authorize]
     public class CashJournalController : BaseController
     {
-        public CashJournalController(IHostingEnvironment env) : base(env)
+        public CashJournalController(IConfiguration config, ILogger<CashJournalController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
+            : base(config, logger, env, memoryCache)
         {
 
         }
@@ -30,7 +34,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(GetDatabasePath()))
+                using (var db = new TreasurersAppDbContext(DatabasePath))
                 {
                     if (db.CashJournals.Count() > 0)
                     {
@@ -60,7 +64,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(GetDatabasePath()))
+                using (var db = new TreasurersAppDbContext(DatabasePath))
                 {
                     entity = db.CashJournals.Find(id);
                     if (entity != null)
@@ -91,7 +95,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(GetDatabasePath()))
+                using (var db = new TreasurersAppDbContext(DatabasePath))
                 {
                     if (entity != null)
                     {
@@ -122,7 +126,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(GetDatabasePath()))
+                using (var db = new TreasurersAppDbContext(DatabasePath))
                 {
                     if (entity != null)
                     {

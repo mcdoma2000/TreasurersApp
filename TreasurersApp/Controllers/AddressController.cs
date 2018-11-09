@@ -1,21 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using TreasurersApp.Database;
 using TreasurersApp.Models;
 
 namespace TreasurersApp.Controllers
 {
-    [Produces("application/json")]
     [Route("api/[controller]")]
     public class AddressController : BaseController
     {
-        public AddressController(IHostingEnvironment env) : base(env)
+        public AddressController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
+            : base(config, logger, env, memoryCache)
         {
 
         }
@@ -31,7 +35,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(GetDatabasePath()))
+                using (var db = new TreasurersAppDbContext(DatabasePath))
                 {
                     if (db.Addresses.Count() > 0)
                     {
@@ -67,7 +71,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(GetDatabasePath()))
+                using (var db = new TreasurersAppDbContext(DatabasePath))
                 {
                     entity = db.Addresses.Find(id);
                     if (entity != null)
@@ -93,7 +97,7 @@ namespace TreasurersApp.Controllers
 #if RELEASE
         [Authorize(Policy = "CanAccessAddresses")]
 #endif
-        public IActionResult Post(AppAddress address)
+        public IActionResult Post([FromBody]AppAddress address)
         {
             string json = JsonConvert.SerializeObject(address);
             var returnResult = new AppAddressActionResult(false, new List<string>(), null);
@@ -101,9 +105,10 @@ namespace TreasurersApp.Controllers
             {
                 try
                 {
-                    using (var db = new TreasurersAppDbContext(GetDatabasePath()))
+                    using (var db = new TreasurersAppDbContext(DatabasePath))
                     {
                         var resultAddress = db.Addresses.Add(address);
+                        db.SaveChanges();
                         var entity = resultAddress.Entity;
                         if (entity != null)
                         {
@@ -135,7 +140,7 @@ namespace TreasurersApp.Controllers
 #if RELEASE
         [Authorize(Policy = "CanAccessAddresses")]
 #endif
-        public IActionResult Put(AppAddress address)
+        public IActionResult Put([FromBody]AppAddress address)
         {
             string json = JsonConvert.SerializeObject(address);
             var returnResult = new AppAddressActionResult(false, new List<string>(), null);
@@ -143,7 +148,7 @@ namespace TreasurersApp.Controllers
             {
                 try
                 {
-                    using (var db = new TreasurersAppDbContext(GetDatabasePath()))
+                    using (var db = new TreasurersAppDbContext(DatabasePath))
                     {
                         var resultAddress = db.Addresses.SingleOrDefault(x => x.Id == address.Id);
                         if (resultAddress != null)
@@ -186,7 +191,7 @@ namespace TreasurersApp.Controllers
             var returnResult = new AppAddressActionResult(false, new List<string>(), null);
             try
             {
-                using (var db = new TreasurersAppDbContext(GetDatabasePath()))
+                using (var db = new TreasurersAppDbContext(DatabasePath))
                 {
                     var resultAddress = db.Addresses.SingleOrDefault(x => x.Id == id);
                     if (resultAddress != null)
