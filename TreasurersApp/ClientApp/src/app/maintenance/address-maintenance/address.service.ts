@@ -24,15 +24,7 @@ export class AddressService {
   constructor(private http: HttpClient) { }
 
   newAddress(): Address {
-    return {
-      Id: 0,
-      AddressLine1: null,
-      AddressLine2: null,
-      AddressLine3: null,
-      City: null,
-      State: null,
-      PostalCode: null
-    };
+    return new Address(0, null, null, null, null, null, null);
   }
 
   getAddresses(forceReload: boolean = false): Observable<Address[]> {
@@ -54,7 +46,7 @@ export class AddressService {
   }
 
   validateAddress(address: Address): boolean {
-    if (!address.AddressLine1 || !address.City || !address.State || !address.PostalCode) {
+    if (!address.addressLine1 || !address.city || !address.state || !address.postalCode) {
       return false;
     }
     return true;
@@ -77,7 +69,7 @@ export class AddressService {
 
   addAddress(address: Address): Observable<AddressActionResult> {
     let result = new AddressActionResult(this);
-    address.Id = 0;
+    address.id = 0;
     this.http.post<AddressActionResult>(ADDRESS_API_URL, address, this.httpOptions).subscribe(
       (resp) => {
         result = resp;
@@ -92,9 +84,16 @@ export class AddressService {
   }
 
   deleteAddress(addressId: number): Observable<AddressActionResult> {
+    const options = {
+      params: new HttpParams().set("id", addressId.toString()),
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      })
+    }
+
     let result: AddressActionResult = new AddressActionResult(this);
-    const deleteUrl = `${ADDRESS_API_URL}/${addressId}`;
-    this.http.delete<AddressActionResult>(deleteUrl, this.httpOptions).subscribe(
+    this.http.delete<AddressActionResult>(ADDRESS_API_URL, options).subscribe(
       (resp) => {
         result = resp;
       },

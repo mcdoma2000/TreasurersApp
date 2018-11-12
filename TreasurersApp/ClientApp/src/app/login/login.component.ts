@@ -3,7 +3,6 @@ import { AppUser } from '../security/app-user';
 import { AppUserAuth } from '../security/app-user-auth';
 import { SecurityService } from '../security/security.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BlockUIModule } from 'primeng/blockui';
 
 @Component({
   selector: 'app-login',

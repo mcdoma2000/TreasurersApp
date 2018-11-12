@@ -75,6 +75,7 @@ import { ContributorMaintenanceComponent } from './maintenance/contributor-maint
     ToastModule,
     DialogModule,
     ConfirmDialogModule,
+    BlockUIModule,
     SliderModule,
     DataViewModule,
     DataGridModule,

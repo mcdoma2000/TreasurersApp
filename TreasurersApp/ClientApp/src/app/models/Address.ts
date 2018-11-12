@@ -1,19 +1,19 @@
 export class Address {
-  Id: number = null;
-  AddressLine1: string = null;
-  AddressLine2: string = null;
-  AddressLine3: string = null;
-  City: string = null;
-  State: string = null;
-  PostalCode: string = null;
+  id: number = null;
+  addressLine1: string = null;
+  addressLine2: string = null;
+  addressLine3: string = null;
+  city: string = null;
+  state: string = null;
+  postalCode: string = null;
 
   constructor(id: number, addressLine1: string, addressLine2: string, addressLine3: string, city: string, state: string, postalCode: string) {
-    this.Id = id;
-    this.AddressLine1 = addressLine1;
-    this.AddressLine2 = addressLine2;
-    this.AddressLine3 = addressLine3;
-    this.City = city;
-    this.State = state;
-    this.PostalCode = postalCode;
+    this.id = id;
+    this.addressLine1 = addressLine1;
+    this.addressLine2 = addressLine2;
+    this.addressLine3 = addressLine3;
+    this.city = city;
+    this.state = state;
+    this.postalCode = postalCode;
   }
 }
