@@ -3,6 +3,7 @@ import { AppUser } from '../security/app-user';
 import { AppUserAuth } from '../security/app-user-auth';
 import { SecurityService } from '../security/security.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { BlockUIModule } from 'primeng/blockui';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +20,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   loginSub = null;
   commandSub = null;
   securitySub = null;
+  uiBlocked = false;
 
   constructor(private securityService: SecurityService,
     private route: ActivatedRoute,
@@ -51,21 +53,25 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   login() {
+    this.uiBlocked = true;
     this.securitySub = this.securityService.login(this.user)
       .subscribe(resp => {
         this.loggedInEmitter.emit(null);
         this.securityObject = resp;
         if (this.returnUrl) {
+          this.uiBlocked = false;
           this.router.navigateByUrl(this.returnUrl);
         } else {
+          this.uiBlocked = false;
           this.router.navigateByUrl('/dashboard');
         }
       },
-        () => {
-          // Initialize security object to display error message
-          this.securityObject = new AppUserAuth();
-          this.loggedOutEmitter.emit(null);
-        });
+      () => {
+        // Initialize security object to display error message
+        this.uiBlocked = false;
+        this.securityObject = new AppUserAuth();
+        this.loggedOutEmitter.emit(null);
+      });
   }
 
   logout() {

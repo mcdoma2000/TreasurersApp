@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using TreasurersApp.Database;
 using TreasurersApp.Models;
 
@@ -16,7 +19,8 @@ namespace TreasurersApp.Controllers
     [Authorize]
     public class MaintenanceController : BaseController
     {
-        public MaintenanceController(IHostingEnvironment env) : base(env)
+        public MaintenanceController(IConfiguration config, ILogger<MaintenanceController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
+            : base(config, logger, env, memoryCache)
         {
         }
 
@@ -29,7 +33,7 @@ namespace TreasurersApp.Controllers
             List<AppUserEdit> users = new List<AppUserEdit>();
             try
             {
-                using (var db = new TreasurersAppDbContext(GetDatabasePath()))
+                using (var db = new TreasurersAppDbContext(DatabasePath))
                 {
                     users = db.Users.Select(x => new AppUserEdit()
                     {

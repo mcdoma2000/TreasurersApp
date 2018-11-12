@@ -27,7 +27,9 @@ namespace TreasurersApp.Database
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string CONN = string.Format(@"Server=(localdb)\MSSQLLocalDB;Database=BTA;AttachDbFilename={0};MultipleActiveResultSets=true", DbPath);
-            optionsBuilder.UseSqlServer(CONN);
+            optionsBuilder
+                .UseSqlServer(CONN)
+                .EnableSensitiveDataLogging(true);
         }
     }
 }

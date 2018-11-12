@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using TreasurersApp.Database;
 using TreasurersApp.Models;
 
@@ -17,7 +20,7 @@ namespace TreasurersApp.Controllers
 #endif
     public class ContributorController : BaseController
     {
-        public ContributorController(IHostingEnvironment env) : base(env)
+        public ContributorController(IConfiguration config, ILogger<ContributorController> logger, IHostingEnvironment env, IMemoryCache memoryCache) : base(config, logger, env, memoryCache)
         {
 
         }
@@ -33,7 +36,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(this.GetDatabasePath()))
+                using (var db = new TreasurersAppDbContext(this.DatabasePath))
                 {
                     if (db.Contributors.Count() > 0)
                     {
@@ -69,7 +72,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(GetDatabasePath()))
+                using (var db = new TreasurersAppDbContext(DatabasePath))
                 {
                     entity = db.Contributors.Find(id);
                     if (entity != null)

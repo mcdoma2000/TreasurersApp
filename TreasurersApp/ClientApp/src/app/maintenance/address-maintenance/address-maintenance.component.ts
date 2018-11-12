@@ -1,11 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Observable, of, Subscription } from 'rxjs';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
 
 import { Address } from '../../models/Address';
 import { AddressService } from './address.service';
-import { ConfirmationMessage } from '../../models/confirmationMessage';
+import { ConfirmationMessage } from '../../models/ConfirmationMessage';
 
 @Component({
   selector: 'app-address-maintenance',
@@ -53,30 +52,78 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   addAddress() {
     this.displayAdd = true;
     this.addressToEdit = new Address(null, null, null, null, null, null, null);
-
   }
 
   deleteAddress() {
     console.log(this.selectedAddress);
+    this.addressToEdit = {
+      Id: this.selectedAddress.Id,
+      AddressLine1: this.selectedAddress.AddressLine1,
+      AddressLine2: this.selectedAddress.AddressLine2,
+      AddressLine3: this.selectedAddress.AddressLine3,
+      City: this.selectedAddress.City,
+      State: this.selectedAddress.State,
+      PostalCode: this.selectedAddress.PostalCode
+    };
     this.confirmDelete();
   }
 
   confirmDelete() {
-    const confMsg = new ConfirmationMessage("warn", "Service Message", "Deleting address...");
-    this.showConfirmation('Are you certain that you want to delete this record?', 'Delete Confirmation', 'Delete', confMsg);
+    const confMsg = new ConfirmationMessage("warn", "Address Service Message", "Deleting address...");
+    this.showConfirmation('Are you certain that you want to delete this record?', 'Delete Confirmation', 'Delete', confMsg, () => {
+      this.addressService.deleteAddress(this.addressToEdit.Id).subscribe(
+        (resp) => {
+          if (resp.success === true) {
+            this.messageService.add({ severity: "success", summary: "Address Maintenance", detail: resp.statusMessages[0] });
+          } else {
+            resp.statusMessages.forEach(function (msg) {
+              this.messageService.add({ severity: "error", summary: "Address Maintenance", detail: msg });
+            });
+          }
+        },
+        (err) => {
+          this.messageService.add({ severity: "error", summary: "Address Maintenance", detail: JSON.stringify(err) });
+        }
+      );
+    });
   }
 
   confirmAdd() {
-    const confMsg = new ConfirmationMessage("warn", "Service Message", "Adding address...");
-    this.showConfirmation("Are you certain that you want to add this record?", "Add Confirmation", "Add", confMsg);
+    const confMsg = new ConfirmationMessage("warn", "Address Maintenance", "Adding address...");
+    this.showConfirmation("Are you certain that you want to add this record?", "Add Confirmation", "Add", confMsg, () => {
+      this.addAddressToDB(this.addressToEdit).subscribe(
+        (resp) => {
+          console.log(resp);
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+    });
   }
 
   confirmUpdate() {
-    const confMsg = new ConfirmationMessage("warn", "Service Message", "Updating address...");
-    this.showConfirmation('Are you certain that you want to update this record?', 'Update Confirmation', 'Update', confMsg);
+    const confMsg = new ConfirmationMessage("warn", "Address Maintenance", "Updating address...");
+    this.showConfirmation('Are you certain that you want to update this record?', 'Update Confirmation', 'Update', confMsg, () => {
+      this.addressService.updateAddress(this.addressToEdit).subscribe(
+        (resp) => {
+          if (resp.success === true) {
+            this.messageService.add({ severity: "success", summary: "Address Maintenance", detail: resp.statusMessages[0] });
+          } else {
+            resp.statusMessages.forEach(function(msg) {
+              this.messageService.add({ severity: "error", summary: "Address Maintenance", detail: msg });
+            });
+          }
+        },
+        (err) => {
+          this.messageService.add({ severity: "error", summary: "Address Maintenance", detail: JSON.stringify(err) });
+        }
+      );
+    });
   }
 
-  showConfirmation(message: string, header: string, acceptLabel: string, confirmationMessage: ConfirmationMessage) {
+  showConfirmation(message: string, header: string, acceptLabel: string, confirmationMessage: ConfirmationMessage, callback:() => void) {
+
     this.confirmationService.confirm({
       message: message,
       header: header,
@@ -85,6 +132,7 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
       rejectLabel: "Cancel",
       accept: () => {
         this.messageService.add(confirmationMessage);
+        callback();
       },
       reject: () => {
         console.log("Rejected Update");
@@ -95,35 +143,53 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   editAddress() {
     this.displayEdit = true;
     this.addressToEdit = {
-      id: this.selectedAddress.id,
-      addressLine1: this.selectedAddress.addressLine1,
-      addressLine2: this.selectedAddress.addressLine2,
-      addressLine3: this.selectedAddress.addressLine3,
-      city: this.selectedAddress.city,
-      state: this.selectedAddress.state,
-      postalCode: this.selectedAddress.postalCode
+      Id: this.selectedAddress.Id,
+      AddressLine1: this.selectedAddress.AddressLine1,
+      AddressLine2: this.selectedAddress.AddressLine2,
+      AddressLine3: this.selectedAddress.AddressLine3,
+      City: this.selectedAddress.City,
+      State: this.selectedAddress.State,
+      PostalCode: this.selectedAddress.PostalCode
     };
+  }
+
+  saveAddClick($event) {
+    console.log("Save Add was clicked");
+    this.displayEdit = false;
+    if (this.shouldSaveAdd()) {
+      this.confirmAdd();
+    } else {
+      this.messageService.add({ severity: "info", summary: "Address Maintenance: Add", detail: "No data changed." });
+    }
   }
 
   saveEditClick($event) {
     console.log("Save Edit was clicked");
     this.displayEdit = false;
     if (this.shouldSaveEdit()) {
-      console.log("Save edit");
+      this.confirmAdd();
     } else {
-      console.log("Don't save edit");
+      this.messageService.add({ severity: "info", summary: "Address Maintenance: Edit", detail: "No data changed." });
     }
+  }
+
+  private shouldSaveAdd(): boolean {
+    let save = false;
+    if (this.addressToEdit.AddressLine1 && this.addressToEdit.City && this.addressToEdit.State && this.addressToEdit.PostalCode) {
+      save = true;
+    }
+    return save;
   }
 
   private shouldSaveEdit(): boolean {
     let save = false;
-    if (this.selectedAddress.id !== this.addressToEdit.id ||
-        this.selectedAddress.addressLine1 !== this.addressToEdit.addressLine1 ||
-        this.selectedAddress.addressLine2 !== this.addressToEdit.addressLine2 ||
-        this.selectedAddress.addressLine3 !== this.addressToEdit.addressLine3 ||
-        this.selectedAddress.city !== this.addressToEdit.city ||
-        this.selectedAddress.state !== this.addressToEdit.state ||
-        this.selectedAddress.postalCode !== this.addressToEdit.postalCode) {
+    if (this.selectedAddress.Id !== this.addressToEdit.Id ||
+        this.selectedAddress.AddressLine1 !== this.addressToEdit.AddressLine1 ||
+        this.selectedAddress.AddressLine2 !== this.addressToEdit.AddressLine2 ||
+        this.selectedAddress.AddressLine3 !== this.addressToEdit.AddressLine3 ||
+        this.selectedAddress.City !== this.addressToEdit.City ||
+        this.selectedAddress.State !== this.addressToEdit.State ||
+        this.selectedAddress.PostalCode !== this.addressToEdit.PostalCode) {
       save = true;
     }
     return save;
@@ -132,19 +198,13 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   cancelEditClick($event) {
     console.log("Cancel Edit was clicked");
     this.displayEdit = false;
-    this.addressToEdit = this.newAddress();
+    this.addressToEdit = this.addressService.newAddress();
   }
 
-  newAddress() {
-    return {
-      id: null,
-      addressLine1: null,
-      addressLine2: null,
-      addressLine3: null,
-      city: null,
-      state: null,
-      postalCode: null
-    };
+  cancelAddClick($event) {
+    console.log("Cancel Add was clicked");
+    this.displayAdd = false;
+    this.addressToEdit = this.addressService.newAddress();
   }
 
   onGridReady(params) {
@@ -163,46 +223,111 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
     }
   }
 
+  validateAddress(address: Address): boolean {
+    if (!address.AddressLine1 || !address.City || !address.State || !address.PostalCode) {
+      return false;
+    }
+    return true;
+  }
+
   updateAddressToDB(address: Address): Observable<Address> {
-    if (address.id === null) {
-      console.log("an empty address was passed to saveAddress()");
+    if (address.Id === null) {
+      const msg = "An incomplete address was passed to update address";
+      console.log(msg);
+      this.messageService.add({ severity: "error", summary: "Address Service Message", detail: msg });
       return of(address);
     }
-    this.addressService.updateAddress(address.id, address).subscribe(
+    if (this.validateAddress(address) === false) {
+      const msg = "An invalid address was passed to update address";
+      console.log(msg);
+      this.messageService.add({ severity: "error", summary: "Address Service Message", detail: msg });
+      return of(address);
+    }
+    this.addressService.updateAddress(address).subscribe(
       (resp) => {
-        return of(this.rowData);
+        if (resp.success === true) {
+          this.messageService.add({ severity: "success", summary: "Address Service Message", detail: resp.statusMessages[0] });
+          return of(resp.address);
+        } else {
+          this.messageService.add({ severity: "error", summary: "Address Service Message", detail: "An error occurred while attempting to update the address." });
+          resp.statusMessages.forEach(function (msg) {
+            this.messageService.add({ severity: "error", summary: "Address Service Message", detail: msg });
+          });
+          return of(resp.address);
+        }
       },
       (err) => {
         console.log(err);
-        this.rowData = [];
-        return of(this.rowData);
+        this.messageService.add({ severity: "error", summary: "Address Service Message", detail: "An error occurred while attempting to update the address." });
+        this.messageService.add({ severity: "error", summary: "Address Service Message", detail: JSON.stringify(err) });
+        return of(this.addressService.newAddress());
       }
     );
   }
 
   addAddressToDB(address: Address): Observable<Address> {
-    if (address.id === null) {
-      console.log("an empty address was passed to addAddress()");
+    if (this.validateAddress(address) === false) {
+      const msg = "An invalid address was passed to add an address";
+      console.log(msg);
+      this.messageService.add({ severity: "error", summary: "Address Service Message", detail: msg });
       return of(address);
     }
     this.addressService.addAddress(address).subscribe(
       (resp) => {
-        return of(address);
+        if (resp.success === true) {
+          resp.statusMessages.forEach(function (value) {
+            this.messageService.add({ severity: "success", summary: "Address Service Message", detail: value });
+          });
+          return of(resp.address);
+        } else {
+          this.messageService.add({ severity: "error", summary: "Address Service Message", detail: "An error occurred while attempting to add the address." });
+          resp.statusMessages.forEach(function (msg) {
+            this.messageService.add({ severity: "error", summary: "Address Service Message", detail: msg });
+          });
+          return of(resp.address);
+        }
       },
       (err) => {
         console.log(err);
-        return of(address);
+        this.messageService.add({ severity: "error", summary: "Address Service Message", detail: "An exception occurred while attempting to add the address." });
+        this.messageService.add({ severity: "error", summary: "Address Service Message", detail: JSON.stringify(err) });
+        return of(this.addressService.newAddress());
       }
     );
   }
 
   deleteAddressFromDB(address: Address): Observable<Address> {
-    return of(address);
+    if (address.Id === null) {
+      const msg = "An incomplete address was passed to delete address";
+      console.log(msg);
+      this.messageService.add({ severity: "error", summary: "Address Service Message", detail: msg });
+      return of(address);
+    }
+    this.addressService.deleteAddress(address.Id).subscribe(
+      (resp) => {
+        if (resp.success === true) {
+          this.messageService.add({ severity: "success", summary: "Address Service Message", detail: resp.statusMessages[0] });
+          return of(resp.address);
+        } else {
+          this.messageService.add({ severity: "error", summary: "Address Service Message", detail: "An error occurred while attempting to delete the address." });
+          resp.statusMessages.forEach(function (msg) {
+            this.messageService.add({ severity: "error", summary: "Address Service Message", detail: msg });
+          });
+          return of(resp.address);
+        }
+      },
+      (err) => {
+        console.log(err);
+        this.messageService.add({ severity: "error", summary: "Address Service Message", detail: "An error occurred while attempting to delete the address." });
+        this.messageService.add({ severity: "error", summary: "Address Service Message", detail: JSON.stringify(err) });
+        return of(this.addressService.newAddress());
+      }
+    );
   }
 
   getAddressById(id: number): Observable<Address> {
     if (this.rowData.length > 0) {
-      this.foundAddress = this.rowData.find(x => x.id === id);
+      this.foundAddress = this.rowData.find(x => x.Id === id);
     }
     if (this.foundAddress) {
       return of(this.foundAddress);
@@ -223,7 +348,7 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
         (err) => {
           console.log(err);
           this.rowData = [];
-          return of(this.rowData);
+          return of(err);
         }
       );
     }

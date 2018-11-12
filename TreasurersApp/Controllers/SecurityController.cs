@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using TreasurersApp.Utilities.Security;
 using TreasurersApp.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace TreasurersApp.Controllers
 {
@@ -10,7 +13,8 @@ namespace TreasurersApp.Controllers
   public class SecurityController : BaseController
   {
     private JwtSettings _settings;
-    public SecurityController(JwtSettings settings, IHostingEnvironment env) : base(env)
+    public SecurityController(JwtSettings settings, IConfiguration config, ILogger<SecurityController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
+            : base(config, logger, env, memoryCache)
     {
       _settings = settings;
     }
@@ -20,7 +24,7 @@ namespace TreasurersApp.Controllers
     {
       IActionResult ret = null;
       AppUserAuth auth = new AppUserAuth();
-      SecurityManager mgr = new SecurityManager(_settings, GetDatabasePath());
+      SecurityManager mgr = new SecurityManager(_settings, DatabasePath);
 
       auth = mgr.ValidateUser(user);
       if (auth.IsAuthenticated)

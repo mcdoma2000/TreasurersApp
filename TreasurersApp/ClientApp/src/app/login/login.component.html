@@ -1,15 +1,16 @@
 <div class="container" style="max-width: 1000px;">
-<div class="row">
-  <div class="col-xs-12">
-    <div class="alert alert-danger"
-      *ngIf="securityObject && !securityObject.isAuthenticated">
-      <p>Invalid User Name/Password.</p>
+  <p-blockUI [blocked]="uiBlocked"></p-blockUI>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="alert alert-danger"
+        *ngIf="securityObject && !securityObject.isAuthenticated">
+        <p>Invalid User Name/Password.</p>
+      </div>
     </div>
-  </div>
   </div>
   <form>
     <div class="row">
-      <div class="col-xs-12 col-sm-6">
+      <div class="col-md-12">
         <div class="panel panel-primary">
           <div class="panel-heading">
             <h3 class="panel-title">Log in</h3>
