@@ -164,6 +164,12 @@ namespace TreasurersApp.Controllers
                             returnResult.Address = resultAddress;
                             returnResult.StatusMessages.Add("Successfully updated address.");
                         }
+                        else
+                        {
+                            returnResult.Success = false;
+                            returnResult.StatusMessages.Add(string.Format("Unable to locate address for index: {0}", address.Id));
+                            returnResult.Address = null;
+                        }
                     }
                 }
                 catch (Exception e)

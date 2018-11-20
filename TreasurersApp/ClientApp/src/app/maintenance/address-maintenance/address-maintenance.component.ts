@@ -127,7 +127,7 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   refreshGridData() {
-    this.dataGrid.instance.refresh();
+    this.dataGrid.instance.getDataSource().reload();
   }
 
   showConfirmation(message: string, header: string, acceptLabel: string, confirmationMessage: ConfirmationMessage, callback: () => void) {
