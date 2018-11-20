@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Observable, of, Subscription } from 'rxjs';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
@@ -6,6 +6,7 @@ import { Address } from '../../models/Address';
 import { AddressService } from './address.service';
 import { ConfirmationMessage } from '../../models/ConfirmationMessage';
 import * as $ from 'jquery';
+import { DxDataGridComponent } from 'devextreme-angular/ui/data-grid';
 
 @Component({
   selector: 'app-address-maintenance',
@@ -14,27 +15,16 @@ import * as $ from 'jquery';
 })
 export class AddressMaintenanceComponent implements OnInit, OnDestroy {
 
-  uiBlocked: boolean = false;
-  columnDefs = [
-    { headerName: 'ID', field: 'id', hide: true, editable: false },
-    { headerName: 'Address 1', field: 'addressLine1', width: 210, editable: true },
-    { headerName: 'Address 2', field: 'addressLine2', width: 160, editable: true },
-    { headerName: 'Address 3', field: 'addressLine3', width: 160, editable: true },
-    { headerName: 'City', field: 'city', width: 165, editable: true },
-    { headerName: 'State', field: 'state', width: 70, editable: true },
-    { headerName: 'Postal Code', field: 'postalCode', width: 125, editable: true },
-  ];
+  @ViewChild(DxDataGridComponent) dataGrid: DxDataGridComponent;
 
+  uiBlocked = false;
   rowData: Address[] = [];
   foundAddress: Address = null;
-  getAddresses$: Subscription = null;
   rowIsSelected = false;
   selectedAddress = new Address(null, null, null, null, null, null, null);
   addressToEdit = new Address(null, null, null, null, null, null, null);
   displayEdit = false;
   displayAdd = false;
-  gridApi = null;
-  columnApi = null;
 
   constructor(private addressService: AddressService,
               private confirmationService: ConfirmationService,
@@ -42,18 +32,15 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.getAddresses$ = this.addressService.getAddresses(true).subscribe(resp => { this.rowData = resp; });
+    this.addressService.getAddresses(true).subscribe(resp => { this.rowData = resp; });
   }
 
   ngOnDestroy() {
-    if (this.getAddresses$ !== null) {
-      this.getAddresses$.unsubscribe();
-    }
   }
 
   addAddress() {
     this.displayAdd = true;
-    this.addressToEdit = new Address(0, null, null, null, null, null, null);
+    this.addressToEdit = this.addressService.newAddress();
   }
 
   deleteAddress() {
@@ -64,53 +51,50 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   confirmDelete() {
-    const confMsg = new ConfirmationMessage("warn", "Address Maintenance: Delete", "Deleting address...");
+    const confMsg = new ConfirmationMessage('warn', 'Address Maintenance: Delete', 'Deleting address...');
     this.showConfirmation('Are you certain that you want to delete this record?', 'Delete Confirmation', 'Delete', confMsg, () => {
       this.uiBlocked = true;
       this.addressService.deleteAddress(this.addressToEdit.id).subscribe(
         (resp) => {
           if (resp.success === true) {
-            this.messageService.add({ severity: "success", summary: "Address Maintenance: Delete", detail: resp.statusMessages[0] });
+            this.messageService.add({ severity: 'success', summary: 'Address Maintenance: Delete', detail: resp.statusMessages[0] });
           } else {
             resp.statusMessages.forEach(function (msg) {
-              this.messageService.add({ severity: "error", summary: "Address Maintenance: Delete", detail: msg });
+              this.messageService.add({ severity: 'error', summary: 'Address Maintenance: Delete', detail: msg });
             });
           }
-          this.doRefresh();
+          this.refreshGridData();
           this.uiBlocked = false;
         },
         (err) => {
-          this.messageService.add({ severity: "error", summary: "Address Maintenance: Delete", detail: JSON.stringify(err) });
-          this.doRefresh();
+          this.messageService.add({ severity: 'error', summary: 'Address Maintenance: Delete', detail: JSON.stringify(err) });
+          this.refreshGridData();
           this.uiBlocked = false;
         }
       );
     });
   }
 
-  doRefresh() {
-    $("#refresh-grid-data-button").trigger("click");
-  }
-
   confirmAdd() {
-    const confMsg = new ConfirmationMessage("warn", "Address Maintenance: Add", "Adding address...");
-    this.showConfirmation("Are you certain that you want to add this record?", "Add Confirmation", "Add", confMsg, () => {
+    const confMsg = new ConfirmationMessage('warn', 'Address Maintenance: Add', 'Adding address...');
+    this.showConfirmation('Are you certain that you want to add this record?', 'Add Confirmation', 'Add', confMsg, () => {
       this.uiBlocked = true;
       this.addressService.addAddress(this.addressToEdit).subscribe(
         (resp) => {
           if (resp.success === true) {
-            this.messageService.add({ severity: "success", summary: "Address Maintenance: Add", detail: resp.statusMessages[0] });
+            this.messageService.add({ severity: 'success', summary: 'Address Maintenance: Add', detail: resp.statusMessages[0] });
           } else {
             resp.statusMessages.forEach(function (msg) {
-              this.messageService.add({ severity: "error", summary: "Address Maintenance: Add", detail: msg });
+              this.messageService.add({ severity: 'error', summary: 'Address Maintenance: Add', detail: msg });
             });
           }
-          this.doRefresh();
+          this.refreshGridData();
           this.uiBlocked = false;
+          this.displayAdd = false;
         },
         (err) => {
-          this.messageService.add({ severity: "error", summary: "Address Maintenance: Add", detail: JSON.stringify(err) });
-          this.doRefresh();
+          this.messageService.add({ severity: 'error', summary: 'Address Maintenance: Add', detail: JSON.stringify(err) });
+          this.refreshGridData();
           this.uiBlocked = false;
         }
       );
@@ -118,24 +102,24 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   confirmUpdate() {
-    const confMsg = new ConfirmationMessage("warn", "Address Maintenance: Update", "Updating address...");
+    const confMsg = new ConfirmationMessage('warn', 'Address Maintenance: Update', 'Updating address...');
     this.showConfirmation('Are you certain that you want to update this record?', 'Update Confirmation', 'Update', confMsg, () => {
       this.uiBlocked = true;
       this.addressService.updateAddress(this.addressToEdit).subscribe(
         (resp) => {
           if (resp.success === true) {
-            this.messageService.add({ severity: "success", summary: "Address Maintenance: Update", detail: resp.statusMessages[0] });
+            this.messageService.add({ severity: 'success', summary: 'Address Maintenance: Update', detail: resp.statusMessages[0] });
           } else {
             resp.statusMessages.forEach(function(msg) {
-              this.messageService.add({ severity: "error", summary: "Address Maintenance: Update", detail: msg });
+              this.messageService.add({ severity: 'error', summary: 'Address Maintenance: Update', detail: msg });
             });
           }
-          this.doRefresh();
+          this.refreshGridData();
           this.uiBlocked = false;
         },
         (err) => {
-          this.messageService.add({ severity: "error", summary: "Address Maintenance: Update", detail: JSON.stringify(err) });
-          this.doRefresh();
+          this.messageService.add({ severity: 'error', summary: 'Address Maintenance: Update', detail: JSON.stringify(err) });
+          this.refreshGridData();
           this.uiBlocked = false;
         }
       );
@@ -143,30 +127,22 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   refreshGridData() {
-    setTimeout(this.refresh, 0, this);
+    this.dataGrid.instance.refresh();
   }
 
-  private refresh(amcComponent: AddressMaintenanceComponent) {
-    amcComponent.addressService.getAddresses(true).subscribe(resp => {
-      amcComponent.rowData = resp;
-      amcComponent.gridApi.setRowData(amcComponent.rowData);
-    });
-    this.uiBlocked = false;
-  }
-
-  showConfirmation(message: string, header: string, acceptLabel: string, confirmationMessage: ConfirmationMessage, callback:() => void) {
+  showConfirmation(message: string, header: string, acceptLabel: string, confirmationMessage: ConfirmationMessage, callback: () => void) {
     this.confirmationService.confirm({
       message: message,
       header: header,
       icon: 'pi pi-info-circle',
       acceptLabel: acceptLabel,
-      rejectLabel: "Cancel",
+      rejectLabel: 'Cancel',
       accept: () => {
         this.messageService.add(confirmationMessage);
         callback();
       },
       reject: () => {
-        console.log("Rejected Update");
+        console.log('Rejected Update');
       }
     });
   }
@@ -183,7 +159,7 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
     if (this.shouldSaveAdd()) {
       this.confirmAdd();
     } else {
-      this.messageService.add({ severity: "info", summary: "Address Maintenance: Add", detail: "No data changed." });
+      this.messageService.add({ severity: 'info', summary: 'Address Maintenance: Add', detail: 'No data changed.' });
     }
   }
 
@@ -192,12 +168,12 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
     if (this.shouldSaveEdit()) {
       this.confirmUpdate();
     } else {
-      this.messageService.add({ severity: "info", summary: "Address Maintenance: Edit", detail: "No data changed." });
+      this.messageService.add({ severity: 'info', summary: 'Address Maintenance: Edit', detail: 'No data changed.' });
     }
   }
 
   private shouldSaveAdd(): boolean {
-    let save = this.validateAddress(this.addressToEdit);
+    const save = this.validateAddress(this.addressToEdit);
     return save;
   }
 
@@ -216,31 +192,27 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   cancelEditClick($event) {
-    console.log("Cancel Edit was clicked");
+    console.log('Cancel Edit was clicked');
     this.displayEdit = false;
     this.addressToEdit = this.addressService.newAddress();
   }
 
   cancelAddClick($event) {
-    console.log("Cancel Add was clicked");
+    console.log('Cancel Add was clicked');
     this.displayAdd = false;
     this.addressToEdit = this.addressService.newAddress();
   }
 
-  onGridReady(params) {
-    this.gridApi = params.api;
-    this.columnApi = params.columnApi;
-  }
-
-  onSelectionChanged() {
-    const selectedRows = this.gridApi.getSelectedRows();
-    if (selectedRows.length === 0) {
-      this.rowIsSelected = false;
-      this.selectedAddress = null;
-    } else {
-      this.rowIsSelected = true;
-      this.selectedAddress = selectedRows[0];
-    }
+  onRowClick(e) {
+    this.selectedAddress = new Address(
+      e.data.id,
+      e.data.addressLine1,
+      e.data.addressLine2,
+      e.data.addressLine3,
+      e.data.city,
+      e.data.state,
+      e.data.postalCode);
+    this.rowIsSelected = true;
   }
 
   validateAddress(address: Address): boolean {

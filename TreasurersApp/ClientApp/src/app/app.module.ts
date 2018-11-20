@@ -17,9 +17,10 @@ import { BlockUIModule } from 'primeng/blockui';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-import { AgGridModule } from 'ag-grid-angular';
+import { DataTableModule } from 'primeng/datatable';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations/';
 
+import { DxDataGridModule } from 'devextreme-angular/ui/data-grid';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CashJournalComponent } from './cashjournal/cash-journal.component';
@@ -68,6 +69,7 @@ import { ContributorMaintenanceComponent } from './maintenance/contributor-maint
     HttpClientModule,
     HttpInterceptorModule,
     CalendarModule,
+    ButtonModule,
     MultiSelectModule,
     MenubarModule,
     InputMaskModule,
@@ -79,30 +81,16 @@ import { ContributorMaintenanceComponent } from './maintenance/contributor-maint
     SliderModule,
     DataViewModule,
     DataGridModule,
-    AgGridModule.withComponents(
-      [
-        MaintenanceComponent,
-        ContributorMaintenanceComponent,
-        AddressMaintenanceComponent
-      ]),
+    DataTableModule,
+    DxDataGridModule,
     BrowserAnimationsModule
   ],
   providers: [
     SecurityService,
     AuthGuard,
     LoginComponent,
-    CalendarModule,
-    MultiSelectModule,
-    MenubarModule,
-    InputMaskModule,
-    SliderModule,
-    ButtonModule,
-    BlockUIModule,
-    ConfirmDialogModule,
     ConfirmationService,
     MessageService,
-    DataViewModule,
-    DataGridModule,
     BrowserAnimationsModule
   ],
   bootstrap: [AppComponent]

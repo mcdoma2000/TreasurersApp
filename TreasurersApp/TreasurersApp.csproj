@@ -13,6 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DevExtreme.Web" Version="18.2.3" />
     <PackageReference Include="EPPlus" Version="4.5.2.1" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.App" />

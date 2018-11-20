@@ -5,7 +5,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Address } from '../../models/Address';
 import { AddressActionResult } from '../../models/AddressActionResult';
 
-//const ADDRESS_API_URL = 'http://localhost:55000/api/address/';
+// const ADDRESS_API_URL = 'http://localhost:55000/api/address/';
 const ADDRESS_API_URL = '/api/address/';
 
 
@@ -19,7 +19,7 @@ export class AddressService {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     })
-  }
+  };
 
   constructor(private http: HttpClient) { }
 
@@ -53,10 +53,10 @@ export class AddressService {
   }
 
   updateAddress(address: Address): Observable<AddressActionResult> {
-    let result = new AddressActionResult(this);
+    const result = new AddressActionResult(this);
     this.http.put<AddressActionResult>(ADDRESS_API_URL, address, this.httpOptions).subscribe(
       (resp) => {
-        result = resp;
+        return resp;
       },
       (err) => {
         result.success = false;
@@ -68,11 +68,11 @@ export class AddressService {
   }
 
   addAddress(address: Address): Observable<AddressActionResult> {
-    let result = new AddressActionResult(this);
+    const result = new AddressActionResult(this);
     address.id = 0;
     this.http.post<AddressActionResult>(ADDRESS_API_URL, address, this.httpOptions).subscribe(
       (resp) => {
-        result = resp;
+        return resp;
       },
       (err) => {
         result.success = false;
@@ -85,17 +85,17 @@ export class AddressService {
 
   deleteAddress(addressId: number): Observable<AddressActionResult> {
     const options = {
-      params: new HttpParams().set("id", addressId.toString()),
+      params: new HttpParams().set('id', addressId.toString()),
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       })
-    }
+    };
 
-    let result: AddressActionResult = new AddressActionResult(this);
+    const result: AddressActionResult = new AddressActionResult(this);
     this.http.delete<AddressActionResult>(ADDRESS_API_URL, options).subscribe(
       (resp) => {
-        result = resp;
+        return resp;
       },
       (err) => {
         result.success = false;
