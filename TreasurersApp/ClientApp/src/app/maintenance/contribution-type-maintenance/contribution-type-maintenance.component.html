@@ -1,0 +1,121 @@
+<div #contributionTypeMaintenance id="contribution-type-maintenance" class="container" style="max-width: 1000px;">
+  <div class="row">&nbsp;</div>
+  <div class="row">&nbsp;</div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="appCallout">
+        Contribution Type Maintenance
+      </div>
+    </div>
+  </div>
+  <div class="row">&nbsp;</div>
+  <div class="row">
+    <div class="col-md-2">
+      <button type="button" (click)="addContributionType()" class="btn btn-primary" style="width: 100%;">Add</button>
+    </div>
+    <div class="col-md-2">
+      <button type="button" (click)="editContributionType()" [disabled]="rowIsSelected === false" class="btn btn-primary" style="width: 100%;">Edit</button>
+    </div>
+    <div class="col-md-2">
+      <button type="button" (click)="deleteContributionType()" [disabled]="rowIsSelected === false" class="btn btn-primary" style="width: 100%;">Delete</button>
+    </div>
+    <div class="col-md-4">&nbsp;</div>
+    <div class="col-md-2">
+      <button id="refresh-grid-data-button" type="button" (click)="refreshGridData()" class="btn btn-primary">Refresh Grid</button>
+    </div>
+  </div>
+  <div class="row">&nbsp;</div>
+  <div class="row">
+    <div class="col-md-12">
+      <dx-data-grid #contributionTypeGrid
+                    [dataSource]="rowData"
+                    keyExpr="id"
+                    [rowAlternationEnabled]="true"
+                    [showBorders]="true"
+                    [showColumnLines]="true"
+                    [showRowLines]="true"
+                    (onRowClick)="onRowClick($event)">
+        <dxo-selection [mode]="'single'"></dxo-selection>
+        <dxo-paging [enabled]="true" [pageIndex]="0" [pageSize]="10"></dxo-paging>
+        <dxo-pager [visible]="true"
+                   [allowedPageSizes]="[10,20]"
+                   [infoText]="'Page {0} of {1} ({2} Addresses)'"
+                   [showInfo]="true"
+                   [showPageSizeSelector]="true"
+                   [showNavigationButtons]="true"></dxo-pager>
+        <dxi-column dataField="contributionTypeCategory" caption="Category"></dxi-column>
+        <dxi-column dataField="contributionTypeName" caption="Name"></dxi-column>
+        <dxi-column dataField="description" caption="Description"></dxi-column>
+      </dx-data-grid>
+    </div>
+  </div>
+  <div class="row">&nbsp;</div>
+  <p-toast></p-toast>
+  <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle" width="425"></p-confirmDialog>
+  <p-dialog header="Edit Contribution Type" [(visible)]="displayEdit" width="600">
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Category</div>
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="ctypeToEdit.contributionTypeCategory" />
+      </div>
+    </div>
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Name</div>
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="ctypeToEdit.contributionTypeName" />
+      </div>
+    </div>
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Description</div>
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="ctypeToEdit.description" />
+      </div>
+    </div>
+    <p-footer>
+      <div class="row">
+        <div class="col-md-3">&nbsp;</div>
+        <div class="col-md-3">
+          <p-button label="Save" (click)="saveEditClick($event)"></p-button>
+        </div>
+        <div class="col-md-3">
+          <p-button label="Cancel" (click)="cancelEditClick($event)"></p-button>
+        </div>
+        <div class="col-md-3">&nbsp;</div>
+      </div>
+    </p-footer>
+  </p-dialog>
+  <p-dialog header="Add Contribution Type" [(visible)]="displayAdd" width="600">
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Category</div>
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="ctypeToEdit.contributionTypeCategory" />
+      </div>
+    </div>
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Name</div>
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="ctypeToEdit.contributionTypeName" />
+      </div>
+    </div>
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Description</div>
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="ctypeToEdit.description" />
+      </div>
+    </div>
+    <p-footer>
+      <div class="row">
+        <div class="col-md-3">&nbsp;</div>
+        <div class="col-md-3">
+          <p-button label="Save" (click)="saveAddClick($event)"></p-button>
+        </div>
+        <div class="col-md-3">
+          <p-button label="Cancel" (click)="cancelAddClick($event)"></p-button>
+        </div>
+        <div class="col-md-3">&nbsp;</div>
+      </div>
+    </p-footer>
+  </p-dialog>
+  <div class="row">&nbsp;</div>
+  <div class="row">&nbsp;</div>
+</div>

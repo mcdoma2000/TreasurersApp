@@ -41,6 +41,7 @@ import { ReportReceiptsByGregorianYearComponent } from './reports/rrbgy/report-r
 import { StandardReportFormComponent } from './standard-report-form/standard-report-form.component';
 import { AddressMaintenanceComponent } from './maintenance/address-maintenance/address-maintenance.component';
 import { ContributorMaintenanceComponent } from './maintenance/contributor-maintenance/contributor-maintenance.component';
+import { ContributionTypeMaintenanceComponent } from './maintenance/contribution-type-maintenance/contribution-type-maintenance.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +61,7 @@ import { ContributorMaintenanceComponent } from './maintenance/contributor-maint
     StandardReportFormComponent,
     AddressMaintenanceComponent,
     ContributorMaintenanceComponent,
+    ContributionTypeMaintenanceComponent,
   ],
   imports: [
     BrowserModule,

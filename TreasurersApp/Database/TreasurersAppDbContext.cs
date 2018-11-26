@@ -23,6 +23,7 @@ namespace TreasurersApp.Database
         public DbSet<Report> Reports { get; set; }
         public DbSet<AppContributor> Contributors { get; set; }
         public DbSet<AppAddress> Addresses { get; set; }
+        public DbSet<AppContributionType> ContributionTypes { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

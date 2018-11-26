@@ -14,6 +14,7 @@ import { ReportReceiptsByGregorianYearComponent } from './reports/rrbgy/report-r
 import { AuthGuard } from './security/auth.guard';
 import { AddressMaintenanceComponent } from './maintenance/address-maintenance/address-maintenance.component';
 import { ContributorMaintenanceComponent } from './maintenance/contributor-maintenance/contributor-maintenance.component';
+import { ContributionTypeMaintenanceComponent } from './maintenance/contribution-type-maintenance/contribution-type-maintenance.component';
 
 const routes: Routes = [
   {
@@ -71,6 +72,12 @@ const routes: Routes = [
   {
     path: 'maintenance/contributor',
     component: ContributorMaintenanceComponent,
+    canActivate: [AuthGuard],
+    data: { claimType: 'canPerformAdmin' }
+  },
+  {
+    path: 'maintenance/contributiontype',
+    component: ContributionTypeMaintenanceComponent,
     canActivate: [AuthGuard],
     data: { claimType: 'canPerformAdmin' }
   },

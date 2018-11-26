@@ -1,48 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using TreasurersApp.Database;
 using TreasurersApp.Models;
 
 namespace TreasurersApp.Controllers
 {
     [Route("api/[controller]")]
-    public class AddressController : BaseController
+    public class ContributionTypeController : BaseController
     {
-        public AddressController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
+        public ContributionTypeController(IConfiguration config, ILogger<ContributionTypeController> logger, IHostingEnvironment env, IMemoryCache memoryCache)
             : base(config, logger, env, memoryCache)
         {
 
         }
 
-        [HttpGet()]
-#if RELEASE
-        [Authorize(Policy = "CanAccessAddresses")]
-#endif
+        [HttpGet(Name = "ContributionTypeGetAll")]
         public IActionResult Get()
         {
             IActionResult ret = null;
-            List<AppAddress> list = new List<AppAddress>();
+            List<AppContributionType> list = new List<AppContributionType>();
 
             try
             {
                 using (var db = new TreasurersAppDbContext(DatabasePath))
                 {
-                    if (db.Addresses.Count() > 0)
+                    if (db.ContributionTypes.Count() > 0)
                     {
-                        list = db.Addresses
-                            .OrderBy(r => r.State)
-                            .ThenBy(r => r.City)
-                            .ThenBy(r => r.PostalCode)
+                        list = db.ContributionTypes
+                            .OrderBy(r => r.ContributionTypeCategory)
+                            .ThenBy(r => r.Description)
                             .ToList();
                     }
                     ret = StatusCode(StatusCodes.Status200OK, list);
@@ -50,67 +43,61 @@ namespace TreasurersApp.Controllers
             }
             catch (Exception ex)
             {
-                ret = HandleException(ex, "Exception trying to get all Addresses");
+                ret = HandleException(ex, "Exception trying to get all contribution types");
             }
 
             return ret;
         }
 
-        [HttpGet("{id}")]
-#if RELEASE
-        [Authorize(Policy = "CanAccessAddresses")]
-#endif
+        [HttpGet("{id}", Name = "ContributionTypeGetByID")]
         public IActionResult Get(int id)
         {
             IActionResult ret = null;
-            AppAddress entity = null;
+            AppContributionType entity = null;
 
             try
             {
                 using (var db = new TreasurersAppDbContext(DatabasePath))
                 {
-                    entity = db.Addresses.Find(id);
+                    entity = db.ContributionTypes.Find(id);
                     if (entity != null)
                     {
                         ret = StatusCode(StatusCodes.Status200OK, entity);
                     }
                     else
                     {
-                        ret = StatusCode(StatusCodes.Status404NotFound, 
-                                        "Can't Find Address: " + id.ToString());
+                        ret = StatusCode(StatusCodes.Status404NotFound,
+                                        "Can't Find contribution type for id: " + id.ToString());
                     }
                 }
             }
             catch (Exception ex)
             {
-                ret = HandleException(ex, "Exception trying to retrieve a single Address.");
+                ret = HandleException(ex, "Exception trying to retrieve a single contribution type.");
             }
 
             return ret;
         }
 
-        [HttpPost(Name = "AddressPost")]
-#if RELEASE
-        [Authorize(Policy = "CanAccessAddresses")]
-#endif
-        public IActionResult Post([FromBody]AppAddress address)
+        [HttpPost(Name = "ContributionTypePost")]
+        [ValidateAntiForgeryToken]
+        public ActionResult Post([FromBody]AppContributionType contributionType)
         {
-            string json = JsonConvert.SerializeObject(address);
-            var returnResult = new AppAddressActionResult(false, new List<string>(), null);
-            if (address != null)
+            var returnResult = new AppContributionTypeActionResult(false, new List<string>(), null);
+            if (contributionType != null)
             {
                 try
                 {
                     using (var db = new TreasurersAppDbContext(DatabasePath))
                     {
-                        var resultAddress = db.Addresses.Add(address);
+                        var resultContributionType = db.ContributionTypes.Add(contributionType);
                         db.SaveChanges();
-                        var entity = resultAddress.Entity;
+                        var entity = resultContributionType.Entity;
                         if (entity != null)
                         {
                             returnResult.Success = true;
-                            returnResult.StatusMessages.Add("Successfully added address.");
-                            returnResult.Address = entity;
+                            returnResult.StatusMessages.Add("Successfully added contribution type.");
+                            returnResult.ContributionType = entity;
                         }
                     }
                 }
@@ -118,53 +105,47 @@ namespace TreasurersApp.Controllers
                 {
                     returnResult.Success = false;
                     returnResult.StatusMessages.Add(e.Message);
-                    returnResult.Address = null;
+                    returnResult.ContributionType = null;
                 }
             }
             else
             {
                 returnResult.Success = false;
-                returnResult.StatusMessages.Add("Empty address posted for add.");
-                returnResult.Address = null;
+                returnResult.StatusMessages.Add("Empty contribution type posted for add.");
+                returnResult.ContributionType = null;
             }
             return returnResult.Success ?
                 StatusCode(StatusCodes.Status200OK, returnResult) :
                 StatusCode(StatusCodes.Status500InternalServerError, returnResult);
         }
 
-        [HttpPut(Name = "AddressPut")]
-#if RELEASE
-        [Authorize(Policy = "CanAccessAddresses")]
-#endif
-        public IActionResult Put([FromBody]AppAddress address)
+        [HttpPut(Name = "ContributionTypePut")]
+        [ValidateAntiForgeryToken]
+        public ActionResult Put([FromBody]AppContributionType contributionType)
         {
-            string json = JsonConvert.SerializeObject(address);
-            var returnResult = new AppAddressActionResult(false, new List<string>(), null);
-            if (address != null)
+            var returnResult = new AppContributionTypeActionResult(false, new List<string>(), null);
+            if (contributionType != null)
             {
                 try
                 {
                     using (var db = new TreasurersAppDbContext(DatabasePath))
                     {
-                        var resultAddress = db.Addresses.SingleOrDefault(x => x.Id == address.Id);
-                        if (resultAddress != null)
+                        var resultContributionType = db.ContributionTypes.SingleOrDefault(x => x.Id == contributionType.Id);
+                        if (resultContributionType != null)
                         {
-                            resultAddress.AddressLine1 = address.AddressLine1;
-                            resultAddress.AddressLine2 = address.AddressLine2;
-                            resultAddress.AddressLine3 = address.AddressLine3;
-                            resultAddress.City = address.City;
-                            resultAddress.State = address.State;
-                            resultAddress.PostalCode = address.PostalCode;
+                            resultContributionType.ContributionTypeCategory = contributionType.ContributionTypeCategory;
+                            resultContributionType.ContributionTypeName = contributionType.ContributionTypeName;
+                            resultContributionType.Description = contributionType.Description;
                             db.SaveChanges();
                             returnResult.Success = true;
-                            returnResult.Address = resultAddress;
-                            returnResult.StatusMessages.Add("Successfully updated address.");
+                            returnResult.ContributionType = resultContributionType;
+                            returnResult.StatusMessages.Add("Successfully updated contribution type.");
                         }
                         else
                         {
                             returnResult.Success = false;
-                            returnResult.StatusMessages.Add(string.Format("Unable to locate address for index: {0}", address.Id));
-                            returnResult.Address = null;
+                            returnResult.StatusMessages.Add(string.Format("Unable to locate contribution type for id: {0}", contributionType.Id));
+                            returnResult.ContributionType = null;
                         }
                     }
                 }
@@ -172,37 +153,37 @@ namespace TreasurersApp.Controllers
                 {
                     returnResult.Success = false;
                     returnResult.StatusMessages.Add(e.Message);
-                    returnResult.Address = null;
+                    returnResult.ContributionType = null;
                 }
             }
             else
             {
                 returnResult.Success = false;
-                returnResult.StatusMessages.Add("Empty address posted for update.");
-                returnResult.Address = null;
+                returnResult.StatusMessages.Add("Empty contribution type posted for update.");
+                returnResult.ContributionType = null;
             }
             return returnResult.Success ?
                 StatusCode(StatusCodes.Status200OK, returnResult) :
                 StatusCode(StatusCodes.Status500InternalServerError, returnResult);
         }
 
-        [HttpDelete(Name = "AddressDelete")]
-        [Authorize(Policy = "CanPerformAdmin")]
+        [HttpDelete(Name = "ContributionTypeDelete")]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
-            var returnResult = new AppAddressActionResult(false, new List<string>(), null);
+            var returnResult = new AppContributionTypeActionResult(false, new List<string>(), null);
             try
             {
                 using (var db = new TreasurersAppDbContext(DatabasePath))
                 {
-                    var resultAddress = db.Addresses.SingleOrDefault(x => x.Id == id);
-                    if (resultAddress != null)
+                    var resultContributionType = db.ContributionTypes.SingleOrDefault(x => x.Id == id);
+                    if (resultContributionType != null)
                     {
-                        db.Addresses.Remove(resultAddress);
+                        db.ContributionTypes.Remove(resultContributionType);
                         db.SaveChanges();
                         returnResult.Success = true;
-                        returnResult.Address = resultAddress;
-                        returnResult.StatusMessages.Add("Successfully deleted address.");
+                        returnResult.ContributionType = resultContributionType;
+                        returnResult.StatusMessages.Add("Successfully deleted contribution type.");
                     }
                 }
             }
@@ -210,7 +191,7 @@ namespace TreasurersApp.Controllers
             {
                 returnResult.Success = false;
                 returnResult.StatusMessages.Add(e.Message);
-                returnResult.Address = null;
+                returnResult.ContributionType = null;
             }
             return returnResult.Success ?
                 StatusCode(StatusCodes.Status200OK, returnResult) :
