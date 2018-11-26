@@ -48,8 +48,8 @@
           [showPageSizeSelector]="true"
           [showNavigationButtons]="true"></dxo-pager>
         <dxi-column dataField="addressLine1" caption="Address"></dxi-column>
-        <dxi-column dataField="addressLine2" caption="Line 2"></dxi-column>
-        <dxi-column dataField="addressLine3" caption="Line 3"></dxi-column>
+        <!--<dxi-column dataField="addressLine2" caption="Line 2"></dxi-column>
+        <dxi-column dataField="addressLine3" caption="Line 3"></dxi-column>-->
         <dxi-column dataField="city" caption="City"></dxi-column>
         <dxi-column dataField="state" caption="State"></dxi-column>
         <dxi-column dataField="postalCode" caption="Zip"></dxi-column>
@@ -61,12 +61,12 @@
   <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle" width="425"></p-confirmDialog>
   <p-dialog header="Edit Address" [(visible)]="displayEdit" width="600">
     <div class="row" style="padding-bottom: 5px;">
-      <div class="col-md-3">Address Line 1</div>
+      <div class="col-md-3">Address</div>
       <div class="col-md-9">
         <input type="text" pInputText [(ngModel)]="addressToEdit.addressLine1" />
       </div>
     </div>
-    <div class="row" style="padding-bottom: 5px;">
+    <!--<div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Address Line 2</div>
       <div class="col-md-9">
         <input type="text" pInputText [(ngModel)]="addressToEdit.addressLine2" />
@@ -77,7 +77,7 @@
       <div class="col-md-9">
         <input type="text" pInputText [(ngModel)]="addressToEdit.addressLine3" />
       </div>
-    </div>
+    </div>-->
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">City</div>
       <div class="col-md-9">
@@ -111,12 +111,12 @@
   </p-dialog>
   <p-dialog header="Add Address" [(visible)]="displayAdd" width="600">
     <div class="row" style="padding-bottom: 5px;">
-      <div class="col-md-3">Address Line 1</div>
+      <div class="col-md-3">Address</div>
       <div class="col-md-9">
         <input type="text" pInputText [(ngModel)]="addressToEdit.addressLine1" />
       </div>
     </div>
-    <div class="row" style="padding-bottom: 5px;">
+    <!--<div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Address Line 2</div>
       <div class="col-md-9">
         <input type="text" pInputText [(ngModel)]="addressToEdit.addressLine2" />
@@ -127,7 +127,7 @@
       <div class="col-md-9">
         <input type="text" pInputText [(ngModel)]="addressToEdit.addressLine3" />
       </div>
-    </div>
+    </div>-->
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">City</div>
       <div class="col-md-9">
