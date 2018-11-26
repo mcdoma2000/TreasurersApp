@@ -51,7 +51,11 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   confirmDelete() {
-    const confMsg = new ConfirmationMessage('warn', 'Address Maintenance: Delete', 'Deleting address...');
+    const confMsg = {
+      severity: 'warn',
+      summary: 'Address Maintenance: Delete',
+      detail: 'Deleting address...'
+    };
     this.showConfirmation('Are you certain that you want to delete this record?', 'Delete Confirmation', 'Delete', confMsg, () => {
       this.uiBlocked = true;
       this.addressService.deleteAddress(this.addressToEdit.id).subscribe(
@@ -59,6 +63,7 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
           if (resp.success === true) {
             this.messageService.add({ severity: 'success', summary: 'Address Maintenance: Delete', detail: resp.statusMessages[0] });
           } else {
+            this.messageService.add({ severity: 'error', summary: 'Address Maintenance: Delete', detail: 'An error occurred while attempting to delete an address.' });
             resp.statusMessages.forEach(function (msg) {
               this.messageService.add({ severity: 'error', summary: 'Address Maintenance: Delete', detail: msg });
             });
@@ -76,7 +81,11 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   confirmAdd() {
-    const confMsg = new ConfirmationMessage('warn', 'Address Maintenance: Add', 'Adding address...');
+    const confMsg = {
+      severity: 'warn',
+      summary: 'Address Maintenance: Add',
+      detail: 'Adding address...'
+    };
     this.showConfirmation('Are you certain that you want to add this record?', 'Add Confirmation', 'Add', confMsg, () => {
       this.uiBlocked = true;
       this.addressService.addAddress(this.addressToEdit).subscribe(
@@ -102,7 +111,11 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   confirmUpdate() {
-    const confMsg = new ConfirmationMessage('warn', 'Address Maintenance: Update', 'Updating address...');
+    const confMsg = {
+      severity: 'warn',
+      summary: 'Address Maintenance: Update',
+      detail: 'Updating address...'
+    };
     this.showConfirmation('Are you certain that you want to update this record?', 'Update Confirmation', 'Update', confMsg, () => {
       this.uiBlocked = true;
       this.addressService.updateAddress(this.addressToEdit).subscribe(
@@ -126,8 +139,23 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
     });
   }
 
+  private refreshData(component: AddressMaintenanceComponent) {
+    component.dataGrid.instance.getDataSource().reload();
+    component.dataGrid.instance.refresh();
+  }
+
   refreshGridData() {
-    this.dataGrid.instance.getDataSource().reload();
+    this.addressService.getAddresses(true).subscribe(
+      (resp) => {
+        this.rowData = resp;
+        setTimeout(this.refreshData, 0, this);
+      },
+      (err) => {
+        console.log(err);
+        this.rowData = [];
+        setTimeout(this.refreshData, 0, this);
+      }
+    );
   }
 
   showConfirmation(message: string, header: string, acceptLabel: string, confirmationMessage: ConfirmationMessage, callback: () => void) {
@@ -245,7 +273,7 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
         (err) => {
           console.log(err);
           this.rowData = [];
-          return of(err);
+          return of(this.rowData);
         }
       );
     }
