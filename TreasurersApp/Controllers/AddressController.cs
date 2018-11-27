@@ -24,7 +24,7 @@ namespace TreasurersApp.Controllers
 
         }
 
-        [HttpGet()]
+        [HttpGet(Name = "AddressGet")]
 #if RELEASE
         [Authorize(Policy = "CanAccessAddresses")]
 #endif
@@ -56,7 +56,7 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "AddressGetByID")]
 #if RELEASE
         [Authorize(Policy = "CanAccessAddresses")]
 #endif
@@ -186,7 +186,7 @@ namespace TreasurersApp.Controllers
                 StatusCode(StatusCodes.Status500InternalServerError, returnResult);
         }
 
-        [HttpDelete(Name = "AddressDelete")]
+        [HttpDelete("{id}", Name = "AddressDelete")]
         [Authorize(Policy = "CanPerformAdmin")]
         public IActionResult Delete(int id)
         {

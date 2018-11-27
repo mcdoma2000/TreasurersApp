@@ -21,7 +21,10 @@ namespace TreasurersApp.Controllers
 
         }
 
-        [HttpGet(Name = "ContributionTypeGetAll")]
+        [HttpGet(Name = "ContributionTypeGet")]
+#if RELEASE
+        [Authorize(Policy = "CanAccessAddresses")]
+#endif
         public IActionResult Get()
         {
             IActionResult ret = null;
@@ -50,6 +53,9 @@ namespace TreasurersApp.Controllers
         }
 
         [HttpGet("{id}", Name = "ContributionTypeGetByID")]
+#if RELEASE
+        [Authorize(Policy = "CanAccessAddresses")]
+#endif
         public IActionResult Get(int id)
         {
             IActionResult ret = null;
@@ -81,6 +87,9 @@ namespace TreasurersApp.Controllers
 
         [HttpPost(Name = "ContributionTypePost")]
         [ValidateAntiForgeryToken]
+#if RELEASE
+        [Authorize(Policy = "CanAccessAddresses")]
+#endif
         public ActionResult Post([FromBody]AppContributionType contributionType)
         {
             var returnResult = new AppContributionTypeActionResult(false, new List<string>(), null);
@@ -121,6 +130,9 @@ namespace TreasurersApp.Controllers
 
         [HttpPut(Name = "ContributionTypePut")]
         [ValidateAntiForgeryToken]
+#if RELEASE
+        [Authorize(Policy = "CanAccessAddresses")]
+#endif
         public ActionResult Put([FromBody]AppContributionType contributionType)
         {
             var returnResult = new AppContributionTypeActionResult(false, new List<string>(), null);
@@ -167,8 +179,11 @@ namespace TreasurersApp.Controllers
                 StatusCode(StatusCodes.Status500InternalServerError, returnResult);
         }
 
-        [HttpDelete(Name = "ContributionTypeDelete")]
+        [HttpDelete("{id}", Name = "ContributionTypeDelete")]
         [ValidateAntiForgeryToken]
+#if RELEASE
+        [Authorize(Policy = "CanAccessAddresses")]
+#endif
         public IActionResult Delete(int id)
         {
             var returnResult = new AppContributionTypeActionResult(false, new List<string>(), null);
