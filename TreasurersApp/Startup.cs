@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging.Log4Net;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
+using TreasurersApp.Database;
 
 namespace TreasurersApp
 {
@@ -34,7 +35,9 @@ namespace TreasurersApp
             JwtSettings settings;
             settings = GetJwtSettings();
             // Create singleton of JwtSettings
-            services.AddSingleton<JwtSettings>(settings);
+            services.AddSingleton(settings);
+            var context = new TreasurersAppDbContext();
+            services.AddScoped(_ => context);
 
             // Register Jwt as the Authentication service
             services.AddAuthentication(options =>
@@ -63,10 +66,14 @@ namespace TreasurersApp
             {
                 // NOTE: The claim type and value are case-sensitive
                 // TODO: This area will be needed as we get more granular control
-                cfg.AddPolicy("CanPerformAdmin", p => p.RequireClaim("CanPerformAdmin", "true"));
-                cfg.AddPolicy("CanAccessReports", p => p.RequireClaim("CanAccessReports", "true"));
-                cfg.AddPolicy("CanAccessCashJournal", p => p.RequireClaim("CanAccessCashJournal", "true"));
-                cfg.AddPolicy("CanEditCashJournal", p => p.RequireClaim("CanEditCashJournal", "true"));
+                foreach(var clm in context.Claims)
+                {
+                    cfg.AddPolicy(clm.ClaimName, p => p.RequireClaim(clm.ClaimName, clm.ClaimValue));
+                }
+                //cfg.AddPolicy("CanPerformAdmin", p => p.RequireClaim("CanPerformAdmin", "true"));
+                //cfg.AddPolicy("CanAccessReports", p => p.RequireClaim("CanAccessReports", "true"));
+                //cfg.AddPolicy("CanAccessCashJournal", p => p.RequireClaim("CanAccessCashJournal", "true"));
+                //cfg.AddPolicy("CanEditCashJournal", p => p.RequireClaim("CanEditCashJournal", "true"));
             });
 
             services
@@ -78,9 +85,9 @@ namespace TreasurersApp
                 );
 			
             // In production, the Angular files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
+            services.AddSpaStaticFiles(config =>
             {
-                configuration.RootPath = "ClientApp/dist";
+                config.RootPath = "ClientApp/dist";
             });
         }
 
@@ -128,14 +135,13 @@ namespace TreasurersApp
 
         public JwtSettings GetJwtSettings()
         {
-            JwtSettings settings = new JwtSettings();
-
-            settings.Key = Configuration["JwtSettings:key"];
-            settings.Audience = Configuration["JwtSettings:audience"];
-            settings.Issuer = Configuration["JwtSettings:issuer"];
-            settings.MinutesToExpiration =
-             Convert.ToInt32(
-                Configuration["JwtSettings:minutesToExpiration"]);
+            JwtSettings settings = new JwtSettings
+            {
+                Key = Configuration["JwtSettings:key"],
+                Audience = Configuration["JwtSettings:audience"],
+                Issuer = Configuration["JwtSettings:issuer"],
+                MinutesToExpiration = Convert.ToInt32(Configuration["JwtSettings:minutesToExpiration"])
+            };
 
             return settings;
         }

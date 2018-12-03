@@ -15,27 +15,27 @@ using TreasurersApp.Models;
 namespace TreasurersApp.Controllers
 {
     [Route("api/[controller]")]
-    public class CashJournalController : BaseController
+    public class ContributionCategoryController : BaseController
     {
         private readonly TreasurersAppDbContext db;
 
-        public CashJournalController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache, TreasurersAppDbContext db)
+        public ContributionCategoryController(IConfiguration config, ILogger<ContributionCategoryController> logger, IHostingEnvironment env, IMemoryCache memoryCache, TreasurersAppDbContext db)
             : base(config, logger, env, memoryCache)
         {
             this.db = db;
         }
 
-        [HttpGet("/get", Name = "CashJournalGet")]
+        [HttpGet("/get", Name = "ContributionCategoryGet")]
         public IActionResult Get()
         {
             IActionResult ret = null;
-            List<CashJournal> list = new List<CashJournal>();
+            List<ContributionCategory> list = new List<ContributionCategory>();
 
             try
             {
                 if (db.CashJournals.Count() > 0)
                 {
-                    list = db.CashJournals.OrderBy(p => p.CreatedDate).ToList();
+                    list = db.ContributionCategories.OrderBy(p => p.Description).ToList();
                     ret = StatusCode(StatusCodes.Status200OK, list);
                 }
                 else
@@ -51,15 +51,15 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
-        [HttpGet("/getbyid", Name = "CashJournalGetByID")]
+        [HttpGet("/getbyid", Name = "ContributionCategoryGetById")]
         public IActionResult Get(int id)
         {
             IActionResult ret = null;
-            CashJournal entity = null;
+            ContributionCategory entity = null;
 
             try
             {
-                entity = db.CashJournals.Find(id);
+                entity = db.ContributionCategories.Find(id);
                 if (entity != null)
                 {
                     ret = StatusCode(StatusCodes.Status200OK, entity);
@@ -79,8 +79,8 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
-        [HttpPost("/post", Name = "CashJournalPost")]
-        public IActionResult Post([FromBody]CashJournal entity)
+        [HttpPost("/post", Name = "ContributionCategoryPost")]
+        public IActionResult Post([FromBody]ContributionCategory entity)
         {
             IActionResult ret = null;
 
@@ -88,7 +88,7 @@ namespace TreasurersApp.Controllers
             {
                 if (entity != null)
                 {
-                    db.CashJournals.Add(entity);
+                    db.ContributionCategories.Add(entity);
                     db.SaveChanges();
                     ret = StatusCode(StatusCodes.Status201Created,
                         entity);
@@ -106,8 +106,8 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
-        [HttpPut("/put", Name = "CashJournalPut")]
-        public IActionResult Put([FromBody]CashJournal entity)
+        [HttpPut("/put", Name = "ContributionCategoryPut")]
+        public IActionResult Put([FromBody]ContributionCategory entity)
         {
             IActionResult ret = null;
 
@@ -126,7 +126,7 @@ namespace TreasurersApp.Controllers
             }
             catch (Exception ex)
             {
-                ret = HandleException(ex, "Exception trying to update cash journal entry: " + entity.CashJournalID.ToString());
+                ret = HandleException(ex, "Exception trying to update cash journal entry: " + entity.ContributionCategoryID.ToString());
             }
 
             return ret;

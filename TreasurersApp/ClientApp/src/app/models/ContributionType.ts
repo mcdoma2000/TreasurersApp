@@ -1,12 +1,12 @@
 export class ContributionType {
   id: number = null;
-  contributionTypeCategory: string = null;
+  categoryId: number = null;
   contributionTypeName: string = null;
   description: string = null;
 
-  constructor(id: number, contributionTypeCategory: string, contributionTypeName: string, description: string) {
+  constructor(id: number, categoryId: number, contributionTypeName: string, description: string) {
     this.id = id;
-    this.contributionTypeCategory = contributionTypeCategory;
+    this.categoryId = categoryId;
     this.contributionTypeName = contributionTypeName;
     this.description = description;
   }

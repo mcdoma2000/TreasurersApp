@@ -13,31 +13,29 @@ namespace TreasurersApp.Utilities.Security
     public class SecurityManager
     {
         private JwtSettings _settings = null;
-        private string _dbPath;
-        public string DbPath
+        private readonly TreasurersAppDbContext _db = null;
+
+        public TreasurersAppDbContext DataContext
         {
-            get { return _dbPath; }
-            set { }
+            get { return _db; }
+            private set { }
         }
 
-        public SecurityManager(JwtSettings settings, string dbPath)
+        public SecurityManager(JwtSettings settings, TreasurersAppDbContext db)
         {
             _settings = settings;
-            _dbPath = dbPath;
+            this._db = db;
         }
 
-        public AppUserAuth ValidateUser(AppUser user)
+        public UserAuth ValidateUser(User user)
         {
-            AppUserAuth ret = new AppUserAuth();
-            AppUser authUser = null;
+            UserAuth ret = new UserAuth();
+            User authUser = null;
 
-            using (var db = new TreasurersAppDbContext(DbPath))
-            {
-                // Attempt to validate user
-                authUser = db.Users.Where(
-                  u => u.UserName.ToLower() == user.UserName.ToLower()
-                  && u.Password == user.Password).FirstOrDefault();
-            }
+            // Attempt to validate user
+            authUser = DataContext.Users.Where(
+                u => u.UserName.ToLower() == user.UserName.ToLower()
+                && u.Password == user.Password).FirstOrDefault();
 
             if (authUser != null)
             {
@@ -48,30 +46,26 @@ namespace TreasurersApp.Utilities.Security
             return ret;
         }
 
-        protected List<AppUserClaim> GetUserClaims(AppUser authUser)
+        protected List<Models.Claim> GetClaimsForUser(User authUser)
         {
-            List<AppUserClaim> list = new List<AppUserClaim>();
-
+            List<Models.Claim> claims = new List<Models.Claim>();
             try
             {
-                using (var db = new TreasurersAppDbContext(DbPath))
-                {
-                    list = db.UserClaims.Where(x => x.UserId == authUser.UserId).ToList();
-                }
+                var list = DataContext.UserClaims.Where(x => x.UserID == authUser.UserID).Select(x => x.ClaimID).ToList();
+                claims.AddRange(DataContext.Claims.Where(x => list.Contains(x.ClaimID)).ToList());
             }
             catch (Exception ex)
             {
-                throw new Exception(
-                    "Exception trying to retrieve user claims.", ex);
+                throw new Exception("Exception trying to retrieve user claims.", ex);
             }
 
-            return list;
+            return claims;
         }
 
-        protected AppUserAuth BuildUserAuthObject(AppUser authUser)
+        protected UserAuth BuildUserAuthObject(User authUser)
         {
-            AppUserAuth ret = new AppUserAuth();
-            List<AppUserClaim> claims = new List<AppUserClaim>();
+            UserAuth ret = new UserAuth();
+            List<UserClaim> claims = new List<UserClaim>();
 
             // Set User Properties
             ret.UserName = authUser.UserName;
@@ -79,7 +73,7 @@ namespace TreasurersApp.Utilities.Security
             ret.BearerToken = new Guid().ToString();
 
             // Get all claims for this user
-            ret.Claims = GetUserClaims(authUser);
+            ret.Claims = GetClaimsForUser(authUser);
 
             // Set JWT bearer token
             ret.BearerToken = BuildJwtToken(ret);
@@ -87,22 +81,22 @@ namespace TreasurersApp.Utilities.Security
             return ret;
         }
 
-        protected string BuildJwtToken(AppUserAuth authUser)
+        protected string BuildJwtToken(UserAuth authUser)
         {
             SymmetricSecurityKey key = new SymmetricSecurityKey(
               Encoding.UTF8.GetBytes(_settings.Key));
 
             // Create standard JWT claims
-            List<Claim> jwtClaims = new List<Claim>();
-            jwtClaims.Add(new Claim(JwtRegisteredClaimNames.Sub,
-                authUser.UserName));
-            jwtClaims.Add(new Claim(JwtRegisteredClaimNames.Jti,
-                Guid.NewGuid().ToString()));
+            List<System.Security.Claims.Claim> jwtClaims = new List<System.Security.Claims.Claim>
+            {
+                new System.Security.Claims.Claim(JwtRegisteredClaimNames.Sub, authUser.UserName),
+                new System.Security.Claims.Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
 
             // Add custom claims
             foreach (var claim in authUser.Claims)
             {
-                jwtClaims.Add(new Claim(claim.ClaimType, claim.ClaimValue));
+                jwtClaims.Add(new System.Security.Claims.Claim(claim.ClaimName, claim.ClaimValue));
             }
 
             // Create the JwtSecurityToken object

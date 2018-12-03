@@ -2,20 +2,20 @@ using System.Collections.Generic;
 
 namespace TreasurersApp.Models
 {
-    public class AppUserAuth
+    public class UserAuth
     {
-        public AppUserAuth() : base()
+        public UserAuth() : base()
         {
             UserName = "Not authorized";
             BearerToken = string.Empty;
             IsAuthenticated = false;
-            Claims = new List<AppUserClaim>();
+            Claims = new List<Claim>();
         }
 
         public string UserName { get; set; }
         public string BearerToken { get; set; }
         public bool IsAuthenticated { get; set; }
 
-        public List<AppUserClaim> Claims { get; set; }
+        public List<Claim> Claims { get; set; }
     }
 }

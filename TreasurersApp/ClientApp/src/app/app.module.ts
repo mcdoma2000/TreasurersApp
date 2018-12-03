@@ -42,6 +42,7 @@ import { StandardReportFormComponent } from './standard-report-form/standard-rep
 import { AddressMaintenanceComponent } from './maintenance/address-maintenance/address-maintenance.component';
 import { ContributorMaintenanceComponent } from './maintenance/contributor-maintenance/contributor-maintenance.component';
 import { ContributionTypeMaintenanceComponent } from './maintenance/contribution-type-maintenance/contribution-type-maintenance.component';
+import { UserComponent } from './maintenance/user/user.component';
 
 @NgModule({
   declarations: [
@@ -62,6 +63,7 @@ import { ContributionTypeMaintenanceComponent } from './maintenance/contribution
     AddressMaintenanceComponent,
     ContributorMaintenanceComponent,
     ContributionTypeMaintenanceComponent,
+    UserComponent
   ],
   imports: [
     BrowserModule,

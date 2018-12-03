@@ -45,7 +45,7 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
   deleteContributionType() {
     this.ctypeToEdit =
       new ContributionType(this.selectedContributionType.id,
-        this.selectedContributionType.contributionTypeCategory,
+        this.selectedContributionType.categoryId,
         this.selectedContributionType.contributionTypeName,
         this.selectedContributionType.description);
     this.confirmDelete();
@@ -181,7 +181,7 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
     this.displayEdit = true;
     this.ctypeToEdit =
       new ContributionType(this.selectedContributionType.id,
-        this.selectedContributionType.contributionTypeCategory,
+        this.selectedContributionType.categoryId,
         this.selectedContributionType.contributionTypeName,
         this.selectedContributionType.description);
   }
@@ -212,7 +212,7 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
   private shouldSaveEdit(): boolean {
     let save = false;
     if (this.selectedContributionType.id &&
-      (this.selectedContributionType.contributionTypeCategory !== this.ctypeToEdit.contributionTypeCategory ||
+      (this.selectedContributionType.categoryId !== this.ctypeToEdit.categoryId ||
       this.selectedContributionType.contributionTypeName !== this.ctypeToEdit.contributionTypeName ||
       this.selectedContributionType.description !== this.ctypeToEdit.description)) {
       save = true;
@@ -238,7 +238,7 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   validateContributionType(ctype: ContributionType): boolean {
-    if (!ctype.contributionTypeCategory || !ctype.contributionTypeName || !ctype.description) {
+    if (!ctype.categoryId || !ctype.contributionTypeName || !ctype.description) {
       return false;
     }
     return true;
