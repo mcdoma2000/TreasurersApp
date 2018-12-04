@@ -5,7 +5,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { ContributionType } from '../../models/ContributionType';
 import { ContributionTypeActionResult } from '../../models/ContributionTypeActionResult';
 
-const CONTRIBUTIONTYPE_API_URL = '/api/contributiontype/';
+const CONTRIBUTIONTYPE_API_URL = '/api/contributiontype';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +30,7 @@ export class ContributionTypeService {
       headers: this.httpOptions.headers,
       params: new HttpParams().set('forceReload', forceReload.toString())
     };
-    return this.http.get<ContributionType[]>(CONTRIBUTIONTYPE_API_URL, options);
+    return this.http.get<ContributionType[]>(CONTRIBUTIONTYPE_API_URL + '/get', options);
   }
 
   getContributionTypeById(id: number, forceReload: boolean = false): Observable<ContributionType> {
@@ -40,11 +40,11 @@ export class ContributionTypeService {
         .set('id', id.toString())
         .set('forceReload', forceReload.toString())
     };
-    return this.http.get<ContributionType>(CONTRIBUTIONTYPE_API_URL, options);
+    return this.http.get<ContributionType>(CONTRIBUTIONTYPE_API_URL + '/getbyid', options);
   }
 
   validateContributionType(contributionType: ContributionType): boolean {
-    if (!contributionType.contributionTypeCategory || !contributionType.contributionTypeName || !contributionType.description) {
+    if (!contributionType.contributionCategoryId || !contributionType.contributionTypeName || !contributionType.description) {
       return false;
     }
     return true;
@@ -55,7 +55,7 @@ export class ContributionTypeService {
       console.log("Attempted to update an invalid contribution type.");
       console.log(JSON.stringify(contributionType));
     }
-    var result = this.http.put<ContributionTypeActionResult>(CONTRIBUTIONTYPE_API_URL, contributionType, this.httpOptions);
+    var result = this.http.put<ContributionTypeActionResult>(CONTRIBUTIONTYPE_API_URL + '/put', contributionType, this.httpOptions);
     return result
   }
 
@@ -65,7 +65,7 @@ export class ContributionTypeService {
       console.log("Attempted to add an invalid contribution type.");
       console.log(JSON.stringify(contributionType));
     }
-    var result = this.http.post<ContributionTypeActionResult>(CONTRIBUTIONTYPE_API_URL, contributionType, this.httpOptions);
+    var result = this.http.post<ContributionTypeActionResult>(CONTRIBUTIONTYPE_API_URL + '/post', contributionType, this.httpOptions);
     return result;
   }
 
@@ -77,7 +77,7 @@ export class ContributionTypeService {
         'Accept': 'application/json'
       })
     };
-    var result = this.http.delete<ContributionTypeActionResult>(CONTRIBUTIONTYPE_API_URL, options);
+    var result = this.http.delete<ContributionTypeActionResult>(CONTRIBUTIONTYPE_API_URL + '/delete', options);
     return result;
   }
 }

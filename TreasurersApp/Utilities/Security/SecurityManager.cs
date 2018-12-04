@@ -26,10 +26,10 @@ namespace TreasurersApp.Utilities.Security
             _dbPath = dbPath;
         }
 
-        public AppUserAuth ValidateUser(AppUser user)
+        public SecurityUserAuth ValidateUser(SecurityUser user)
         {
-            AppUserAuth ret = new AppUserAuth();
-            AppUser authUser = null;
+            SecurityUserAuth ret = new SecurityUserAuth();
+            SecurityUser authUser = null;
 
             using (var db = new TreasurersAppDbContext(DbPath))
             {
@@ -48,15 +48,19 @@ namespace TreasurersApp.Utilities.Security
             return ret;
         }
 
-        protected List<AppUserClaim> GetUserClaims(AppUser authUser)
+        protected List<SecurityClaim> GetUserClaims(SecurityUser authUser)
         {
-            List<AppUserClaim> list = new List<AppUserClaim>();
+            List<SecurityClaim> list = new List<SecurityClaim>();
 
             try
             {
                 using (var db = new TreasurersAppDbContext(DbPath))
                 {
-                    list = db.UserClaims.Where(x => x.UserId == authUser.UserId).ToList();
+                    var userClaims = db.UserClaims
+                        .Where(x => x.UserID == authUser.UserID)
+                        .Select(x => x.ClaimID)
+                        .ToList();
+                    list = db.Claims.Where(x => userClaims.Contains(x.ClaimID)).ToList();
                 }
             }
             catch (Exception ex)
@@ -68,10 +72,10 @@ namespace TreasurersApp.Utilities.Security
             return list;
         }
 
-        protected AppUserAuth BuildUserAuthObject(AppUser authUser)
+        protected SecurityUserAuth BuildUserAuthObject(SecurityUser authUser)
         {
-            AppUserAuth ret = new AppUserAuth();
-            List<AppUserClaim> claims = new List<AppUserClaim>();
+            SecurityUserAuth ret = new SecurityUserAuth();
+            List<SecurityUserClaim> claims = new List<SecurityUserClaim>();
 
             // Set User Properties
             ret.UserName = authUser.UserName;
@@ -87,7 +91,7 @@ namespace TreasurersApp.Utilities.Security
             return ret;
         }
 
-        protected string BuildJwtToken(AppUserAuth authUser)
+        protected string BuildJwtToken(SecurityUserAuth authUser)
         {
             SymmetricSecurityKey key = new SymmetricSecurityKey(
               Encoding.UTF8.GetBytes(_settings.Key));

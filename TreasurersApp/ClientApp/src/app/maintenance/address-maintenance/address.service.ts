@@ -5,8 +5,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Address } from '../../models/Address';
 import { AddressActionResult } from '../../models/AddressActionResult';
 
-// const ADDRESS_API_URL = 'http://localhost:55000/api/address/';
-const ADDRESS_API_URL = '/api/address/';
+const ADDRESS_API_URL = '/api/address';
 
 
 @Injectable({
@@ -32,7 +31,7 @@ export class AddressService {
       headers: this.httpOptions.headers,
       params: new HttpParams().set('forceReload', forceReload.toString())
     };
-    return this.http.get<Address[]>(ADDRESS_API_URL, options);
+    return this.http.get<Address[]>(ADDRESS_API_URL + "/get", options);
   }
 
   getAddressById(id: number, forceReload: boolean = false): Observable<Address> {
@@ -42,7 +41,7 @@ export class AddressService {
                     .set('id', id.toString())
                     .set('forceReload', forceReload.toString())
     };
-    return this.http.get<Address>(ADDRESS_API_URL, options);
+    return this.http.get<Address>(ADDRESS_API_URL + "/getbyid", options);
   }
 
   validateAddress(address: Address): boolean {
@@ -53,12 +52,12 @@ export class AddressService {
   }
 
   updateAddress(address: Address): Observable<AddressActionResult> {
-    return this.http.put<AddressActionResult>(ADDRESS_API_URL, address, this.httpOptions);
+    return this.http.put<AddressActionResult>(ADDRESS_API_URL + "/put", address, this.httpOptions);
   }
 
   addAddress(address: Address): Observable<AddressActionResult> {
     address.id = 0;
-    return this.http.post<AddressActionResult>(ADDRESS_API_URL, address, this.httpOptions);
+    return this.http.post<AddressActionResult>(ADDRESS_API_URL + "/post", address, this.httpOptions);
   }
 
   deleteAddress(addressId: number): Observable<AddressActionResult> {
@@ -69,6 +68,6 @@ export class AddressService {
         'Accept': 'application/json'
       })
     };
-    return this.http.delete<AddressActionResult>(ADDRESS_API_URL, options);
+    return this.http.delete<AddressActionResult>(ADDRESS_API_URL + "/delete", options);
   }
 }

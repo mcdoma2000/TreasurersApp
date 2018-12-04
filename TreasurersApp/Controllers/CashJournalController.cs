@@ -14,23 +14,19 @@ using TreasurersApp.Models;
 
 namespace TreasurersApp.Controllers
 {
-    [Produces("application/json")]
-    [Route("api/CashJournal")]
-    [Authorize]
+    [Route("api/[controller]")]
     public class CashJournalController : BaseController
     {
-        public CashJournalController(IConfiguration config, ILogger<CashJournalController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
+        public CashJournalController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache)
             : base(config, logger, env, memoryCache)
         {
-
         }
 
-        [HttpGet]
-        [Authorize(Policy = "CanAccessCashJournal")]
+        [HttpGet("get", Name = "CashJournalGet")]
         public IActionResult Get()
         {
             IActionResult ret = null;
-            List<AppCashJournal> list = new List<AppCashJournal>();
+            List<CashJournal> list = new List<CashJournal>();
 
             try
             {
@@ -55,12 +51,11 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
-        [HttpGet("{id}", Name = "GetCashJournal")]
-        [Authorize(Policy = "CanAccessCashJournal")]
+        [HttpGet("getbyid", Name = "CashJournalGetByID")]
         public IActionResult Get(int id)
         {
             IActionResult ret = null;
-            AppCashJournal entity = null;
+            CashJournal entity = null;
 
             try
             {
@@ -74,7 +69,7 @@ namespace TreasurersApp.Controllers
                     else
                     {
                         ret = StatusCode(StatusCodes.Status404NotFound,
-                                 "Can't Find Cash Journal Entry: " + id.ToString());
+                                    "Can't Find Cash Journal Entry: " + id.ToString());
                     }
                 }
             }
@@ -87,27 +82,25 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
-        [HttpPost()]
-        [Authorize(Policy = "CanEditCashJournal")]
-        public IActionResult Post([FromBody]AppCashJournal entity)
+        [HttpPost("/post", Name = "CashJournalPost")]
+        public IActionResult Post([FromBody]CashJournal entity)
         {
             IActionResult ret = null;
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                if (entity != null)
                 {
-                    if (entity != null)
+                    using (var db = new TreasurersAppDbContext(DatabasePath))
                     {
                         db.CashJournals.Add(entity);
                         db.SaveChanges();
-                        ret = StatusCode(StatusCodes.Status201Created,
-                            entity);
+                        ret = StatusCode(StatusCodes.Status201Created, entity);
                     }
-                    else
-                    {
-                        ret = StatusCode(StatusCodes.Status400BadRequest, "Invalid data passed to create new cash journal entry");
-                    }
+                }
+                else
+                {
+                    ret = StatusCode(StatusCodes.Status400BadRequest, "Invalid data passed to create new cash journal entry");
                 }
             }
             catch (Exception ex)
@@ -118,31 +111,30 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
-        [HttpPut()]
-        [Authorize(Policy = "CanEditCashJournal")]
-        public IActionResult Put([FromBody]AppCashJournal entity)
+        [HttpPut("/put", Name = "CashJournalPut")]
+        public IActionResult Put([FromBody]CashJournal entity)
         {
             IActionResult ret = null;
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                if (entity != null)
                 {
-                    if (entity != null)
+                    using (var db = new TreasurersAppDbContext(DatabasePath))
                     {
                         db.Update(entity);
                         db.SaveChanges();
                         ret = StatusCode(StatusCodes.Status200OK, entity);
                     }
-                    else
-                    {
-                        ret = StatusCode(StatusCodes.Status400BadRequest, "Invalid data passed for cash journal update");
-                    }
+                }
+                else
+                {
+                    ret = StatusCode(StatusCodes.Status400BadRequest, "Invalid data passed for cash journal update");
                 }
             }
             catch (Exception ex)
             {
-                ret = HandleException(ex, "Exception trying to update cash journal entry: " + entity.Id.ToString());
+                ret = HandleException(ex, "Exception trying to update cash journal entry: " + entity.CashJournalID.ToString());
             }
 
             return ret;

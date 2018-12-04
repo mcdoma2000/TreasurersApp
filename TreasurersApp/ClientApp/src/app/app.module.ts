@@ -18,6 +18,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { DataTableModule } from 'primeng/datatable';
+import { DropdownModule } from 'primeng/dropdown';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations/';
 
 import { DxDataGridModule } from 'devextreme-angular/ui/data-grid';
@@ -42,6 +43,7 @@ import { StandardReportFormComponent } from './standard-report-form/standard-rep
 import { AddressMaintenanceComponent } from './maintenance/address-maintenance/address-maintenance.component';
 import { ContributorMaintenanceComponent } from './maintenance/contributor-maintenance/contributor-maintenance.component';
 import { ContributionTypeMaintenanceComponent } from './maintenance/contribution-type-maintenance/contribution-type-maintenance.component';
+import { ContributionCategoryMaintenanceComponent } from './maintenance/contribution-category-maintenance/contribution-category-maintenance.component';
 
 @NgModule({
   declarations: [
@@ -62,6 +64,7 @@ import { ContributionTypeMaintenanceComponent } from './maintenance/contribution
     AddressMaintenanceComponent,
     ContributorMaintenanceComponent,
     ContributionTypeMaintenanceComponent,
+    ContributionCategoryMaintenanceComponent,
   ],
   imports: [
     BrowserModule,
@@ -85,6 +88,7 @@ import { ContributionTypeMaintenanceComponent } from './maintenance/contribution
     DataGridModule,
     DataTableModule,
     DxDataGridModule,
+    DropdownModule,
     BrowserAnimationsModule
   ],
   providers: [

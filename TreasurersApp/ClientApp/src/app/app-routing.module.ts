@@ -15,6 +15,7 @@ import { AuthGuard } from './security/auth.guard';
 import { AddressMaintenanceComponent } from './maintenance/address-maintenance/address-maintenance.component';
 import { ContributorMaintenanceComponent } from './maintenance/contributor-maintenance/contributor-maintenance.component';
 import { ContributionTypeMaintenanceComponent } from './maintenance/contribution-type-maintenance/contribution-type-maintenance.component';
+import { ContributionCategoryMaintenanceComponent } from './maintenance/contribution-category-maintenance/contribution-category-maintenance.component';
 
 const routes: Routes = [
   {
@@ -78,6 +79,12 @@ const routes: Routes = [
   {
     path: 'maintenance/contributiontype',
     component: ContributionTypeMaintenanceComponent,
+    canActivate: [AuthGuard],
+    data: { claimType: 'canPerformAdmin' }
+  },
+  {
+    path: 'maintenance/contributioncategory',
+    component: ContributionCategoryMaintenanceComponent,
     canActivate: [AuthGuard],
     data: { claimType: 'canPerformAdmin' }
   },

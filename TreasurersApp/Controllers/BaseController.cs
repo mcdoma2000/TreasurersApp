@@ -47,6 +47,8 @@ namespace TreasurersApp.Controllers
             // Create new exception with generic message        
             ret = StatusCode(
                 StatusCodes.Status500InternalServerError, new Exception(msg, ex));
+            _logger.LogError(msg);
+            _logger.LogError(ex.ToString());
 
             return ret;
         }

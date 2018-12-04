@@ -2,58 +2,52 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Observable, of, Subscription } from 'rxjs';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
-import { ContributionType } from '../../models/ContributionType';
-import { ContributionTypeService } from './contribution-type.service';
 import { ContributionCategory } from '../../models/ContributionCategory';
-import { ContributionCategoryService } from '../contribution-category-maintenance/contribution-category.service';
+import { ContributionCategoryService } from './contribution-category.service';
 import { ConfirmationMessage } from '../../models/ConfirmationMessage';
 import { DxDataGridComponent } from 'devextreme-angular/ui/data-grid';
-import { SelectItem } from 'primeng/api';
 
 @Component({
-  selector: 'app-address-maintenance',
-  templateUrl: './contribution-type-maintenance.component.html',
-  styleUrls: ['./contribution-type-maintenance.component.css']
+  selector: 'app-contribution-category-maintenance',
+  templateUrl: './contribution-category-maintenance.component.html',
+  styleUrls: ['./contribution-category-maintenance.component.css']
 })
-export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
+export class ContributionCategoryMaintenanceComponent implements OnInit {
 
   @ViewChild(DxDataGridComponent) dataGrid: DxDataGridComponent;
 
   uiBlocked = false;
-  rowData: ContributionType[] = [];
   categories: ContributionCategory[] = [];
-  foundContributionType: ContributionType = null;
+  rowData: ContributionCategory[] = [];
+  foundContributionCategory: ContributionCategory = null;
   rowIsSelected = false;
-  selectedContributionType = new ContributionType(0, null, null, null);
-  ctypeToEdit = new ContributionType(0, null, null, null);
+  selectedContributionCategory = new ContributionCategory(0, null, null);
+  ccatToEdit = new ContributionCategory(0, null, null);
   displayEdit = false;
   displayAdd = false;
 
-  constructor(private contributionTypeService: ContributionTypeService,
-    private contributionCategoryService: ContributionCategoryService,
+  constructor(private contributionCategoryService: ContributionCategoryService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService) {
   }
 
   ngOnInit() {
-    this.contributionTypeService.getContributionTypes(true).subscribe(resp => { this.rowData = resp; });
-    this.contributionCategoryService.getContributionCategories(true).subscribe(resp => { this.categories = resp; });
+    this.contributionCategoryService.getContributionCategories(true).subscribe(resp => { this.rowData = resp; });
   }
 
   ngOnDestroy() {
   }
 
-  addContributionType() {
+  addContributionCategory() {
     this.displayAdd = true;
-    this.ctypeToEdit = this.contributionTypeService.newContributionType();
+    this.ccatToEdit = this.contributionCategoryService.newContributionCategory();
   }
 
-  deleteContributionType() {
-    this.ctypeToEdit =
-      new ContributionType(this.selectedContributionType.id,
-        this.selectedContributionType.contributionCategoryId,
-        this.selectedContributionType.contributionTypeName,
-        this.selectedContributionType.description);
+  deleteContributionCategory() {
+    this.ccatToEdit =
+      new ContributionCategory(this.selectedContributionCategory.id,
+        this.selectedContributionCategory.contributionCategoryName,
+        this.selectedContributionCategory.description);
     this.confirmDelete();
   }
 
@@ -65,21 +59,21 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
     };
     this.showConfirmation('Are you certain that you want to delete this record?', 'Delete Confirmation', 'Delete', confMsg, () => {
       this.uiBlocked = true;
-      this.contributionTypeService.deleteContributionType(this.ctypeToEdit.id).subscribe(
+      this.contributionCategoryService.deleteContributionCategory(this.ccatToEdit.id).subscribe(
         (resp) => {
           if (resp.success === true) {
             this.messageService.add({ severity: 'success', summary: 'Contribution Type Maintenance: Delete', detail: resp.statusMessages[0] });
           } else {
-            this.messageService.add({ severity: 'error', summary: 'ContributionType Maintenance: Delete', detail: 'An error occurred while attempting to delete an address.' });
+            this.messageService.add({ severity: 'error', summary: 'ContributionCategory Maintenance: Delete', detail: 'An error occurred while attempting to delete an address.' });
             resp.statusMessages.forEach(function (msg) {
-              this.messageService.add({ severity: 'error', summary: 'ContributionType Maintenance: Delete', detail: msg });
+              this.messageService.add({ severity: 'error', summary: 'ContributionCategory Maintenance: Delete', detail: msg });
             });
           }
           this.refreshGridData();
           this.uiBlocked = false;
         },
         (err) => {
-          this.messageService.add({ severity: 'error', summary: 'ContributionType Maintenance: Delete', detail: JSON.stringify(err) });
+          this.messageService.add({ severity: 'error', summary: 'ContributionCategory Maintenance: Delete', detail: JSON.stringify(err) });
           this.refreshGridData();
           this.uiBlocked = false;
         }
@@ -90,12 +84,12 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
   confirmAdd() {
     const confMsg = {
       severity: 'warn',
-      summary: 'ContributionType Maintenance: Add',
+      summary: 'ContributionCategory Maintenance: Add',
       detail: 'Adding Contribution Type...'
     };
     this.showConfirmation('Are you certain that you want to add this record?', 'Add Confirmation', 'Add', confMsg, () => {
       this.uiBlocked = true;
-      this.contributionTypeService.addContributionType(this.ctypeToEdit).subscribe(
+      this.contributionCategoryService.addContributionCategory(this.ccatToEdit).subscribe(
         (resp) => {
           if (resp.success === true) {
             this.messageService.add({ severity: 'success', summary: 'Contribution Type Maintenance: Add', detail: resp.statusMessages[0] });
@@ -126,7 +120,7 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
     };
     this.showConfirmation('Are you certain that you want to update this record?', 'Update Confirmation', 'Update', confMsg, () => {
       this.uiBlocked = true;
-      this.contributionTypeService.updateContributionType(this.ctypeToEdit).subscribe(
+      this.contributionCategoryService.updateContributionCategory(this.ccatToEdit).subscribe(
         (resp) => {
           if (resp.success === true) {
             this.messageService.add({ severity: 'success', summary: 'Contribution Type Maintenance: Update', detail: resp.statusMessages[0] });
@@ -147,13 +141,13 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
     });
   }
 
-  private refreshData(component: ContributionTypeMaintenanceComponent) {
+  private refreshData(component: ContributionCategoryMaintenanceComponent) {
     component.dataGrid.instance.getDataSource().reload();
     component.dataGrid.instance.refresh();
   }
 
   refreshGridData() {
-    this.contributionTypeService.getContributionTypes(true).subscribe(
+    this.contributionCategoryService.getContributionCategories(true).subscribe(
       (resp) => {
         this.rowData = resp;
         setTimeout(this.refreshData, 0, this);
@@ -183,13 +177,12 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
     });
   }
 
-  editContributionType() {
+  editContributionCategory() {
     this.displayEdit = true;
-    this.ctypeToEdit =
-      new ContributionType(this.selectedContributionType.id,
-        this.selectedContributionType.contributionCategoryId,
-        this.selectedContributionType.contributionTypeName,
-        this.selectedContributionType.description);
+    this.ccatToEdit =
+      new ContributionCategory(this.selectedContributionCategory.id,
+        this.selectedContributionCategory.contributionCategoryName,
+        this.selectedContributionCategory.description);
   }
 
   saveAddClick($event) {
@@ -197,7 +190,7 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
     if (this.shouldSaveAdd()) {
       this.confirmAdd();
     } else {
-      this.messageService.add({ severity: 'info', summary: 'ContributionType Maintenance: Add', detail: 'No data changed.' });
+      this.messageService.add({ severity: 'info', summary: 'ContributionCategory Maintenance: Add', detail: 'No data changed.' });
     }
   }
 
@@ -206,21 +199,22 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
     if (this.shouldSaveEdit()) {
       this.confirmUpdate();
     } else {
-      this.messageService.add({ severity: 'info', summary: 'ContributionType Maintenance: Edit', detail: 'No data changed.' });
+      this.messageService.add({ severity: 'info', summary: 'ContributionCategory Maintenance: Edit', detail: 'No data changed.' });
     }
   }
 
   private shouldSaveAdd(): boolean {
-    const save = this.contributionTypeService.validateContributionType(this.ctypeToEdit);
+    const save = this.contributionCategoryService.validateContributionCategory(this.ccatToEdit);
     return save;
   }
 
   private shouldSaveEdit(): boolean {
     let save = false;
-    if (this.selectedContributionType.id &&
-      (this.selectedContributionType.contributionCategoryId !== this.ctypeToEdit.contributionCategoryId ||
-      this.selectedContributionType.contributionTypeName !== this.ctypeToEdit.contributionTypeName ||
-      this.selectedContributionType.description !== this.ctypeToEdit.description)) {
+    if (this.selectedContributionCategory.id &&
+        this.contributionCategoryService
+          .validateContributionCategory(this.selectedContributionCategory) &&
+       (this.selectedContributionCategory.contributionCategoryName !== this.ccatToEdit.contributionCategoryName ||
+        this.selectedContributionCategory.description !== this.ccatToEdit.description)) {
       save = true;
     }
     return save;
@@ -229,43 +223,43 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
   cancelEditClick($event) {
     console.log('Cancel Edit was clicked');
     this.displayEdit = false;
-    this.ctypeToEdit = this.contributionTypeService.newContributionType();
+    this.ccatToEdit = this.contributionCategoryService.newContributionCategory();
   }
 
   cancelAddClick($event) {
     console.log('Cancel Add was clicked');
     this.displayAdd = false;
-    this.ctypeToEdit = this.contributionTypeService.newContributionType();
+    this.ccatToEdit = this.contributionCategoryService.newContributionCategory();
   }
 
   onRowClick(e) {
-    this.selectedContributionType = new ContributionType(e.data.id,e.data.contributionTypeCategory,e.data.contributionTypeName,e.data.description);
+    this.selectedContributionCategory = new ContributionCategory(e.data.id, e.data.contributionCategoryName, e.data.description);
     this.rowIsSelected = true;
   }
 
-  validateContributionType(ctype: ContributionType): boolean {
-    if (!ctype.contributionCategoryId || !ctype.contributionTypeName || !ctype.description) {
+  validateContributionCategory(ctype: ContributionCategory): boolean {
+    if (!ctype.contributionCategoryName || !ctype.description) {
       return false;
     }
     return true;
   }
 
-  getContributionTypeById(id: number): Observable<ContributionType> {
+  getContributionCategoryById(id: number): Observable<ContributionCategory> {
     if (this.rowData.length > 0) {
-      this.foundContributionType = this.rowData.find(x => x.id === id);
+      this.foundContributionCategory = this.rowData.find(x => x.id === id);
     }
-    if (this.foundContributionType) {
-      return of(this.foundContributionType);
+    if (this.foundContributionCategory) {
+      return of(this.foundContributionCategory);
     } else {
-      return this.contributionTypeService.getContributionTypeById(id);
+      return this.contributionCategoryService.getContributionCategoryById(id);
     }
   }
 
-  getContributionTypes(forceReload: boolean = false): Observable<ContributionType[]> {
+  getContributionCategories(forceReload: boolean = false): Observable<ContributionCategory[]> {
     if (this.rowData.length > 0 && forceReload === false) {
       return of(this.rowData);
     } else {
-      this.contributionTypeService.getContributionTypes().subscribe(
+      this.contributionCategoryService.getContributionCategories().subscribe(
         (resp) => {
           this.rowData = resp;
           return of(this.rowData);

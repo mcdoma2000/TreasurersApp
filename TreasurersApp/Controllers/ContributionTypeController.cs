@@ -15,20 +15,16 @@ namespace TreasurersApp.Controllers
     [Route("api/[controller]")]
     public class ContributionTypeController : BaseController
     {
-        public ContributionTypeController(IConfiguration config, ILogger<ContributionTypeController> logger, IHostingEnvironment env, IMemoryCache memoryCache)
+        public ContributionTypeController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache)
             : base(config, logger, env, memoryCache)
         {
-
         }
 
-        [HttpGet(Name = "ContributionTypeGet")]
-#if RELEASE
-        [Authorize(Policy = "CanAccessAddresses")]
-#endif
+        [HttpGet("get", Name = "ContributionTypeGet")]
         public IActionResult Get()
         {
             IActionResult ret = null;
-            List<AppContributionType> list = new List<AppContributionType>();
+            List<ContributionType> list = new List<ContributionType>();
 
             try
             {
@@ -37,8 +33,7 @@ namespace TreasurersApp.Controllers
                     if (db.ContributionTypes.Count() > 0)
                     {
                         list = db.ContributionTypes
-                            .OrderBy(r => r.ContributionTypeCategory)
-                            .ThenBy(r => r.Description)
+                            .OrderBy(r => r.Description)
                             .ToList();
                     }
                     ret = StatusCode(StatusCodes.Status200OK, list);
@@ -52,14 +47,11 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
-        [HttpGet("{id}", Name = "ContributionTypeGetByID")]
-#if RELEASE
-        [Authorize(Policy = "CanAccessAddresses")]
-#endif
+        [HttpGet("getbyid", Name = "ContributionTypeGetByID")]
         public IActionResult Get(int id)
         {
             IActionResult ret = null;
-            AppContributionType entity = null;
+            ContributionType entity = null;
 
             try
             {
@@ -85,14 +77,11 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
-        [HttpPost(Name = "ContributionTypePost")]
+        [HttpPost("post", Name = "ContributionTypePost")]
         [ValidateAntiForgeryToken]
-#if RELEASE
-        [Authorize(Policy = "CanAccessAddresses")]
-#endif
-        public ActionResult Post([FromBody]AppContributionType contributionType)
+        public ActionResult Post([FromBody]ContributionType contributionType)
         {
-            var returnResult = new AppContributionTypeActionResult(false, new List<string>(), null);
+            var returnResult = new ContributionTypeActionResult(false, new List<string>(), null);
             if (contributionType != null)
             {
                 try
@@ -106,7 +95,7 @@ namespace TreasurersApp.Controllers
                         {
                             returnResult.Success = true;
                             returnResult.StatusMessages.Add("Successfully added contribution type.");
-                            returnResult.ContributionType = entity;
+                            returnResult.Data = entity;
                         }
                     }
                 }
@@ -114,50 +103,47 @@ namespace TreasurersApp.Controllers
                 {
                     returnResult.Success = false;
                     returnResult.StatusMessages.Add(e.Message);
-                    returnResult.ContributionType = null;
+                    returnResult.Data = null;
                 }
             }
             else
             {
                 returnResult.Success = false;
                 returnResult.StatusMessages.Add("Empty contribution type posted for add.");
-                returnResult.ContributionType = null;
+                returnResult.Data = null;
             }
             return returnResult.Success ?
                 StatusCode(StatusCodes.Status200OK, returnResult) :
                 StatusCode(StatusCodes.Status500InternalServerError, returnResult);
         }
 
-        [HttpPut(Name = "ContributionTypePut")]
+        [HttpPut("put", Name = "ContributionTypePut")]
         [ValidateAntiForgeryToken]
-#if RELEASE
-        [Authorize(Policy = "CanAccessAddresses")]
-#endif
-        public ActionResult Put([FromBody]AppContributionType contributionType)
+        public ActionResult Put([FromBody]ContributionType contributionType)
         {
-            var returnResult = new AppContributionTypeActionResult(false, new List<string>(), null);
+            var returnResult = new ContributionTypeActionResult(false, new List<string>(), null);
             if (contributionType != null)
             {
                 try
                 {
                     using (var db = new TreasurersAppDbContext(DatabasePath))
                     {
-                        var resultContributionType = db.ContributionTypes.SingleOrDefault(x => x.Id == contributionType.Id);
+                        var resultContributionType = db.ContributionTypes.SingleOrDefault(x => x.ContributionTypeID == contributionType.ContributionTypeID);
                         if (resultContributionType != null)
                         {
-                            resultContributionType.ContributionTypeCategory = contributionType.ContributionTypeCategory;
+                            resultContributionType.CategoryID = contributionType.CategoryID;
                             resultContributionType.ContributionTypeName = contributionType.ContributionTypeName;
                             resultContributionType.Description = contributionType.Description;
                             db.SaveChanges();
                             returnResult.Success = true;
-                            returnResult.ContributionType = resultContributionType;
+                            returnResult.Data = resultContributionType;
                             returnResult.StatusMessages.Add("Successfully updated contribution type.");
                         }
                         else
                         {
                             returnResult.Success = false;
-                            returnResult.StatusMessages.Add(string.Format("Unable to locate contribution type for id: {0}", contributionType.Id));
-                            returnResult.ContributionType = null;
+                            returnResult.StatusMessages.Add(string.Format("Unable to locate contribution type for id: {0}", contributionType.ContributionTypeID));
+                            returnResult.Data = null;
                         }
                     }
                 }
@@ -165,48 +151,14 @@ namespace TreasurersApp.Controllers
                 {
                     returnResult.Success = false;
                     returnResult.StatusMessages.Add(e.Message);
-                    returnResult.ContributionType = null;
+                    returnResult.Data = null;
                 }
             }
             else
             {
                 returnResult.Success = false;
                 returnResult.StatusMessages.Add("Empty contribution type posted for update.");
-                returnResult.ContributionType = null;
-            }
-            return returnResult.Success ?
-                StatusCode(StatusCodes.Status200OK, returnResult) :
-                StatusCode(StatusCodes.Status500InternalServerError, returnResult);
-        }
-
-        [HttpDelete("{id}", Name = "ContributionTypeDelete")]
-        [ValidateAntiForgeryToken]
-#if RELEASE
-        [Authorize(Policy = "CanAccessAddresses")]
-#endif
-        public IActionResult Delete(int id)
-        {
-            var returnResult = new AppContributionTypeActionResult(false, new List<string>(), null);
-            try
-            {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
-                {
-                    var resultContributionType = db.ContributionTypes.SingleOrDefault(x => x.Id == id);
-                    if (resultContributionType != null)
-                    {
-                        db.ContributionTypes.Remove(resultContributionType);
-                        db.SaveChanges();
-                        returnResult.Success = true;
-                        returnResult.ContributionType = resultContributionType;
-                        returnResult.StatusMessages.Add("Successfully deleted contribution type.");
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                returnResult.Success = false;
-                returnResult.StatusMessages.Add(e.Message);
-                returnResult.ContributionType = null;
+                returnResult.Data = null;
             }
             return returnResult.Success ?
                 StatusCode(StatusCodes.Status200OK, returnResult) :

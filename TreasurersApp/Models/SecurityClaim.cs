@@ -1,23 +1,27 @@
+using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TreasurersApp.Models
 {
-    [Table("UserClaim", Schema = "Security")]
-    public class AppUserClaim
-    {
+  [Table("Claim", Schema = "Security")]
+  public class SecurityClaim
+  {
         [Required()]
         [Key()]
-        public Guid ClaimId { get; set; }
+        [JsonProperty("id")]
+        public Guid ClaimID { get; set; }
 
         [Required()]
-        public Guid UserId { get; set; }
-
-        [Required()]
+        [StringLength(50)]
+        [JsonProperty("claimType")]
         public string ClaimType { get; set; }
 
         [Required()]
+        [StringLength(50)]
+        [JsonProperty("claimValue")]
         public string ClaimValue { get; set; }
     }
+
 }

@@ -17,13 +17,15 @@ namespace TreasurersApp.Database
             _dbPath = dbPath;
         }
 
-        public DbSet<AppUser> Users { get; set; }
-        public DbSet<AppUserClaim> UserClaims { get; set; }
-        public DbSet<AppCashJournal> CashJournals { get; set; }
+        public DbSet<SecurityUser> Users { get; set; }
+        public DbSet<SecurityUserClaim> UserClaims { get; set; }
+        public DbSet<SecurityClaim> Claims { get; set; }
+        public DbSet<CashJournal> CashJournals { get; set; }
         public DbSet<Report> Reports { get; set; }
-        public DbSet<AppContributor> Contributors { get; set; }
-        public DbSet<AppAddress> Addresses { get; set; }
-        public DbSet<AppContributionType> ContributionTypes { get; set; }
+        public DbSet<Contributor> Contributors { get; set; }
+        public DbSet<Address> Addresses { get; set; }
+        public DbSet<ContributionType> ContributionTypes { get; set; }
+        public DbSet<ContributionCategory> ContributionCategories { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
