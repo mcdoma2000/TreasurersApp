@@ -14,36 +14,35 @@ using TreasurersApp.Models;
 
 namespace TreasurersApp.Controllers
 {
+    [Produces("application/json")]
     [Route("api/[controller]")]
+    [Authorize]
     public class MaintenanceController : BaseController
     {
-        private readonly TreasurersAppDbContext db;
-
-        public MaintenanceController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache, TreasurersAppDbContext db)
+        public MaintenanceController(IConfiguration config, ILogger<MaintenanceController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
             : base(config, logger, env, memoryCache)
         {
-            this.db = db;
         }
 
-        [HttpGet("/get", Name = "UsersGet")]
+        [HttpGet]
         [Authorize(Policy = "CanPerformAdmin")]
+        [Route("users")]
         public IActionResult GetUsers()
         {
             IActionResult results = null;
-            List<UserEdit> users = new List<UserEdit>();
+            List<AppUserEdit> users = new List<AppUserEdit>();
             try
             {
-                users = db.Users.Select(x => new UserEdit()
+                using (var db = new TreasurersAppDbContext(DatabasePath))
                 {
-                    UserID = x.UserID,
-                    UserName = x.UserName,
-                    DisplayName = x.DisplayName,
-                    Password = x.Password
-                }).ToList();
-                foreach (var u in users)
-                {
-                    var userClaims = db.UserClaims.Where(x => x.UserID == u.UserID).Select(x => x.ClaimID).ToList();
-                    u.Claims = db.Claims.Where(x => userClaims.Contains(x.ClaimID)).ToList();
+                    users = db.Users.Select(x => new AppUserEdit()
+                    {
+                        Id = x.UserId,
+                        UserName = x.UserName,
+                        DisplayName = x.DisplayName,
+                        Password = x.Password,
+                        UserClaims = db.UserClaims.Where(y => y.UserId == x.UserId).ToList()
+                    }).ToList();
                 }
                 results = StatusCode(StatusCodes.Status200OK, users);
             }

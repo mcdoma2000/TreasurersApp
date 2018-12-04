@@ -5,11 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace TreasurersApp.Models
 {
   [Table("User", Schema = "Security")]
-  public partial class User
+  public partial class AppUser
   {
     [Key()]
     [Required()]
-    public Guid UserID { get; set; }
+    public Guid UserId { get; set; }
 
     [Required()]
     [StringLength(255)]

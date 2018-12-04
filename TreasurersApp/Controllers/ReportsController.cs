@@ -16,33 +16,36 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace TreasurersApp.Controllers
 {
+    [Produces("application/json")]
     [Route("api/[controller]")]
+    // [Authorize(Policy = "CanAccessReports")]
     public class ReportsController : BaseController
     {
-        private readonly TreasurersAppDbContext db;
-
-        public ReportsController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache, TreasurersAppDbContext db)
+        public ReportsController(IConfiguration config, ILogger<ReportsController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
             : base(config, logger, env, memoryCache)
         {
-            this.db = db;
         }
 
-        [HttpGet("/get", Name = "ReportsGet")]
+        [HttpGet(Name = "GetReports")]
         public IActionResult Get()
         {
             IActionResult ret = null;
             List<Report> list = new List<Report>();
 
+
             try
             {
-                if (db.Reports.Count() > 0)
+                using (var db = new TreasurersAppDbContext(DatabasePath))
                 {
-                    list = db.Reports.Where(r => r.Active).OrderBy(r => r.DisplayOrder).ToList();
-                    ret = StatusCode(StatusCodes.Status200OK, list);
-                }
-                else
-                {
-                    ret = StatusCode(StatusCodes.Status404NotFound, "Can't Find Reports");
+                    if (db.Reports.Count() > 0)
+                    {
+                        list = db.Reports.Where(r => r.Active).OrderBy(r => r.DisplayOrder).ToList();
+                        ret = StatusCode(StatusCodes.Status200OK, list);
+                    }
+                    else
+                    {
+                        ret = StatusCode(StatusCodes.Status404NotFound, "Can't Find Reports");
+                    }
                 }
             }
             catch (Exception ex)
@@ -53,7 +56,7 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
-        [HttpGet("/getbyid", Name = "ReportsGetById")]
+        [HttpGet("{id}", Name = "GetReport")]
         public IActionResult Get(int id)
         {
             IActionResult ret = null;
@@ -61,15 +64,18 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                entity = db.Reports.Find(id);
-                if (entity != null)
+                using (var db = new TreasurersAppDbContext(DatabasePath))
                 {
-                    ret = StatusCode(StatusCodes.Status200OK, entity);
-                }
-                else
-                {
-                    ret = StatusCode(StatusCodes.Status404NotFound, 
-                                    "Can't Find Report: " + id.ToString());
+                    entity = db.Reports.Find(id);
+                    if (entity != null)
+                    {
+                        ret = StatusCode(StatusCodes.Status200OK, entity);
+                    }
+                    else
+                    {
+                        ret = StatusCode(StatusCodes.Status404NotFound, 
+                                        "Can't Find Report: " + id.ToString());
+                    }
                 }
             }
             catch (Exception ex)
@@ -80,21 +86,22 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
-        [HttpPost("execute", Name = "ReportExecute")]
+        [HttpPost("report", Name = "ExecuteReport")]
         public IActionResult ExecuteReport([FromBody]ReportParameters reportParameters)
         {
             ExcelPackage excel = new ExcelPackage();
             excel.Workbook.Worksheets.Add(reportParameters.ReportName);
-
-            var rpt = db.Reports.SingleOrDefault(x => x.Name == reportParameters.ReportName);
-            if (rpt == null)
+            using (var db = new TreasurersAppDbContext(DatabasePath))
             {
-                throw new ArgumentException("An invalid report name was passed", "Report Name");
+                var rpt = db.Reports.SingleOrDefault(x => x.Name == reportParameters.ReportName);
+                if (rpt == null)
+                {
+                    throw new ArgumentException("An invalid report name was passed", "Report Name");
+                }
+                var rptFactory = new ReportFactory(db);
+                var rptHandler = rptFactory.Create(reportParameters.ReportName);
+                rptHandler.ProcessReport(excel, reportParameters, db);
             }
-            var rptFactory = new ReportFactory(db);
-            var rptHandler = rptFactory.Create(reportParameters.ReportName);
-            rptHandler.ProcessReport(excel, reportParameters, db);
-
             string fileName = string.Format("{0}_{1:yyyyMMdd_hhmmss}.xlsx", reportParameters.ReportName, DateTime.Now);
             var mstream = new MemoryStream();
             excel.SaveAs(mstream);

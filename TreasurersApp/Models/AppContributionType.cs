@@ -5,15 +5,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace TreasurersApp.Models
 {
     [Table("ContributionType", Schema = "dbo")]
-    public partial class ContributionType
+    public partial class AppContributionType
     {
         [Key]
         [JsonProperty("id")]
-        public int ContributionTypeID { get; set; }
+        public int Id { get; set; }
 
         [Required()]
-        [JsonProperty("categoryId")]
-        public string CategoryID { get; set; }
+        [StringLength(100)]
+        [JsonProperty("contributionTypeCategory")]
+        public string ContributionTypeCategory { get; set; }
 
         [Required()]
         [StringLength(100)]

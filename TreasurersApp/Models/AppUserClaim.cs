@@ -5,16 +5,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace TreasurersApp.Models
 {
     [Table("UserClaim", Schema = "Security")]
-    public class UserClaim
+    public class AppUserClaim
     {
         [Required()]
         [Key()]
-        public Guid UserClaimID { get; set; }
+        public Guid ClaimId { get; set; }
 
         [Required()]
-        public Guid ClaimID { get; set; }
+        public Guid UserId { get; set; }
 
         [Required()]
-        public Guid UserID { get; set; }
+        public string ClaimType { get; set; }
+
+        [Required()]
+        public string ClaimValue { get; set; }
     }
 }

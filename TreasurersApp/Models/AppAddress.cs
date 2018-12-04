@@ -5,11 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace TreasurersApp.Models
 {
     [Table("Address", Schema = "dbo")]
-    public partial class Address
+    public partial class AppAddress
     {
         [Key]
         [JsonProperty("id")]
-        public int AddressID { get; set; }
+        public int Id { get; set; }
 
         [Required()]
         [StringLength(100)]

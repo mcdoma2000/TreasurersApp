@@ -5,9 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TreasurersApp.Models
 {
-  public class UserEdit
+  public class AppUserEdit
   {
-    public Guid UserID { get; set; }
+    public Guid Id { get; set; }
 
     public string UserName { get; set; }
 
@@ -15,11 +15,11 @@ namespace TreasurersApp.Models
 
     public string Password { get; set; }
 
-    public ICollection<Claim> Claims { get; set; }
+    public ICollection<AppUserClaim> UserClaims { get; set; }
 
-    public UserEdit()
+    public AppUserEdit()
     {
-      this.Claims = new List<Claim>();
+      this.UserClaims = new List<AppUserClaim>();
       this.UserName = "unknown";
       this.DisplayName = "Unknown, User";
     }
