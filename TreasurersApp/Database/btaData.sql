@@ -25,6 +25,8 @@ CREATE TABLE [dbo].[ContributionCategory] (
     [ContributionCategoryID]                       INT           IDENTITY (1, 1) NOT NULL,
     [ContributionCategoryName] NVARCHAR (50) NOT NULL,
     [Description]              NVARCHAR (50) NOT NULL,
+	[DisplayOrder]			   INT DEFAULT((1)) NOT NULL,
+	[Active]				   BIT DEFAULT((1)) NOT NULL,
     PRIMARY KEY CLUSTERED ([ContributionCategoryID] ASC)
 );
 GO
@@ -42,6 +44,8 @@ CREATE TABLE [dbo].[ContributionType] (
     [CategoryID]           INT            NOT NULL,
     [ContributionTypeName] NVARCHAR (100) NOT NULL,
     [Description]          NVARCHAR (100) NOT NULL,
+	[DisplayOrder]			   INT DEFAULT((1)) NOT NULL,
+	[Active]				   BIT DEFAULT((1)) NOT NULL,
     PRIMARY KEY CLUSTERED ([ContributionTypeID] ASC),
     CONSTRAINT [FK_ContributionType_ContributionCategory] FOREIGN KEY ([CategoryID]) REFERENCES [dbo].[ContributionCategory] ([ContributionCategoryID])
 );

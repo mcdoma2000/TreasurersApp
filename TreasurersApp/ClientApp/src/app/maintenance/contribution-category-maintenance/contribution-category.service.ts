@@ -4,6 +4,8 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { ContributionCategory } from '../../models/ContributionCategory';
 import { ContributionCategoryActionResult } from '../../models/ContributionCategoryActionResult';
+import * as moment from 'moment';
+
 
 const CONTRIBUTIONCATEGORY_API_URL = '/api/contributioncategory';
 
@@ -22,15 +24,19 @@ export class ContributionCategoryService {
   constructor(private http: HttpClient) { }
 
   newContributionCategory(): ContributionCategory {
-    return new ContributionCategory(0, null, null);
+    return new ContributionCategory(0, null, null, null, null);
   }
 
-  getContributionCategories(forceReload: boolean = false): Observable<ContributionCategory[]> {
+  getContributionCategories(forceReload: boolean = false, includeInactive: boolean = false): Observable<ContributionCategory[]> {
     const options = {
       headers: this.httpOptions.headers,
-      params: new HttpParams().set('forceReload', forceReload.toString())
+      params: new HttpParams()
+        .set('includeInactive', includeInactive.toString())
     };
-    return this.http.get<ContributionCategory[]>(CONTRIBUTIONCATEGORY_API_URL + "/get", options);
+    if (forceReload === true) {
+      options.params.set('cacheBuster', moment().format('X'));
+    }
+    return this.http.get<ContributionCategory[]>(CONTRIBUTIONCATEGORY_API_URL + '/get', options);
   }
 
   getContributionCategoryById(id: number, forceReload: boolean = false): Observable<ContributionCategory> {
@@ -38,9 +44,11 @@ export class ContributionCategoryService {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
       params: new HttpParams()
         .set('id', id.toString())
-        .set('forceReload', forceReload.toString())
     };
-    return this.http.get<ContributionCategory>(CONTRIBUTIONCATEGORY_API_URL + "/getbyid", options);
+    if (forceReload === true) {
+      options.params.set('cacheBuster', moment().format('X'));
+    }
+    return this.http.get<ContributionCategory>(CONTRIBUTIONCATEGORY_API_URL + '/getbyid', options);
   }
 
   validateContributionCategory(contributionCategory: ContributionCategory): boolean {
@@ -52,21 +60,19 @@ export class ContributionCategoryService {
 
   updateContributionCategory(contributionCategory: ContributionCategory): Observable<ContributionCategoryActionResult> {
     if (this.validateContributionCategory(contributionCategory) === false) {
-      console.log("Attempted to update an invalid contribution type.");
+      console.log('Attempted to update an invalid contribution type.');
       console.log(JSON.stringify(contributionCategory));
     }
-    var result = this.http.put<ContributionCategoryActionResult>(CONTRIBUTIONCATEGORY_API_URL + "/put", contributionCategory, this.httpOptions);
-    return result
+    return this.http.put<ContributionCategoryActionResult>(CONTRIBUTIONCATEGORY_API_URL + '/put', contributionCategory, this.httpOptions);
   }
 
   addContributionCategory(contributionCategory: ContributionCategory): Observable<ContributionCategoryActionResult> {
     contributionCategory.id = 0;
     if (this.validateContributionCategory(contributionCategory) === false) {
-      console.log("Attempted to add an invalid contribution type.");
+      console.log('Attempted to add an invalid contribution type.');
       console.log(JSON.stringify(contributionCategory));
     }
-    var result = this.http.post<ContributionCategoryActionResult>(CONTRIBUTIONCATEGORY_API_URL + "/post", contributionCategory, this.httpOptions);
-    return result;
+    return this.http.post<ContributionCategoryActionResult>(CONTRIBUTIONCATEGORY_API_URL + '/post', contributionCategory, this.httpOptions);
   }
 
   deleteContributionCategory(contributionCategoryId: number): Observable<ContributionCategoryActionResult> {
@@ -77,7 +83,6 @@ export class ContributionCategoryService {
         'Accept': 'application/json'
       })
     };
-    var result = this.http.delete<ContributionCategoryActionResult>(CONTRIBUTIONCATEGORY_API_URL + "/delete", options);
-    return result;
+    return this.http.delete<ContributionCategoryActionResult>(CONTRIBUTIONCATEGORY_API_URL + '/delete', options);
   }
 }

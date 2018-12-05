@@ -23,7 +23,7 @@ namespace TreasurersApp.Controllers
         }
 
         [HttpGet("get", Name = "ContributionCategoryGet")]
-        public IActionResult Get()
+        public IActionResult Get(bool includeInactive)
         {
             IActionResult ret = null;
             List<ContributionCategory> list = new List<ContributionCategory>();
@@ -34,18 +34,19 @@ namespace TreasurersApp.Controllers
                 {
                     if (db.ContributionCategories.Count() > 0)
                     {
-                        list = db.ContributionCategories.OrderBy(p => p.Description).ToList();
+                        // If includeInactive == true, return all, otherwise return only active records.
+                        list = db.ContributionCategories
+                            .Where(x => x.Active || includeInactive)
+                            .OrderBy(p => p.DisplayOrder)
+                            .ToList();
                         ret = StatusCode(StatusCodes.Status200OK, list);
-                    }
-                    else
-                    {
-                        ret = StatusCode(StatusCodes.Status404NotFound, "Can't find contribution categories.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                ret = HandleException(ex, "Exception trying to get all contribution categories.");
+                Logger.LogError(ex, "Exception trying to get all contribution categories.");
+                ret = StatusCode(StatusCodes.Status200OK, list);
             }
 
             return ret;
@@ -68,15 +69,15 @@ namespace TreasurersApp.Controllers
                     }
                     else
                     {
-                        ret = StatusCode(StatusCodes.Status404NotFound,
-                                    "Can't find contribution category entry: " + id.ToString());
+                        Logger.LogError(string.Format("Can't find contribution category entry: {0}", id));
+                        ret = StatusCode(StatusCodes.Status404NotFound);
                     }
                 }
             }
             catch (Exception ex)
             {
-                ret = HandleException(ex,
-                  "Exception trying to retrieve a single contribution category entry.");
+                Logger.LogError(ex, "An exception occurred while attempting to retrieve a single contribution category entry.");
+                ret = StatusCode(StatusCodes.Status500InternalServerError);
             }
 
             return ret;
@@ -98,7 +99,6 @@ namespace TreasurersApp.Controllers
                         result.Success = true;
                         result.StatusMessages.Add("Successfully added contribution category.");
                         result.Data = entity;
-                        ret = StatusCode(StatusCodes.Status201Created, result);
                     }
                 }
                 else
@@ -106,7 +106,6 @@ namespace TreasurersApp.Controllers
                     result.Success = false;
                     result.StatusMessages.Add("Invalid data passed to create new contribution category.");
                     result.Data = null;
-                    ret = StatusCode(StatusCodes.Status205ResetContent, result);
                 }
             }
             catch (Exception ex)
@@ -116,10 +115,8 @@ namespace TreasurersApp.Controllers
                 result.Success = false;
                 result.Data = null;
                 result.StatusMessages.Add("Exception trying to insert a new contribution category entry.");
-                ret = StatusCode(StatusCodes.Status500InternalServerError, result);
             }
-
-            return ret;
+            return StatusCode(StatusCodes.Status200OK, result);
         }
 
         [HttpPut("put", Name = "ContributionCategoryPut")]
@@ -138,15 +135,13 @@ namespace TreasurersApp.Controllers
                         result.Success = true;
                         result.Data = entity;
                         result.StatusMessages.Add("Successfully updated contribution category.");
-                        ret = StatusCode(StatusCodes.Status200OK, result);
                     }
                 }
                 else
                 {
                     result.Success = false;
                     result.Data = null;
-                    result.StatusMessages.Add("Invalid data passed for contribution category update.");
-                    ret = StatusCode(StatusCodes.Status205ResetContent, result);
+                    result.StatusMessages.Add("Invalid data passed to contribution category update.");
                 }
             }
             catch (Exception ex)
@@ -156,10 +151,9 @@ namespace TreasurersApp.Controllers
                 result.Success = false;
                 result.Data = null;
                 result.StatusMessages.Add("Exception trying to update a contribution category entry.");
-                ret = StatusCode(StatusCodes.Status500InternalServerError, result);
             }
 
-            return ret;
+            return StatusCode(StatusCodes.Status200OK, result);
         }
 
         [HttpDelete("delete", Name = "ContributionCategoryDelete")]
@@ -193,11 +187,8 @@ namespace TreasurersApp.Controllers
                 returnResult.Success = false;
                 returnResult.StatusMessages.Add("An exception occurred while attempting to delete a contribution category.");
                 returnResult.Data = null;
-                return StatusCode(StatusCodes.Status205ResetContent, returnResult);
             }
-            return returnResult.Success ?
-                StatusCode(StatusCodes.Status200OK, returnResult) :
-                StatusCode(StatusCodes.Status500InternalServerError, returnResult);
+            return StatusCode(StatusCodes.Status200OK, returnResult);
         }
     }
 }

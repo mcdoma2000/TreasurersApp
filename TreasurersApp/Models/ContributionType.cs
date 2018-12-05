@@ -12,8 +12,8 @@ namespace TreasurersApp.Models
         public int ContributionTypeID { get; set; }
 
         [Required()]
-        [JsonProperty("categoryId")]
-        public string CategoryID { get; set; }
+        [JsonProperty("contributionCategoryId")]
+        public int CategoryID { get; set; }
 
         [Required()]
         [StringLength(100)]
@@ -22,7 +22,13 @@ namespace TreasurersApp.Models
 
         [Required()]
         [StringLength(100)]
-        [JsonProperty("Description")]
+        [JsonProperty("description")]
         public string Description { get; set; }
+
+        [JsonProperty("displayOrder")]
+        public int DisplayOrder { get; set; }
+
+        [JsonProperty("active")]
+        public bool Active { get; set; }
     }
 }

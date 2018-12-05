@@ -4,20 +4,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TreasurersApp.Models
 {
-    [Table("ContributionCategory", Schema = "dbo")]
-    public partial class ContributionCategory
+    public partial class ContributionTypeViewModel
     {
-        [Key]
         [JsonProperty("id")]
-        public int ContributionCategoryID { get; set; }
+        public int ContributionTypeID { get; set; }
 
-        [Required()]
-        [StringLength(100)]
-        [JsonProperty("contributionCategoryName")]
-        public string ContributionCategoryName { get; set; }
+        [JsonProperty("contributionCategoryId")]
+        public int CategoryID { get; set; }
 
-        [Required()]
-        [StringLength(100)]
+        [JsonProperty("contributionCategoryDescription")]
+        public string CategoryDescription { get; set; }
+
+        [JsonProperty("contributionTypeName")]
+        public string ContributionTypeName { get; set; }
+
         [JsonProperty("description")]
         public string Description { get; set; }
 

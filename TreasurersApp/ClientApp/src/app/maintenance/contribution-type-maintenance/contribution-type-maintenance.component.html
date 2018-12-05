@@ -43,9 +43,11 @@
                    [showInfo]="true"
                    [showPageSizeSelector]="true"
                    [showNavigationButtons]="true"></dxo-pager>
-        <dxi-column dataField="contributionTypeCategory" caption="Category"></dxi-column>
+        <dxi-column dataField="contributionCategoryDescription" caption="Category"></dxi-column>
         <dxi-column dataField="contributionTypeName" caption="Name"></dxi-column>
         <dxi-column dataField="description" caption="Description"></dxi-column>
+        <dxi-column dataField="displayOrder" caption="Display Order"></dxi-column>
+        <dxi-column dataField="active" caption="Active"></dxi-column>
       </dx-data-grid>
     </div>
   </div>
@@ -58,6 +60,7 @@
       <div class="col-md-9">
         <p-dropdown [options]="categories"
                     [(ngModel)]="ctypeToEdit.contributionCategoryId"
+                    placeholder="Select a Category"
                     #categoryDropdownEdit
                     ></p-dropdown>
       </div>
@@ -72,6 +75,18 @@
       <div class="col-md-3">Description</div>
       <div class="col-md-9">
         <input type="text" pInputText [(ngModel)]="ctypeToEdit.description" />
+      </div>
+    </div>
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Display Order</div>
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="ctypeToEdit.displayOrder" required />
+      </div>
+    </div>
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Active</div>
+      <div class="col-md-9">
+        <p-checkbox [(ngModel)]="ctypeToEdit.active" binary="true" required></p-checkbox>
       </div>
     </div>
     <p-footer>
@@ -93,7 +108,7 @@
       <div class="col-md-9">
         <p-dropdown [options]="categories"
                     [(ngModel)]="ctypeToEdit.contributionCategoryId"
-                    placeholder="Select a category"
+                    placeholder="Select a Category"
                     #categoryDropdownAdd></p-dropdown>
       </div>
     </div>
@@ -107,6 +122,18 @@
       <div class="col-md-3">Description</div>
       <div class="col-md-9">
         <input type="text" pInputText [(ngModel)]="ctypeToEdit.description" />
+      </div>
+    </div>
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Display Order</div>
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="ctypeToEdit.displayOrder" required />
+      </div>
+    </div>
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Active</div>
+      <div class="col-md-9">
+        <p-checkbox [(ngModel)]="ctypeToEdit.active" binary="true" required></p-checkbox>
       </div>
     </div>
     <p-footer>

@@ -21,8 +21,8 @@ export class ContributionCategoryMaintenanceComponent implements OnInit {
   rowData: ContributionCategory[] = [];
   foundContributionCategory: ContributionCategory = null;
   rowIsSelected = false;
-  selectedContributionCategory = new ContributionCategory(0, null, null);
-  ccatToEdit = new ContributionCategory(0, null, null);
+  selectedContributionCategory = new ContributionCategory(0, null, null, null, null);
+  ccatToEdit = new ContributionCategory(0, null, null, null, null);
   displayEdit = false;
   displayAdd = false;
 
@@ -35,9 +35,6 @@ export class ContributionCategoryMaintenanceComponent implements OnInit {
     this.contributionCategoryService.getContributionCategories(true).subscribe(resp => { this.rowData = resp; });
   }
 
-  ngOnDestroy() {
-  }
-
   addContributionCategory() {
     this.displayAdd = true;
     this.ccatToEdit = this.contributionCategoryService.newContributionCategory();
@@ -47,7 +44,9 @@ export class ContributionCategoryMaintenanceComponent implements OnInit {
     this.ccatToEdit =
       new ContributionCategory(this.selectedContributionCategory.id,
         this.selectedContributionCategory.contributionCategoryName,
-        this.selectedContributionCategory.description);
+        this.selectedContributionCategory.description,
+        this.selectedContributionCategory.displayOrder,
+        this.selectedContributionCategory.active);
     this.confirmDelete();
   }
 
@@ -62,9 +61,17 @@ export class ContributionCategoryMaintenanceComponent implements OnInit {
       this.contributionCategoryService.deleteContributionCategory(this.ccatToEdit.id).subscribe(
         (resp) => {
           if (resp.success === true) {
-            this.messageService.add({ severity: 'success', summary: 'Contribution Type Maintenance: Delete', detail: resp.statusMessages[0] });
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Contribution Type Maintenance: Delete',
+              detail: resp.statusMessages[0]
+            });
           } else {
-            this.messageService.add({ severity: 'error', summary: 'ContributionCategory Maintenance: Delete', detail: 'An error occurred while attempting to delete an address.' });
+            this.messageService.add({
+              severity: 'error',
+              summary: 'ContributionCategory Maintenance: Delete',
+              detail: 'An error occurred while attempting to delete an address.'
+            });
             resp.statusMessages.forEach(function (msg) {
               this.messageService.add({ severity: 'error', summary: 'ContributionCategory Maintenance: Delete', detail: msg });
             });
@@ -103,7 +110,11 @@ export class ContributionCategoryMaintenanceComponent implements OnInit {
           this.displayAdd = false;
         },
         (err) => {
-          this.messageService.add({ severity: 'error', summary: 'Contribution Type Maintenance: Add', detail: 'An exception occurred while attempting to add a contribution type.' });
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Contribution Type Maintenance: Add',
+            detail: 'An exception occurred while attempting to add a contribution type.'
+          });
           console.log(err);
           this.refreshGridData();
           this.uiBlocked = false;
@@ -123,7 +134,11 @@ export class ContributionCategoryMaintenanceComponent implements OnInit {
       this.contributionCategoryService.updateContributionCategory(this.ccatToEdit).subscribe(
         (resp) => {
           if (resp.success === true) {
-            this.messageService.add({ severity: 'success', summary: 'Contribution Type Maintenance: Update', detail: resp.statusMessages[0] });
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Contribution Type Maintenance: Update',
+              detail: resp.statusMessages[0]
+            });
           } else {
             resp.statusMessages.forEach(function (msg) {
               this.messageService.add({ severity: 'error', summary: 'Contribution Type Maintenance: Update', detail: msg });
@@ -182,7 +197,9 @@ export class ContributionCategoryMaintenanceComponent implements OnInit {
     this.ccatToEdit =
       new ContributionCategory(this.selectedContributionCategory.id,
         this.selectedContributionCategory.contributionCategoryName,
-        this.selectedContributionCategory.description);
+        this.selectedContributionCategory.description,
+        this.selectedContributionCategory.displayOrder,
+        this.selectedContributionCategory.active);
   }
 
   saveAddClick($event) {
@@ -233,7 +250,8 @@ export class ContributionCategoryMaintenanceComponent implements OnInit {
   }
 
   onRowClick(e) {
-    this.selectedContributionCategory = new ContributionCategory(e.data.id, e.data.contributionCategoryName, e.data.description);
+    this.selectedContributionCategory =
+      new ContributionCategory(e.data.id, e.data.contributionCategoryName, e.data.description, e.data.displayOrder, e.data.active);
     this.rowIsSelected = true;
   }
 

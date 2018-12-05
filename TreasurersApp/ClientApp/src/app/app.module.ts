@@ -19,6 +19,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { DataTableModule } from 'primeng/datatable';
 import { DropdownModule } from 'primeng/dropdown';
+import { CheckboxModule } from 'primeng/checkbox';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations/';
 
 import { DxDataGridModule } from 'devextreme-angular/ui/data-grid';
@@ -89,6 +90,7 @@ import { ContributionCategoryMaintenanceComponent } from './maintenance/contribu
     DataTableModule,
     DxDataGridModule,
     DropdownModule,
+    CheckboxModule,
     BrowserAnimationsModule
   ],
   providers: [

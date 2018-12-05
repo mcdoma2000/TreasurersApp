@@ -55,13 +55,25 @@
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Name</div>
       <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="ccatToEdit.contributionCategoryName" />
+        <input type="text" pInputText [(ngModel)]="ccatToEdit.contributionCategoryName" required />
       </div>
     </div>
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Description</div>
       <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="ccatToEdit.description" />
+        <input type="text" pInputText [(ngModel)]="ccatToEdit.description" required />
+      </div>
+    </div>
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Display Order</div>
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="ccatToEdit.displayOrder" required />
+      </div>
+    </div>
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Active</div>
+      <div class="col-md-9">
+        <p-checkbox [(ngModel)]="ccatToEdit.active" binary="true" required></p-checkbox>
       </div>
     </div>
     <p-footer>
@@ -81,13 +93,25 @@
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Name</div>
       <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="ccatToEdit.contributionCategoryName" />
+        <input type="text" pInputText [(ngModel)]="ccatToEdit.contributionCategoryName" required />
       </div>
     </div>
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Description</div>
       <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="ccatToEdit.description" />
+        <input type="text" pInputText [(ngModel)]="ccatToEdit.description" required />
+      </div>
+    </div>
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Display Order</div>
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="ccatToEdit.displayOrder" required />
+      </div>
+    </div>
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Active</div>
+      <div class="col-md-9">
+        <p-checkbox [(ngModel)]="ccatToEdit.active" binary="true" required></p-checkbox>
       </div>
     </div>
     <p-footer>

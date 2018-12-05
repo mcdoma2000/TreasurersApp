@@ -4,6 +4,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 
 import { ContributionType } from '../../models/ContributionType';
 import { ContributionTypeService } from './contribution-type.service';
+import { ContributionTypeViewModel } from '../../models/ContributionTypeViewModel';
 import { ContributionCategory } from '../../models/ContributionCategory';
 import { ContributionCategoryService } from '../contribution-category-maintenance/contribution-category.service';
 import { ConfirmationMessage } from '../../models/ConfirmationMessage';
@@ -20,12 +21,12 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
   @ViewChild(DxDataGridComponent) dataGrid: DxDataGridComponent;
 
   uiBlocked = false;
-  rowData: ContributionType[] = [];
-  categories: ContributionCategory[] = [];
+  rowData: ContributionTypeViewModel[] = [];
+  categories: SelectItem[] = [];
   foundContributionType: ContributionType = null;
   rowIsSelected = false;
-  selectedContributionType = new ContributionType(0, null, null, null);
-  ctypeToEdit = new ContributionType(0, null, null, null);
+  selectedContributionType = new ContributionType(0, null, null, null, null, null);
+  ctypeToEdit = new ContributionType(0, null, null, null, null, null);
   displayEdit = false;
   displayAdd = false;
 
@@ -36,8 +37,30 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.contributionTypeService.getContributionTypes(true).subscribe(resp => { this.rowData = resp; });
-    this.contributionCategoryService.getContributionCategories(true).subscribe(resp => { this.categories = resp; });
+    this.contributionTypeService.getContributionTypeViewModels(true).subscribe(
+      (resp) => {
+        this.rowData = resp;
+        console.log('Contribution Types: ' + resp.length);
+      },
+      (err) => {
+        console.log(JSON.stringify(err));
+      }
+    );
+    let cats: ContributionCategory[] = [];
+    this.contributionCategoryService.getContributionCategories(true).subscribe(
+      (resp) => {
+        cats = resp;
+        console.log('Contribution Categories: ' + resp.length);
+        this.categories = cats.map(function (value) {
+          return { label: value.description, value: value.id };
+        });
+        console.log('Dropdown Count: ' + this.categories.length);
+          },
+      (err) => {
+        console.log(JSON.stringify(err));
+        this.categories = [];
+      }
+    );
   }
 
   ngOnDestroy() {
@@ -53,7 +76,9 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
       new ContributionType(this.selectedContributionType.id,
         this.selectedContributionType.contributionCategoryId,
         this.selectedContributionType.contributionTypeName,
-        this.selectedContributionType.description);
+        this.selectedContributionType.description,
+        this.selectedContributionType.displayOrder,
+        this.selectedContributionType.active);
     this.confirmDelete();
   }
 
@@ -68,9 +93,17 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
       this.contributionTypeService.deleteContributionType(this.ctypeToEdit.id).subscribe(
         (resp) => {
           if (resp.success === true) {
-            this.messageService.add({ severity: 'success', summary: 'Contribution Type Maintenance: Delete', detail: resp.statusMessages[0] });
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Contribution Type Maintenance: Delete',
+              detail: resp.statusMessages[0]
+            });
           } else {
-            this.messageService.add({ severity: 'error', summary: 'ContributionType Maintenance: Delete', detail: 'An error occurred while attempting to delete an address.' });
+            this.messageService.add({
+              severity: 'error',
+              summary: 'ContributionType Maintenance: Delete',
+              detail: 'An error occurred while attempting to delete an address.'
+            });
             resp.statusMessages.forEach(function (msg) {
               this.messageService.add({ severity: 'error', summary: 'ContributionType Maintenance: Delete', detail: msg });
             });
@@ -109,7 +142,11 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
           this.displayAdd = false;
         },
         (err) => {
-          this.messageService.add({ severity: 'error', summary: 'Contribution Type Maintenance: Add', detail: 'An exception occurred while attempting to add a contribution type.' });
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Contribution Type Maintenance: Add',
+            detail: 'An exception occurred while attempting to add a contribution type.'
+          });
           console.log(err);
           this.refreshGridData();
           this.uiBlocked = false;
@@ -129,7 +166,11 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
       this.contributionTypeService.updateContributionType(this.ctypeToEdit).subscribe(
         (resp) => {
           if (resp.success === true) {
-            this.messageService.add({ severity: 'success', summary: 'Contribution Type Maintenance: Update', detail: resp.statusMessages[0] });
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Contribution Type Maintenance: Update',
+              detail: resp.statusMessages[0]
+            });
           } else {
             resp.statusMessages.forEach(function (msg) {
               this.messageService.add({ severity: 'error', summary: 'Contribution Type Maintenance: Update', detail: msg });
@@ -153,7 +194,7 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   refreshGridData() {
-    this.contributionTypeService.getContributionTypes(true).subscribe(
+    this.contributionTypeService.getContributionTypeViewModels(true).subscribe(
       (resp) => {
         this.rowData = resp;
         setTimeout(this.refreshData, 0, this);
@@ -189,7 +230,10 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
       new ContributionType(this.selectedContributionType.id,
         this.selectedContributionType.contributionCategoryId,
         this.selectedContributionType.contributionTypeName,
-        this.selectedContributionType.description);
+        this.selectedContributionType.description,
+        this.selectedContributionType.displayOrder,
+        this.selectedContributionType.active
+        );
   }
 
   saveAddClick($event) {
@@ -220,7 +264,9 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
     if (this.selectedContributionType.id &&
       (this.selectedContributionType.contributionCategoryId !== this.ctypeToEdit.contributionCategoryId ||
       this.selectedContributionType.contributionTypeName !== this.ctypeToEdit.contributionTypeName ||
-      this.selectedContributionType.description !== this.ctypeToEdit.description)) {
+      this.selectedContributionType.description !== this.ctypeToEdit.description ||
+      this.selectedContributionType.displayOrder !== this.ctypeToEdit.displayOrder ||
+      this.selectedContributionType.active !== this.ctypeToEdit.active)) {
       save = true;
     }
     return save;
@@ -239,12 +285,18 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   onRowClick(e) {
-    this.selectedContributionType = new ContributionType(e.data.id,e.data.contributionTypeCategory,e.data.contributionTypeName,e.data.description);
+    this.selectedContributionType =
+      new ContributionType(e.data.id,
+        e.data.contributionTypeCategory,
+        e.data.contributionTypeName,
+        e.data.description,
+        e.data.displayOrder,
+        e.data.active);
     this.rowIsSelected = true;
   }
 
   validateContributionType(ctype: ContributionType): boolean {
-    if (!ctype.contributionCategoryId || !ctype.contributionTypeName || !ctype.description) {
+    if (!ctype.contributionCategoryId || !ctype.contributionTypeName || !ctype.description || !ctype.displayOrder) {
       return false;
     }
     return true;
@@ -265,7 +317,7 @@ export class ContributionTypeMaintenanceComponent implements OnInit, OnDestroy {
     if (this.rowData.length > 0 && forceReload === false) {
       return of(this.rowData);
     } else {
-      this.contributionTypeService.getContributionTypes().subscribe(
+      this.contributionTypeService.getContributionTypeViewModels().subscribe(
         (resp) => {
           this.rowData = resp;
           return of(this.rowData);
