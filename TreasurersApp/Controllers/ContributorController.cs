@@ -38,12 +38,8 @@ namespace TreasurersApp.Controllers
                             .ThenBy(r => r.FirstName)
                             .ThenBy(r => r.MiddleName)
                             .ToList();
-                        ret = StatusCode(StatusCodes.Status200OK, list);
                     }
-                    else
-                    {
-                        ret = StatusCode(StatusCodes.Status404NotFound, "Can't Find Contributor");
-                    }
+                    ret = StatusCode(StatusCodes.Status200OK, list);
                 }
             }
             catch (Exception ex)
@@ -54,7 +50,7 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
-        [HttpGet("getbyid", Name = "ContributorGetById")]
+        [HttpGet("getbyid/{id}", Name = "ContributorGetById")]
         public IActionResult Get(int id)
         {
             IActionResult ret = null;
@@ -71,8 +67,7 @@ namespace TreasurersApp.Controllers
                     }
                     else
                     {
-                        ret = StatusCode(StatusCodes.Status404NotFound,
-                                        "Can't Find Contributor: " + id.ToString());
+                        ret = StatusCode(StatusCodes.Status404NotFound, "Can't Find Contributor: " + id.ToString());
                     }
                 }
             }
@@ -103,24 +98,30 @@ namespace TreasurersApp.Controllers
                             returnResult.StatusMessages.Add("Successfully added contributor.");
                             returnResult.Data = entity;
                         }
+                        else
+                        {
+                            returnResult.Success = false;
+                            returnResult.StatusMessages.Add("Failed to add contributor.");
+                            returnResult.Data = entity;
+                        }
                     }
                 }
                 catch (Exception e)
                 {
+                    string errMsg = "An exception occurred while attempting to add a contributor.";
+                    Logger.LogError(e, errMsg);
                     returnResult.Success = false;
-                    returnResult.StatusMessages.Add(e.Message);
+                    returnResult.StatusMessages.Add(errMsg);
                     returnResult.Data = null;
                 }
             }
             else
             {
                 returnResult.Success = false;
-                returnResult.StatusMessages.Add("Empty contributyor posted for add.");
+                returnResult.StatusMessages.Add("Empty contributor posted for add.");
                 returnResult.Data = null;
             }
-            return returnResult.Success ?
-                StatusCode(StatusCodes.Status200OK, returnResult) :
-                StatusCode(StatusCodes.Status500InternalServerError, returnResult);
+            return StatusCode(StatusCodes.Status200OK, returnResult);
         }
 
         [HttpPut("put", Name = "ContributorPut")]
@@ -147,16 +148,20 @@ namespace TreasurersApp.Controllers
                         }
                         else
                         {
+                            string errMsg = string.Format("Unable to locate contributor for id: {0}", contributor.ContributorId);
+                            Logger.LogError(errMsg, null);
                             returnResult.Success = false;
-                            returnResult.StatusMessages.Add(string.Format("Unable to locate contributor for id: {0}", contributor.ContributorId));
+                            returnResult.StatusMessages.Add(errMsg);
                             returnResult.Data = null;
                         }
                     }
                 }
                 catch (Exception e)
                 {
+                    string excMsg = "An exception occurred while attempting to update a contributor.";
+                    Logger.LogError(e, excMsg);
                     returnResult.Success = false;
-                    returnResult.StatusMessages.Add(e.Message);
+                    returnResult.StatusMessages.Add(excMsg);
                     returnResult.Data = null;
                 }
             }
@@ -166,9 +171,7 @@ namespace TreasurersApp.Controllers
                 returnResult.StatusMessages.Add("Empty contributor posted for update.");
                 returnResult.Data = null;
             }
-            return returnResult.Success ?
-                StatusCode(StatusCodes.Status200OK, returnResult) :
-                StatusCode(StatusCodes.Status500InternalServerError, returnResult);
+            return StatusCode(StatusCodes.Status200OK, returnResult);
         }
     }
 }

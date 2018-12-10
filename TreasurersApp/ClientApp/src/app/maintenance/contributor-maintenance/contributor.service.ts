@@ -1,16 +1,24 @@
 import { Injectable, OnInit, OnDestroy } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Contributor } from '../../models/Contributor';
+import { ContributorActionResult } from '../../models/ContributorActionResult';
 
-//const CONTRIBUTOR_API_URL = 'http://localhost:55000/api/contributor/';
-const CONTRIBUTOR_API_URL = '/api/contributor/';
+const API_URL = '/api/contributor';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContributorService implements OnInit, OnDestroy {
+
+  private defaultHeaders = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  });
+  private defaultOptions = {
+    headers: this.defaultHeaders
+  };
 
   constructor(private http: HttpClient) { }
 
@@ -20,39 +28,61 @@ export class ContributorService implements OnInit, OnDestroy {
   ngOnDestroy() {
   }
 
+  newContributor(): Contributor {
+    return new Contributor(0, null, null, null, null);
+  }
+
+  validateContributor(contributor: Contributor): boolean {
+    let isValid = false;
+    if (contributor) {
+      isValid = (contributor.firstName !== null && contributor.lastName !== null);
+    }
+    return isValid;
+  }
+
   getContributors(): Observable<Contributor[]> {
-    return this.http.get<Contributor[]>(CONTRIBUTOR_API_URL);
+    return this.http.get<Contributor[]>(API_URL + '/get');
   }
 
   getContributorById(id: number): Observable<Contributor> {
     const options = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-      params: new HttpParams()
-                    .set('id', id.toString())
-    };
-    return this.http.get<Contributor>(CONTRIBUTOR_API_URL, options);
-  }
-
-  updateContributor(id: number, contributor: Contributor) {
-    const options = {
-      params: new HttpParams()
-        .set('id', id.toString())
-        .set('contributor', JSON.stringify(Contributor))
-    };
-    return this.http.put<Contributor>(CONTRIBUTOR_API_URL, contributor, options);
-  }
-
-  addContributor(contributor: Contributor) {
-    const options = {
-      params: new HttpParams().set('contributor', JSON.stringify(Contributor))
-    };
-    return this.http.post<Contributor>(CONTRIBUTOR_API_URL, contributor, options);
-  }
-
-  deleteContributor(id: number) {
-    const options = {
+      headers: this.defaultHeaders,
       params: new HttpParams().set('id', id.toString())
     };
-    return this.http.delete<Contributor>(CONTRIBUTOR_API_URL, options);
+    return this.http.get<Contributor>(API_URL + '/getbyid', options);
+  }
+
+  updateContributor(contributor: Contributor): Observable<ContributorActionResult>  {
+    if (this.validateContributor(contributor) === false) {
+      console.log('Attempted to update an invalid contributor.');
+      console.log(JSON.stringify(contributor));
+      const errResult = new ContributorActionResult(this);
+      errResult.contributor = contributor;
+      errResult.statusMessages.push('Attempted to update an invalid contributor.');
+      errResult.success = false;
+      return of(errResult);
+    }
+    return this.http.put<ContributorActionResult>(API_URL + '/put', contributor, this.defaultOptions);
+  }
+
+  addContributor(contributor: Contributor): Observable<ContributorActionResult> {
+    if (this.validateContributor(contributor) === false) {
+      console.log('Attempted to add an invalid contributor.');
+      console.log(JSON.stringify(contributor));
+      const errResult = new ContributorActionResult(this);
+      errResult.contributor = contributor;
+      errResult.statusMessages.push('Attempted to add an invalid contributor.');
+      errResult.success = false;
+      return of(errResult);
+    }
+    return this.http.post<ContributorActionResult>(API_URL, contributor, this.defaultOptions);
+  }
+
+  deleteContributor(id: number): Observable<ContributorActionResult> {
+    const options = {
+      headers: this.defaultHeaders,
+      params: new HttpParams().set('id', id.toString())
+    };
+    return this.http.delete<ContributorActionResult>(API_URL, options);
   }
 }
