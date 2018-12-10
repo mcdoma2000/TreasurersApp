@@ -29,13 +29,13 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    if (db.ContributionTypes.Count() > 0)
+                    if (db.ContributionType.Count() > 0)
                     {
                         // If includeInactive == true, return all, otherwise return only active records.
-                        list = db.ContributionTypes
-                            .Where(x => x.Active || includeInactive)
+                        list = db.ContributionType
+                            .Where(x => (x.Active.HasValue && x.Active.Value) || includeInactive)
                             .OrderBy(x => x.DisplayOrder)
                             .ToList();
                     }
@@ -59,23 +59,22 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    if (db.ContributionTypes.Count() > 0)
+                    if (db.ContributionType.Count() > 0)
                     {
                         // If includeInactive == true, return all, otherwise return only active records.
-                        var ctypes = from ct in db.ContributionTypes
-                                     join cc in db.ContributionCategories on ct.CategoryID equals cc.ContributionCategoryID
-                                     select new ContributionTypeViewModel()
-                                     {
-                                         ContributionTypeID = ct.ContributionTypeID,
-                                         CategoryID = ct.CategoryID,
-                                         CategoryDescription = cc.Description,
-                                         ContributionTypeName = ct.ContributionTypeName,
-                                         DisplayOrder = ct.DisplayOrder,
-                                         Active = ct.Active
-                                     };
-                        list = ctypes.ToList();
+                        list = db.ContributionType
+                            .Where(x => x.Active ?? false || includeInactive)
+                            .Select(x => new ContributionTypeViewModel()
+                            {
+                                ContributionTypeID = x.ContributionTypeId,
+                                CategoryID = x.CategoryId,
+                                CategoryDescription = x.Category.Description,
+                                ContributionTypeName = x.ContributionTypeName,
+                                DisplayOrder = x.DisplayOrder,
+                                Active = x.Active ?? false
+                            }).ToList();
                     }
                     ret = StatusCode(StatusCodes.Status200OK, list);
                 }
@@ -97,9 +96,9 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    entity = db.ContributionTypes.Find(id);
+                    entity = db.ContributionType.Find(id);
                     if (entity != null)
                     {
                         ret = StatusCode(StatusCodes.Status200OK, entity);
@@ -128,9 +127,9 @@ namespace TreasurersApp.Controllers
             {
                 try
                 {
-                    using (var db = new TreasurersAppDbContext(DatabasePath))
+                    using (var db = new BTAContext())
                     {
-                        var resultContributionType = db.ContributionTypes.Add(contributionType);
+                        var resultContributionType = db.ContributionType.Add(contributionType);
                         db.SaveChanges();
                         var entity = resultContributionType.Entity;
                         if (entity != null)
@@ -166,12 +165,12 @@ namespace TreasurersApp.Controllers
             {
                 try
                 {
-                    using (var db = new TreasurersAppDbContext(DatabasePath))
+                    using (var db = new BTAContext())
                     {
-                        var resultContributionType = db.ContributionTypes.SingleOrDefault(x => x.ContributionTypeID == contributionType.ContributionTypeID);
+                        var resultContributionType = db.ContributionType.SingleOrDefault(x => x.ContributionTypeId == contributionType.ContributionTypeId);
                         if (resultContributionType != null)
                         {
-                            resultContributionType.CategoryID = contributionType.CategoryID;
+                            resultContributionType.CategoryId = contributionType.CategoryId;
                             resultContributionType.ContributionTypeName = contributionType.ContributionTypeName;
                             resultContributionType.Description = contributionType.Description;
                             db.SaveChanges();
@@ -182,7 +181,7 @@ namespace TreasurersApp.Controllers
                         else
                         {
                             returnResult.Success = false;
-                            returnResult.StatusMessages.Add(string.Format("Unable to locate contribution type for id: {0}", contributionType.ContributionTypeID));
+                            returnResult.StatusMessages.Add(string.Format("Unable to locate contribution type for id: {0}", contributionType.ContributionTypeId));
                             returnResult.Data = null;
                         }
                     }
@@ -209,9 +208,9 @@ namespace TreasurersApp.Controllers
             var returnResult = new ContributionTypeActionResult(false, new List<string>(), null);
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    if (db.ContributionTypes.Any(x => x.ContributionTypeID == id) == false)
+                    if (db.ContributionType.Any(x => x.ContributionTypeId == id) == false)
                     {
                         returnResult.Success = false;
                         returnResult.StatusMessages.Add(string.Format("Unable to locate contribution type for id: {0}", id));
@@ -219,7 +218,7 @@ namespace TreasurersApp.Controllers
                     }
                     else
                     {
-                        var resultContributionType = db.ContributionTypes.Single(x => x.ContributionTypeID == id);
+                        var resultContributionType = db.ContributionType.Single(x => x.ContributionTypeId == id);
                         db.Remove(resultContributionType);
                         db.SaveChanges();
                         returnResult.Success = true;

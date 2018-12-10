@@ -32,11 +32,11 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    if (db.Reports.Count() > 0)
+                    if (db.Report.Count() > 0)
                     {
-                        list = db.Reports.Where(r => r.Active).OrderBy(r => r.DisplayOrder).ToList();
+                        list = db.Report.Where(r => r.Active ?? false).OrderBy(r => r.DisplayOrder).ToList();
                         ret = StatusCode(StatusCodes.Status200OK, list);
                     }
                     else
@@ -61,9 +61,9 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    entity = db.Reports.Find(id);
+                    entity = db.Report.Find(id);
                     if (entity != null)
                     {
                         ret = StatusCode(StatusCodes.Status200OK, entity);
@@ -89,9 +89,9 @@ namespace TreasurersApp.Controllers
             ExcelPackage excel = new ExcelPackage();
             excel.Workbook.Worksheets.Add(reportParameters.ReportName);
 
-            using (var db = new TreasurersAppDbContext(DatabasePath))
+            using (var db = new BTAContext())
             {
-                var rpt = db.Reports.SingleOrDefault(x => x.Name == reportParameters.ReportName);
+                var rpt = db.Report.SingleOrDefault(x => x.Name == reportParameters.ReportName);
                 if (rpt == null)
                 {
                     throw new ArgumentException("An invalid report name was passed", "Report Name");

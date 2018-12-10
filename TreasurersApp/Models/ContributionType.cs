@@ -1,27 +1,25 @@
-using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
 namespace TreasurersApp.Models
 {
-    [Table("ContributionType", Schema = "dbo")]
     public partial class ContributionType
     {
-        [Key]
+        public ContributionType()
+        {
+            CashJournal = new HashSet<CashJournal>();
+        }
+
         [JsonProperty("id")]
-        public int ContributionTypeID { get; set; }
+        public int ContributionTypeId { get; set; }
 
-        [Required()]
         [JsonProperty("contributionCategoryId")]
-        public int CategoryID { get; set; }
+        public int CategoryId { get; set; }
 
-        [Required()]
-        [StringLength(100)]
         [JsonProperty("contributionTypeName")]
         public string ContributionTypeName { get; set; }
 
-        [Required()]
-        [StringLength(100)]
         [JsonProperty("description")]
         public string Description { get; set; }
 
@@ -29,6 +27,12 @@ namespace TreasurersApp.Models
         public int DisplayOrder { get; set; }
 
         [JsonProperty("active")]
-        public bool Active { get; set; }
+        public bool? Active { get; set; }
+
+        [JsonProperty("category")]
+        public ContributionCategory Category { get; set; }
+
+        [JsonProperty("cashJournals")]
+        public ICollection<CashJournal> CashJournal { get; set; }
     }
 }

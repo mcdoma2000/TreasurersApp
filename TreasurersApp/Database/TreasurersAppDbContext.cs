@@ -17,9 +17,9 @@ namespace TreasurersApp.Database
             _dbPath = dbPath;
         }
 
-        public DbSet<SecurityUser> Users { get; set; }
-        public DbSet<SecurityUserClaim> UserClaims { get; set; }
-        public DbSet<SecurityClaim> Claims { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<UserClaim> UserClaims { get; set; }
+        public DbSet<Claim> Claims { get; set; }
         public DbSet<CashJournal> CashJournals { get; set; }
         public DbSet<Report> Reports { get; set; }
         public DbSet<Contributor> Contributors { get; set; }

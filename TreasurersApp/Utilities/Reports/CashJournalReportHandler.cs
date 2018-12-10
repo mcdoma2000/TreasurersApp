@@ -11,13 +11,13 @@ namespace TreasurersApp.Utilities.Reports
         {
             var workSheet = excel.Workbook.Worksheets[reportParameters.ReportName];
             workSheet.Cells[1, 1].Value = "I have successfully processed the report!";
-            TreasurersAppDbContext dc = (TreasurersAppDbContext)db;
-            var reports = dc.Reports;
+            BTAContext dc = (BTAContext)db;
+            var reports = dc.Report;
             int whichRow = 2;
             foreach (var rpt in reports)
             {
                 string cellContents = string.Format("ID: {0} | Name: {1} | Display Name: {2} | Active: {3} | Display Order: {4}",
-                    rpt.Id, rpt.Name, rpt.DisplayName, rpt.Active, rpt.DisplayOrder);
+                    rpt.ReportId, rpt.Name, rpt.DisplayName, rpt.Active, rpt.DisplayOrder);
                 workSheet.Cells[whichRow, 1].Value = cellContents;
                 whichRow++;
             }

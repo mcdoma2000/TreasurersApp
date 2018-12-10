@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+//import { tap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { AppUserAuth } from './app-user-auth';
 import { AppUser } from './app-user';
 
-//const API_URL = 'http://localhost:55000/api/security/';
-const API_URL = '/api/security/';
+const API_URL = '/api/security/login';
 
 const httpOptions = {
   headers: new HttpHeaders({
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
   })
 };
 
@@ -25,17 +25,33 @@ export class SecurityService {
     // Initialize security object
     this.resetSecurityObject();
 
-    return this.http.post<AppUserAuth>(API_URL + 'login',
-      entity, httpOptions).pipe(
-        tap(resp => {
-          // Use object assign to update the current object
-          // NOTE: Don't create a new AppUserAuth object
-          //       because that destroys all references to object
-          Object.assign(this.securityObject, resp);
-          // Store into local storage
-          localStorage.setItem('bearerToken',
-            this.securityObject.bearerToken);
-        }));
+    this.http.post<AppUserAuth>(API_URL, entity, httpOptions).subscribe(
+      (resp) => {
+        // Use object assign to update the current object
+        // NOTE: Don't create a new AppUserAuth object
+        //       because that destroys all references to the object
+        Object.assign(this.securityObject, resp);
+        // Store into local storage
+        localStorage.setItem('bearerToken', this.securityObject.bearerToken);
+      },
+      (err) => {
+        console.log(JSON.stringify(err));
+        this.resetSecurityObject();
+      }
+    );
+    return of(this.securityObject);
+
+    //return this.http.post<AppUserAuth>(API_URL + 'login',
+    //  entity, httpOptions).pipe(
+    //    tap(resp => {
+    //      // Use object assign to update the current object
+    //      // NOTE: Don't create a new AppUserAuth object
+    //      //       because that destroys all references to object
+    //      Object.assign(this.securityObject, resp);
+    //      // Store into local storage
+    //      localStorage.setItem('bearerToken',
+    //        this.securityObject.bearerToken);
+    //    }));
   }
 
   logout(): void {
@@ -82,6 +98,8 @@ export class SecurityService {
   private isClaimValid(claimType: string, claimValue?: string): boolean {
     let ret = false;
     let auth: AppUserAuth = null;
+    let clmType: string = null;
+    let clmVal: string = null;
 
     // Retrieve security object
     auth = this.securityObject;
@@ -90,17 +108,18 @@ export class SecurityService {
       // *hasClaim="'claimType:value'"
       if (claimType.indexOf(':') >= 0) {
         const words: string[] = claimType.split(':');
-        claimType = words[0].toLowerCase();
-        claimValue = words[1];
+        clmType = words[0].toLowerCase();
+        clmVal = words[1];
       } else {
-        claimType = claimType.toLowerCase();
+        clmType = claimType.toLowerCase();
         // Either get the claim value, or assume 'true'
-        claimValue = claimValue ? claimValue : 'true';
+        clmVal = claimValue ? claimValue : 'true';
       }
       // Attempt to find the claim
-      ret = auth.claims.find(c =>
-        c.claimType.toLowerCase() === claimType &&
-        c.claimValue === claimValue) != null;
+      ret = auth.claims.find(function (c) {
+        console.log(c);
+        return c.claimType.toLowerCase() === clmType && c.claimValue === clmVal;
+      }) != null;
     }
 
     return ret;

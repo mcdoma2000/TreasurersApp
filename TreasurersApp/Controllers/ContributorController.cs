@@ -29,11 +29,11 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    if (db.Contributors.Count() > 0)
+                    if (db.Contributor.Count() > 0)
                     {
-                        list = db.Contributors
+                        list = db.Contributor
                             .OrderBy(r => r.LastName)
                             .ThenBy(r => r.FirstName)
                             .ThenBy(r => r.MiddleName)
@@ -42,13 +42,13 @@ namespace TreasurersApp.Controllers
                     }
                     else
                     {
-                        ret = StatusCode(StatusCodes.Status404NotFound, "Can't Find Contributors");
+                        ret = StatusCode(StatusCodes.Status404NotFound, "Can't Find Contributor");
                     }
                 }
             }
             catch (Exception ex)
             {
-                ret = HandleException(ex, "Exception trying to get all Contributors");
+                ret = HandleException(ex, "Exception trying to get all Contributor");
             }
 
             return ret;
@@ -62,9 +62,9 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    entity = db.Contributors.Find(id);
+                    entity = db.Contributor.Find(id);
                     if (entity != null)
                     {
                         ret = StatusCode(StatusCodes.Status200OK, entity);
@@ -92,9 +92,9 @@ namespace TreasurersApp.Controllers
             {
                 try
                 {
-                    using (var db = new TreasurersAppDbContext(DatabasePath))
+                    using (var db = new BTAContext())
                     {
-                        var resultContributionType = db.Contributors.Add(contributor);
+                        var resultContributionType = db.Contributor.Add(contributor);
                         db.SaveChanges();
                         var entity = resultContributionType.Entity;
                         if (entity != null)
@@ -131,9 +131,9 @@ namespace TreasurersApp.Controllers
             {
                 try
                 {
-                    using (var db = new TreasurersAppDbContext(DatabasePath))
+                    using (var db = new BTAContext())
                     {
-                        var resultContributor = db.Contributors.SingleOrDefault(x => x.ContributorID == contributor.ContributorID);
+                        var resultContributor = db.Contributor.SingleOrDefault(x => x.ContributorId == contributor.ContributorId);
                         if (resultContributor != null)
                         {
                             resultContributor.FirstName = contributor.FirstName;
@@ -148,7 +148,7 @@ namespace TreasurersApp.Controllers
                         else
                         {
                             returnResult.Success = false;
-                            returnResult.StatusMessages.Add(string.Format("Unable to locate contributor for id: {0}", contributor.ContributorID));
+                            returnResult.StatusMessages.Add(string.Format("Unable to locate contributor for id: {0}", contributor.ContributorId));
                             returnResult.Data = null;
                         }
                     }

@@ -31,11 +31,11 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    if (db.Addresses.Count() > 0)
+                    if (db.Address.Count() > 0)
                     {
-                        list = db.Addresses
+                        list = db.Address
                             .OrderBy(r => r.State)
                             .ThenBy(r => r.City)
                             .ThenBy(r => r.PostalCode)
@@ -60,9 +60,9 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    entity = db.Addresses.Find(id);
+                    entity = db.Address.Find(id);
                     if (entity != null)
                     {
                         ret = StatusCode(StatusCodes.Status200OK, entity);
@@ -89,7 +89,7 @@ namespace TreasurersApp.Controllers
             var returnResult = new AddressActionResult(false, new List<string>(), null);
             if (address != null)
             {
-                if (address.AddressID > 0)
+                if (address.AddressId > 0)
                 {
                     returnResult.StatusMessages.Add("Attempting to create a new address, but an Id is present.");
                 }
@@ -97,9 +97,9 @@ namespace TreasurersApp.Controllers
                 {
                     try
                     {
-                        using (var db = new TreasurersAppDbContext(DatabasePath))
+                        using (var db = new BTAContext())
                         {
-                            var resultAddress = db.Addresses.Add(address);
+                            var resultAddress = db.Address.Add(address);
                             db.SaveChanges();
                             var entity = resultAddress.Entity;
                             if (entity != null)
@@ -136,7 +136,7 @@ namespace TreasurersApp.Controllers
             var returnResult = new AddressActionResult(false, new List<string>(), null);
             if (address != null)
             {
-                if (address.AddressID <= 0)
+                if (address.AddressId <= 0)
                 {
                     returnResult.StatusMessages.Add("Attempting to update an existing address, but an Id is not present.");
                 }
@@ -144,9 +144,9 @@ namespace TreasurersApp.Controllers
                 {
                     try
                     {
-                        using (var db = new TreasurersAppDbContext(DatabasePath))
+                        using (var db = new BTAContext())
                         {
-                            var resultAddress = db.Addresses.SingleOrDefault(x => x.AddressID == address.AddressID);
+                            var resultAddress = db.Address.SingleOrDefault(x => x.AddressId == address.AddressId);
                             if (resultAddress != null)
                             {
                                 resultAddress.AddressLine1 = address.AddressLine1;
@@ -163,7 +163,7 @@ namespace TreasurersApp.Controllers
                             else
                             {
                                 returnResult.Success = false;
-                                returnResult.StatusMessages.Add(string.Format("Unable to locate address for index: {0}", address.AddressID));
+                                returnResult.StatusMessages.Add(string.Format("Unable to locate address for index: {0}", address.AddressId));
                                 returnResult.Data = null;
                             }
                         }
@@ -194,16 +194,16 @@ namespace TreasurersApp.Controllers
             var returnResult = new AddressActionResult(false, new List<string>(), null);
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    if (db.Addresses.Any(x => x.AddressID == id) == false)
+                    if (db.Address.Any(x => x.AddressId == id) == false)
                     {
                         returnResult.StatusMessages.Add("Attempted to delete a nonexisting address.");
                     }
                     else
                     {
-                        var resultAddress = db.Addresses.Single(x => x.AddressID == id);
-                        db.Addresses.Remove(resultAddress);
+                        var resultAddress = db.Address.Single(x => x.AddressId == id);
+                        db.Address.Remove(resultAddress);
                         db.SaveChanges();
                         returnResult.Success = true;
                         returnResult.Data = resultAddress;

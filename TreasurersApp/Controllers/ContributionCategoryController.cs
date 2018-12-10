@@ -30,13 +30,13 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    if (db.ContributionCategories.Count() > 0)
+                    if (db.ContributionCategory.Count() > 0)
                     {
                         // If includeInactive == true, return all, otherwise return only active records.
-                        list = db.ContributionCategories
-                            .Where(x => x.Active || includeInactive)
+                        list = db.ContributionCategory
+                            .Where(x => (x.Active.HasValue && x.Active.Value) || includeInactive)
                             .OrderBy(p => p.DisplayOrder)
                             .ToList();
                         ret = StatusCode(StatusCodes.Status200OK, list);
@@ -60,9 +60,9 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    entity = db.ContributionCategories.Find(id);
+                    entity = db.ContributionCategory.Find(id);
                     if (entity != null)
                     {
                         ret = StatusCode(StatusCodes.Status200OK, entity);
@@ -86,15 +86,14 @@ namespace TreasurersApp.Controllers
         [HttpPost("post", Name = "ContributionCategoryPost")]
         public IActionResult Post([FromBody]ContributionCategory entity)
         {
-            IActionResult ret = null;
             var result = new ContributionCategoryActionResult(false, new List<string>(), null);
             try
             {
                 if (entity != null)
                 {
-                    using (var db = new TreasurersAppDbContext(DatabasePath))
+                    using (var db = new BTAContext())
                     {
-                        db.ContributionCategories.Add(entity);
+                        db.ContributionCategory.Add(entity);
                         db.SaveChanges();
                         result.Success = true;
                         result.StatusMessages.Add("Successfully added contribution category.");
@@ -122,13 +121,12 @@ namespace TreasurersApp.Controllers
         [HttpPut("put", Name = "ContributionCategoryPut")]
         public IActionResult Put([FromBody]ContributionCategory entity)
         {
-            IActionResult ret = null;
             var result = new ContributionCategoryActionResult(false, new List<string>(), null);
             try
             {
                 if (entity != null)
                 {
-                    using (var db = new TreasurersAppDbContext(DatabasePath))
+                    using (var db = new BTAContext())
                     {
                         db.Update(entity);
                         db.SaveChanges();
@@ -163,16 +161,16 @@ namespace TreasurersApp.Controllers
             var returnResult = new ContributionCategoryActionResult(false, new List<string>(), null);
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    if (db.ContributionCategories.Any(x => x.ContributionCategoryID == id) == false)
+                    if (db.ContributionCategory.Any(x => x.ContributionCategoryId == id) == false)
                     {
                         returnResult.StatusMessages.Add("Attempted to delete a nonexisting contribution category.");
                     }
                     else
                     {
-                        var resultCategory = db.ContributionCategories.Single(x => x.ContributionCategoryID == id);
-                        db.ContributionCategories.Remove(resultCategory);
+                        var resultCategory = db.ContributionCategory.Single(x => x.ContributionCategoryId == id);
+                        db.ContributionCategory.Remove(resultCategory);
                         db.SaveChanges();
                         returnResult.Success = true;
                         returnResult.Data = resultCategory;
