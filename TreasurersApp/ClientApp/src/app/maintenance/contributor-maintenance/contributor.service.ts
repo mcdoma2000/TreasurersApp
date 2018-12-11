@@ -1,8 +1,10 @@
 import { Injectable, OnInit, OnDestroy } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import * as _ from 'lodash';
 
 import { Contributor } from '../../models/Contributor';
+import { ContributorViewModel } from '../../models/ContributorViewModel';
 import { ContributorActionResult } from '../../models/ContributorActionResult';
 
 const API_URL = '/api/contributor';
@@ -32,6 +34,14 @@ export class ContributorService implements OnInit, OnDestroy {
     return new Contributor(0, null, null, null, null);
   }
 
+  newContributorFromViewModel(viewModel: ContributorViewModel): Contributor {
+    return new Contributor(viewModel.id, viewModel.firstName, viewModel.middleName, viewModel.lastName, viewModel.addressId);
+  }
+
+  newViewModel(): ContributorViewModel {
+    return new ContributorViewModel(0, null, null, null, null, null);
+  }
+
   validateContributor(contributor: Contributor): boolean {
     let isValid = false;
     if (contributor) {
@@ -40,16 +50,24 @@ export class ContributorService implements OnInit, OnDestroy {
     return isValid;
   }
 
-  getContributors(): Observable<Contributor[]> {
-    return this.http.get<Contributor[]>(API_URL + '/get');
+  validateContributorViewModel(contributor: ContributorViewModel): boolean {
+    let isValid = false;
+    if (contributor) {
+      isValid = (contributor.firstName !== null && contributor.lastName !== null);
+    }
+    return isValid;
   }
 
-  getContributorById(id: number): Observable<Contributor> {
+  getContributors(): Observable<ContributorViewModel[]> {
+    return this.http.get<ContributorViewModel[]>(API_URL + '/getvm');
+  }
+
+  getContributorById(id: number): Observable<ContributorViewModel> {
     const options = {
       headers: this.defaultHeaders,
       params: new HttpParams().set('id', id.toString())
     };
-    return this.http.get<Contributor>(API_URL + '/getbyid', options);
+    return this.http.get<ContributorViewModel>(API_URL + '/getvmbyid', options);
   }
 
   updateContributor(contributor: Contributor): Observable<ContributorActionResult>  {
@@ -75,7 +93,7 @@ export class ContributorService implements OnInit, OnDestroy {
       errResult.success = false;
       return of(errResult);
     }
-    return this.http.post<ContributorActionResult>(API_URL, contributor, this.defaultOptions);
+    return this.http.post<ContributorActionResult>(API_URL + '/post', contributor, this.defaultOptions);
   }
 
   deleteContributor(id: number): Observable<ContributorActionResult> {
@@ -83,6 +101,6 @@ export class ContributorService implements OnInit, OnDestroy {
       headers: this.defaultHeaders,
       params: new HttpParams().set('id', id.toString())
     };
-    return this.http.delete<ContributorActionResult>(API_URL, options);
+    return this.http.delete<ContributorActionResult>(API_URL + '/delete', options);
   }
 }

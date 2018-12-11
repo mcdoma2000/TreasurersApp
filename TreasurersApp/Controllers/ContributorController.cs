@@ -79,6 +79,82 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
+        [HttpGet("getvm", Name = "ContributorGetVM")]
+        public IActionResult GetVM()
+        {
+            IActionResult ret = null;
+            List<ContributorViewModel> list = new List<ContributorViewModel>();
+
+            try
+            {
+                using (var db = new BTAContext())
+                {
+                    if (db.Contributor.Count() > 0)
+                    {
+                        list = (from cnt in db.Contributor
+                                join adr in db.Address on cnt.AddressId equals adr.AddressId into cntAdr
+                                from cntadr in cntAdr.DefaultIfEmpty()
+                                orderby cnt.LastName, cnt.FirstName, cnt.MiddleName
+                                select new ContributorViewModel()
+                                {
+                                    ContributorId = cnt.ContributorId,
+                                    FirstName = cnt.FirstName,
+                                    MiddleName = cnt.MiddleName,
+                                    LastName = cnt.LastName,
+                                    AddressId = cnt.AddressId,
+                                    AddressText = cntadr != null ?
+                                      string.Format("{0}, {1}, {2} {3}", cntadr.AddressLine1, cntadr.City, cntadr.State, cntadr.PostalCode) : null
+                                }).ToList();
+                    }
+                    ret = StatusCode(StatusCodes.Status200OK, list);
+                }
+            }
+            catch (Exception ex)
+            {
+                ret = HandleException(ex, "Exception trying to get all Contributor");
+            }
+
+            return ret;
+        }
+
+        [HttpGet("getvmbyid/{id}", Name = "ContributorGetVMById")]
+        public IActionResult GetVM(int id)
+        {
+            IActionResult ret = null;
+            Contributor entity = null;
+            ContributorViewModel viewModel = null;
+
+            try
+            {
+                using (var db = new BTAContext())
+                {
+                    entity = db.Contributor.SingleOrDefault(x => x.ContributorId == id);
+                    if (entity != null)
+                    {
+                        viewModel = new ContributorViewModel(entity);
+                        var entityAddress = db.Address.SingleOrDefault(x => x.AddressId == entity.AddressId);
+                        if (entityAddress != null)
+                        {
+                            viewModel.AddressText =
+                                string.Format("{0}, {1}, {2} {3}",
+                                    entityAddress.AddressLine1, entityAddress.City, entityAddress.State, entityAddress.PostalCode);
+                        }
+                        ret = StatusCode(StatusCodes.Status200OK, viewModel);
+                    }
+                    else
+                    {
+                        ret = StatusCode(StatusCodes.Status404NotFound, "Can't Find Contributor: " + id.ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ret = HandleException(ex, "Exception trying to retrieve a single Contributor.");
+            }
+
+            return ret;
+        }
+
         [HttpPost("post", Name = "ContributorPost")]
         public IActionResult Post([FromBody]Contributor contributor)
         {

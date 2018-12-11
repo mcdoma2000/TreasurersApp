@@ -3,6 +3,7 @@ import { Observable, of, Subscription } from 'rxjs';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
 import { Contributor } from '../../models/Contributor';
+import { ContributorViewModel } from '../../models/ContributorViewModel';
 import { ContributorService } from './contributor.service';
 import { ConfirmationMessage } from '../../models/ConfirmationMessage';
 import { DxDataGridComponent } from 'devextreme-angular/ui/data-grid';
@@ -17,11 +18,11 @@ export class ContributorMaintenanceComponent implements OnInit {
   @ViewChild(DxDataGridComponent) dataGrid: DxDataGridComponent;
 
   uiBlocked = false;
-  rowData: Contributor[] = [];
-  foundContributor: Contributor = null;
+  rowData: ContributorViewModel[] = [];
+  foundContributor: ContributorViewModel = null;
   rowIsSelected = false;
-  selectedContributor = new Contributor(0, null, null, null, null);
-  contributorToEdit = new Contributor(0, null, null, null, null);
+  selectedContributor = this.contributorService.newViewModel();
+  contributorToEdit = this.contributorService.newViewModel();
   displayEdit = false;
   displayAdd = false;
 
@@ -36,17 +37,19 @@ export class ContributorMaintenanceComponent implements OnInit {
 
   addContributor() {
     this.displayAdd = true;
-    this.contributorToEdit = this.contributorService.newContributor();
+    this.contributorToEdit = this.contributorService.newViewModel();
   }
 
   deleteContributor() {
-    this.contributorToEdit =
-      new Contributor(this.selectedContributor.id,
-        this.selectedContributor.firstName,
-        this.selectedContributor.middleName,
-        this.selectedContributor.lastName,
-        this.selectedContributor.addressId);
-    this.confirmDelete();
+    this.contributorService.getContributorById(this.selectedContributor.id).subscribe(
+      (resp) => {
+        this.contributorToEdit = resp;
+        this.confirmDelete();
+      },
+      (err) => {
+        console.log(JSON.stringify(err));
+      }
+    );
   }
 
   confirmDelete() {
@@ -197,17 +200,24 @@ export class ContributorMaintenanceComponent implements OnInit {
   }
 
   editContributor() {
-    this.displayEdit = true;
-    this.contributorToEdit =
-      new Contributor(this.selectedContributor.id,
-        this.selectedContributor.firstName,
-        this.selectedContributor.middleName,
-        this.selectedContributor.lastName,
-        this.selectedContributor.addressId);
+    this.contributorService.getContributorById(this.selectedContributor.id).subscribe(
+      (resp) => {
+        this.displayEdit = true;
+        this.contributorToEdit = resp;
+      },
+      (err) => {
+        console.log(JSON.stringify(err));
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Contributor Maintenance: Edit',
+          detail: 'An error occurred while attempting to edit a contributor'
+        });
+      }
+    );
   }
 
   saveAddClick($event) {
-    this.displayEdit = false;
+    this.displayAdd = false;
     if (this.shouldSaveAdd()) {
       this.confirmAdd();
     } else {
@@ -225,14 +235,14 @@ export class ContributorMaintenanceComponent implements OnInit {
   }
 
   private shouldSaveAdd(): boolean {
-    const save = this.contributorService.validateContributor(this.contributorToEdit);
+    const save = this.contributorService.validateContributorViewModel(this.contributorToEdit);
     return save;
   }
 
   private shouldSaveEdit(): boolean {
     let save = false;
     if (this.selectedContributor.id &&
-        this.contributorService.validateContributor(this.selectedContributor) &&
+        this.contributorService.validateContributorViewModel(this.selectedContributor) &&
        (this.selectedContributor.firstName !== this.contributorToEdit.firstName ||
         this.selectedContributor.lastName !== this.contributorToEdit.lastName ||
         this.selectedContributor.middleName !== this.contributorToEdit.middleName ||
@@ -245,23 +255,22 @@ export class ContributorMaintenanceComponent implements OnInit {
   cancelEditClick($event) {
     console.log('Cancel Edit was clicked');
     this.displayEdit = false;
-    this.contributorToEdit = this.contributorService.newContributor();
+    this.contributorToEdit = this.contributorService.newViewModel();
   }
 
   cancelAddClick($event) {
     console.log('Cancel Add was clicked');
     this.displayAdd = false;
-    this.contributorToEdit = this.contributorService.newContributor();
+    this.contributorToEdit = this.contributorService.newViewModel();
   }
 
   onRowClick(e) {
-    this.selectedContributor =
-      new Contributor(e.data.id, e.data.ContributorName, e.data.description, e.data.displayOrder, e.data.active);
+    this.selectedContributor = e.data;
     this.rowIsSelected = true;
   }
 
   validateContributor(contrib: Contributor): boolean {
-    return this.contributorService.validateContributor(contrib);
+    return this.contributorService.validateContributorViewModel(contrib);
   }
 
   getContributorById(id: number): Observable<Contributor> {

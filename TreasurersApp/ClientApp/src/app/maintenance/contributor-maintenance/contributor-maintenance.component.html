@@ -46,7 +46,7 @@
         <dxi-column dataField="firstName" caption="First Name"></dxi-column>
         <dxi-column dataField="middleName" caption="Middle Name"></dxi-column>
         <dxi-column dataField="lastName" caption="Last Name"></dxi-column>
-        <dxi-column dataField="addressId" caption="Address ID"></dxi-column>
+        <dxi-column dataField="addressText" caption="Address"></dxi-column>
       </dx-data-grid>
     </div>
   </div>
@@ -75,7 +75,7 @@
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Address ID</div>
       <div class="col-md-9">
-        <p-checkbox [(ngModel)]="contributorToEdit.addressId"></p-checkbox>
+        <input type="text" pInputText [(ngModel)]="contributorToEdit.addressId" required />
       </div>
     </div>
     <p-footer>

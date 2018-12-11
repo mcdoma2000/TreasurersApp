@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TreasurersApp.Models
 {
-    public partial class ContributionTypeViewModel
+    public class ContributionTypeViewModel
     {
         [JsonProperty("id")]
         public int ContributionTypeID { get; set; }

@@ -22,6 +22,7 @@
     "@angular/router": "^6.1.0",
     "@ng-bootstrap/ng-bootstrap": "^3.2.2",
     "@types/jquery": "^3.3.22",
+    "@types/lodash": "^4.14.119",
     "@types/moment": "^2.13.0",
     "ag-grid": "^18.1.2",
     "ag-grid-angular": "^19.1.1",

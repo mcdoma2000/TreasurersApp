@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace TreasurersApp.Models
 {
-    public partial class ClaimViewModel
+    public class ClaimViewModel
     {
         [JsonProperty("id")]
         public Guid ClaimId { get; set; }
