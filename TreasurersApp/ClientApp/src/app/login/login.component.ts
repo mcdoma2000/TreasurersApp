@@ -55,6 +55,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.uiBlocked = true;
     this.securitySub = this.securityService.login(this.user)
       .subscribe(resp => {
+        console.log(JSON.stringify(resp));
         this.loggedInEmitter.emit(null);
         this.securityObject = resp;
         if (this.returnUrl) {
@@ -65,7 +66,8 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.router.navigateByUrl('/dashboard');
         }
       },
-      () => {
+      (err) => {
+        console.log(JSON.stringify(err));
         // Initialize security object to display error message
         this.uiBlocked = false;
         this.securityObject = new AppUserAuth();

@@ -1,33 +1,32 @@
-using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
 namespace TreasurersApp.Models
 {
-    [Table("Contributor", Schema = "dbo")]
     public partial class Contributor
     {
-        [Key]
-        [JsonProperty("id")]
-        public int ContributorID { get; set; }
+        public Contributor()
+        {
+            CashJournal = new HashSet<CashJournal>();
+        }
 
-        [Required()]
-        [StringLength(100)]
+        [JsonProperty("id")]
+        public int ContributorId { get; set; }
+
         [JsonProperty("firstName")]
         public string FirstName { get; set; }
 
-        [StringLength(100)]
         [JsonProperty("middleName")]
         public string MiddleName { get; set; }
 
-        [Required()]
-        [StringLength(100)]
         [JsonProperty("lastName")]
         public string LastName { get; set; }
 
-        [Required()]
         [JsonProperty("addressId")]
         public int? AddressId { get; set; }
 
+        [JsonProperty("contributions")]
+        public ICollection<CashJournal> CashJournal { get; set; }
     }
 }

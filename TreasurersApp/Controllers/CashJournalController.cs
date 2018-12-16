@@ -30,11 +30,11 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    if (db.CashJournals.Count() > 0)
+                    if (db.CashJournal.Count() > 0)
                     {
-                        list = db.CashJournals.OrderBy(p => p.CreatedDate).ToList();
+                        list = db.CashJournal.OrderBy(p => p.CreatedDate).ToList();
                         ret = StatusCode(StatusCodes.Status200OK, list);
                     }
                     else
@@ -59,9 +59,9 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    entity = db.CashJournals.Find(id);
+                    entity = db.CashJournal.Find(id);
                     if (entity != null)
                     {
                         ret = StatusCode(StatusCodes.Status200OK, entity);
@@ -91,9 +91,9 @@ namespace TreasurersApp.Controllers
             {
                 if (entity != null)
                 {
-                    using (var db = new TreasurersAppDbContext(DatabasePath))
+                    using (var db = new BTAContext())
                     {
-                        db.CashJournals.Add(entity);
+                        db.CashJournal.Add(entity);
                         db.SaveChanges();
                         ret = StatusCode(StatusCodes.Status201Created, entity);
                     }
@@ -120,7 +120,7 @@ namespace TreasurersApp.Controllers
             {
                 if (entity != null)
                 {
-                    using (var db = new TreasurersAppDbContext(DatabasePath))
+                    using (var db = new BTAContext())
                     {
                         db.Update(entity);
                         db.SaveChanges();
@@ -134,7 +134,7 @@ namespace TreasurersApp.Controllers
             }
             catch (Exception ex)
             {
-                ret = HandleException(ex, "Exception trying to update cash journal entry: " + entity.CashJournalID.ToString());
+                ret = HandleException(ex, "Exception trying to update cash journal entry: " + entity.CashJournalId.ToString());
             }
 
             return ret;

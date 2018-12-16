@@ -30,9 +30,9 @@ namespace TreasurersApp.Controllers
             ExcelPackage excel = new ExcelPackage();
             excel.Workbook.Worksheets.Add(reportParms.ReportName);
 
-            using (var db = new TreasurersAppDbContext(DatabasePath))
+            using (var db = new BTAContext())
             {
-                var rpt = db.Reports.SingleOrDefault(x => x.Name == reportParms.ReportName);
+                var rpt = db.Report.SingleOrDefault(x => x.Name == reportParms.ReportName);
                 if (rpt == null)
                 {
                     throw new ArgumentException("An invalid report name was passed", "Report Name");

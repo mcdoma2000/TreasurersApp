@@ -30,19 +30,19 @@ namespace TreasurersApp.Controllers
             List<SecurityUserEdit> users = new List<SecurityUserEdit>();
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    users = db.Users.Select(x => new SecurityUserEdit()
+                    users = db.User.Select(x => new SecurityUserEdit()
                     {
-                        UserID = x.UserID,
+                        UserID = x.UserId,
                         UserName = x.UserName,
                         DisplayName = x.DisplayName,
                         Password = x.Password
                     }).ToList();
                     foreach (var u in users)
                     {
-                        var userClaims = db.UserClaims.Where(x => x.UserID == u.UserID).Select(x => x.ClaimID).ToList();
-                        u.Claims = db.Claims.Where(x => userClaims.Contains(x.ClaimID)).ToList();
+                        var userClaims = db.UserClaim.Where(x => x.UserId == u.UserID).ToList();
+                        u.Claims = userClaims.Select(x => x.Claim).ToList();
                     }
                     results = StatusCode(StatusCodes.Status200OK, users);
                 }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Memory;
 using TreasurersApp.Database;
+using Newtonsoft.Json;
 
 namespace TreasurersApp.Controllers
 {
@@ -22,7 +23,7 @@ namespace TreasurersApp.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody]SecurityUser user)
+        public IActionResult Login([FromBody]User user)
         {
             IActionResult ret = null;
             SecurityUserAuth auth = new SecurityUserAuth();
@@ -35,8 +36,7 @@ namespace TreasurersApp.Controllers
             }
             else
             {
-                ret = StatusCode(StatusCodes.Status404NotFound,
-                                 "Invalid User Name/Password.");
+                ret = StatusCode(StatusCodes.Status404NotFound, "Invalid User Name/Password.");
             }
 
             return ret;

@@ -29,32 +29,28 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    if (db.Contributors.Count() > 0)
+                    if (db.Contributor.Count() > 0)
                     {
-                        list = db.Contributors
+                        list = db.Contributor
                             .OrderBy(r => r.LastName)
                             .ThenBy(r => r.FirstName)
                             .ThenBy(r => r.MiddleName)
                             .ToList();
-                        ret = StatusCode(StatusCodes.Status200OK, list);
                     }
-                    else
-                    {
-                        ret = StatusCode(StatusCodes.Status404NotFound, "Can't Find Contributors");
-                    }
+                    ret = StatusCode(StatusCodes.Status200OK, list);
                 }
             }
             catch (Exception ex)
             {
-                ret = HandleException(ex, "Exception trying to get all Contributors");
+                ret = HandleException(ex, "Exception trying to get all Contributor");
             }
 
             return ret;
         }
 
-        [HttpGet("getbyid", Name = "ContributorGetById")]
+        [HttpGet("getbyid/{id}", Name = "ContributorGetById")]
         public IActionResult Get(int id)
         {
             IActionResult ret = null;
@@ -62,17 +58,92 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    entity = db.Contributors.Find(id);
+                    entity = db.Contributor.Find(id);
                     if (entity != null)
                     {
                         ret = StatusCode(StatusCodes.Status200OK, entity);
                     }
                     else
                     {
-                        ret = StatusCode(StatusCodes.Status404NotFound,
-                                        "Can't Find Contributor: " + id.ToString());
+                        ret = StatusCode(StatusCodes.Status404NotFound, "Can't Find Contributor: " + id.ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ret = HandleException(ex, "Exception trying to retrieve a single Contributor.");
+            }
+
+            return ret;
+        }
+
+        [HttpGet("getvm", Name = "ContributorGetVM")]
+        public IActionResult GetVM()
+        {
+            IActionResult ret = null;
+            List<ContributorViewModel> list = new List<ContributorViewModel>();
+
+            try
+            {
+                using (var db = new BTAContext())
+                {
+                    if (db.Contributor.Count() > 0)
+                    {
+                        list = (from cnt in db.Contributor
+                                join adr in db.Address on cnt.AddressId equals adr.AddressId into cntAdr
+                                from cntadr in cntAdr.DefaultIfEmpty()
+                                orderby cnt.LastName, cnt.FirstName, cnt.MiddleName
+                                select new ContributorViewModel()
+                                {
+                                    ContributorId = cnt.ContributorId,
+                                    FirstName = cnt.FirstName,
+                                    MiddleName = cnt.MiddleName,
+                                    LastName = cnt.LastName,
+                                    AddressId = cnt.AddressId,
+                                    AddressText = cntadr != null ?
+                                      string.Format("{0}, {1}, {2} {3}", cntadr.AddressLine1, cntadr.City, cntadr.State, cntadr.PostalCode) : null
+                                }).ToList();
+                    }
+                    ret = StatusCode(StatusCodes.Status200OK, list);
+                }
+            }
+            catch (Exception ex)
+            {
+                ret = HandleException(ex, "Exception trying to get all Contributor");
+            }
+
+            return ret;
+        }
+
+        [HttpGet("getvmbyid/{id}", Name = "ContributorGetVMById")]
+        public IActionResult GetVM(int id)
+        {
+            IActionResult ret = null;
+            Contributor entity = null;
+            ContributorViewModel viewModel = null;
+
+            try
+            {
+                using (var db = new BTAContext())
+                {
+                    entity = db.Contributor.SingleOrDefault(x => x.ContributorId == id);
+                    if (entity != null)
+                    {
+                        viewModel = new ContributorViewModel(entity);
+                        var entityAddress = db.Address.SingleOrDefault(x => x.AddressId == entity.AddressId);
+                        if (entityAddress != null)
+                        {
+                            viewModel.AddressText =
+                                string.Format("{0}, {1}, {2} {3}",
+                                    entityAddress.AddressLine1, entityAddress.City, entityAddress.State, entityAddress.PostalCode);
+                        }
+                        ret = StatusCode(StatusCodes.Status200OK, viewModel);
+                    }
+                    else
+                    {
+                        ret = StatusCode(StatusCodes.Status404NotFound, "Can't Find Contributor: " + id.ToString());
                     }
                 }
             }
@@ -92,9 +163,9 @@ namespace TreasurersApp.Controllers
             {
                 try
                 {
-                    using (var db = new TreasurersAppDbContext(DatabasePath))
+                    using (var db = new BTAContext())
                     {
-                        var resultContributionType = db.Contributors.Add(contributor);
+                        var resultContributionType = db.Contributor.Add(contributor);
                         db.SaveChanges();
                         var entity = resultContributionType.Entity;
                         if (entity != null)
@@ -103,24 +174,30 @@ namespace TreasurersApp.Controllers
                             returnResult.StatusMessages.Add("Successfully added contributor.");
                             returnResult.Data = entity;
                         }
+                        else
+                        {
+                            returnResult.Success = false;
+                            returnResult.StatusMessages.Add("Failed to add contributor.");
+                            returnResult.Data = entity;
+                        }
                     }
                 }
                 catch (Exception e)
                 {
+                    string errMsg = "An exception occurred while attempting to add a contributor.";
+                    Logger.LogError(e, errMsg);
                     returnResult.Success = false;
-                    returnResult.StatusMessages.Add(e.Message);
+                    returnResult.StatusMessages.Add(errMsg);
                     returnResult.Data = null;
                 }
             }
             else
             {
                 returnResult.Success = false;
-                returnResult.StatusMessages.Add("Empty contributyor posted for add.");
+                returnResult.StatusMessages.Add("Empty contributor posted for add.");
                 returnResult.Data = null;
             }
-            return returnResult.Success ?
-                StatusCode(StatusCodes.Status200OK, returnResult) :
-                StatusCode(StatusCodes.Status500InternalServerError, returnResult);
+            return StatusCode(StatusCodes.Status200OK, returnResult);
         }
 
         [HttpPut("put", Name = "ContributorPut")]
@@ -131,9 +208,9 @@ namespace TreasurersApp.Controllers
             {
                 try
                 {
-                    using (var db = new TreasurersAppDbContext(DatabasePath))
+                    using (var db = new BTAContext())
                     {
-                        var resultContributor = db.Contributors.SingleOrDefault(x => x.ContributorID == contributor.ContributorID);
+                        var resultContributor = db.Contributor.SingleOrDefault(x => x.ContributorId == contributor.ContributorId);
                         if (resultContributor != null)
                         {
                             resultContributor.FirstName = contributor.FirstName;
@@ -147,16 +224,20 @@ namespace TreasurersApp.Controllers
                         }
                         else
                         {
+                            string errMsg = string.Format("Unable to locate contributor for id: {0}", contributor.ContributorId);
+                            Logger.LogError(errMsg, null);
                             returnResult.Success = false;
-                            returnResult.StatusMessages.Add(string.Format("Unable to locate contributor for id: {0}", contributor.ContributorID));
+                            returnResult.StatusMessages.Add(errMsg);
                             returnResult.Data = null;
                         }
                     }
                 }
                 catch (Exception e)
                 {
+                    string excMsg = "An exception occurred while attempting to update a contributor.";
+                    Logger.LogError(e, excMsg);
                     returnResult.Success = false;
-                    returnResult.StatusMessages.Add(e.Message);
+                    returnResult.StatusMessages.Add(excMsg);
                     returnResult.Data = null;
                 }
             }
@@ -166,9 +247,7 @@ namespace TreasurersApp.Controllers
                 returnResult.StatusMessages.Add("Empty contributor posted for update.");
                 returnResult.Data = null;
             }
-            return returnResult.Success ?
-                StatusCode(StatusCodes.Status200OK, returnResult) :
-                StatusCode(StatusCodes.Status500InternalServerError, returnResult);
+            return StatusCode(StatusCodes.Status200OK, returnResult);
         }
     }
 }

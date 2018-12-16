@@ -1,23 +1,22 @@
-using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
 namespace TreasurersApp.Models
 {
-    [Table("ContributionCategory", Schema = "dbo")]
     public partial class ContributionCategory
     {
-        [Key]
-        [JsonProperty("id")]
-        public int ContributionCategoryID { get; set; }
+        public ContributionCategory()
+        {
+            ContributionType = new HashSet<ContributionType>();
+        }
 
-        [Required()]
-        [StringLength(100)]
+        [JsonProperty("id")]
+        public int ContributionCategoryId { get; set; }
+
         [JsonProperty("contributionCategoryName")]
         public string ContributionCategoryName { get; set; }
 
-        [Required()]
-        [StringLength(100)]
         [JsonProperty("description")]
         public string Description { get; set; }
 
@@ -25,6 +24,9 @@ namespace TreasurersApp.Models
         public int DisplayOrder { get; set; }
 
         [JsonProperty("active")]
-        public bool Active { get; set; }
+        public bool? Active { get; set; }
+
+        [JsonProperty("contributionTypes")]
+        public ICollection<ContributionType> ContributionType { get; set; }
     }
 }
