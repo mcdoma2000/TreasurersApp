@@ -15,25 +15,24 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace TreasurersApp.Controllers
 {
-    [Route("[controller]")]
-    // [Authorize(Policy = "CanAccessReports")]
-
+    [Route("api/[controller]")]
     public class ReportDownloadController : BaseController
     {
-        public ReportDownloadController(IConfiguration config, ILogger<ReportDownloadController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
+        public ReportDownloadController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache)
             : base(config, logger, env, memoryCache)
         {
         }
 
-        [HttpPost("report", Name = "DownloadReport", Order = 1)]
+        [HttpPost("report", Name = "ReportDownload", Order = 1)]
         public IActionResult ReportView([FromForm]string reportParameters)
         {
             ReportParameters reportParms = JsonConvert.DeserializeObject<ReportParameters>(reportParameters);
             ExcelPackage excel = new ExcelPackage();
             excel.Workbook.Worksheets.Add(reportParms.ReportName);
-            using (var db = new TreasurersAppDbContext(DatabasePath))
+
+            using (var db = new BTAContext())
             {
-                var rpt = db.Reports.SingleOrDefault(x => x.Name == reportParms.ReportName);
+                var rpt = db.Report.SingleOrDefault(x => x.Name == reportParms.ReportName);
                 if (rpt == null)
                 {
                     throw new ArgumentException("An invalid report name was passed", "Report Name");

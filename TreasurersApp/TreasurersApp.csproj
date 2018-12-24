@@ -13,12 +13,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DevExtreme.Web" Version="18.2.3" />
     <PackageReference Include="EPPlus" Version="4.5.2.1" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
     <PackageReference Include="Node.js" Version="5.3.0" />
   </ItemGroup>
 
@@ -29,7 +31,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\Content\Database\" />
+    <Reference Include="System">
+      <HintPath>System</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <HintPath>System.ComponentModel.DataAnnotations</HintPath>
+    </Reference>
+    <Reference Include="System.Data">
+      <HintPath>System.Data</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

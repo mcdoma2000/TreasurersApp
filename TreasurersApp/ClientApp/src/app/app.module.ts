@@ -17,9 +17,12 @@ import { BlockUIModule } from 'primeng/blockui';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-import { AgGridModule } from 'ag-grid-angular';
+import { DataTableModule } from 'primeng/datatable';
+import { DropdownModule } from 'primeng/dropdown';
+import { CheckboxModule } from 'primeng/checkbox';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations/';
 
+import { DxDataGridModule } from 'devextreme-angular/ui/data-grid';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CashJournalComponent } from './cashjournal/cash-journal.component';
@@ -40,6 +43,8 @@ import { ReportReceiptsByGregorianYearComponent } from './reports/rrbgy/report-r
 import { StandardReportFormComponent } from './standard-report-form/standard-report-form.component';
 import { AddressMaintenanceComponent } from './maintenance/address-maintenance/address-maintenance.component';
 import { ContributorMaintenanceComponent } from './maintenance/contributor-maintenance/contributor-maintenance.component';
+import { ContributionTypeMaintenanceComponent } from './maintenance/contribution-type-maintenance/contribution-type-maintenance.component';
+import { ContributionCategoryMaintenanceComponent } from './maintenance/contribution-category-maintenance/contribution-category-maintenance.component';
 
 @NgModule({
   declarations: [
@@ -59,6 +64,8 @@ import { ContributorMaintenanceComponent } from './maintenance/contributor-maint
     StandardReportFormComponent,
     AddressMaintenanceComponent,
     ContributorMaintenanceComponent,
+    ContributionTypeMaintenanceComponent,
+    ContributionCategoryMaintenanceComponent,
   ],
   imports: [
     BrowserModule,
@@ -68,6 +75,7 @@ import { ContributorMaintenanceComponent } from './maintenance/contributor-maint
     HttpClientModule,
     HttpInterceptorModule,
     CalendarModule,
+    ButtonModule,
     MultiSelectModule,
     MenubarModule,
     InputMaskModule,
@@ -75,33 +83,22 @@ import { ContributorMaintenanceComponent } from './maintenance/contributor-maint
     ToastModule,
     DialogModule,
     ConfirmDialogModule,
+    BlockUIModule,
     SliderModule,
     DataViewModule,
     DataGridModule,
-    AgGridModule.withComponents(
-      [
-        MaintenanceComponent,
-        ContributorMaintenanceComponent,
-        AddressMaintenanceComponent
-      ]),
+    DataTableModule,
+    DxDataGridModule,
+    DropdownModule,
+    CheckboxModule,
     BrowserAnimationsModule
   ],
   providers: [
     SecurityService,
     AuthGuard,
     LoginComponent,
-    CalendarModule,
-    MultiSelectModule,
-    MenubarModule,
-    InputMaskModule,
-    SliderModule,
-    ButtonModule,
-    BlockUIModule,
-    ConfirmDialogModule,
     ConfirmationService,
     MessageService,
-    DataViewModule,
-    DataGridModule,
     BrowserAnimationsModule
   ],
   bootstrap: [AppComponent]

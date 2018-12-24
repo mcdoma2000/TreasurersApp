@@ -1,0 +1,5 @@
+Work:
+Server=(localdb)\MSSQLLocalDB;Database=BTA;AttachDbFilename=F:\R_D\mcdoma2000\TreasurersApp\TreasurersApp\wwwroot\Content\Database\BTA.mdf;MultipleActiveResultSets=true
+
+Home:
+Server=(localdb)\MSSQLLocalDB;Database=BTA;AttachDbFilename=H:\Source\Repos\TreasurersApp\TreasurersApp\wwwroot\Content\Database\BTA.mdf;MultipleActiveResultSets=true

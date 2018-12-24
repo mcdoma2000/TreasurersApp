@@ -21,35 +21,27 @@ namespace TreasurersApp.Controllers
         public AddressController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
             : base(config, logger, env, memoryCache)
         {
-
         }
 
-        [HttpGet()]
-#if RELEASE
-        [Authorize(Policy = "CanAccessAddresses")]
-#endif
+        [HttpGet("get", Name = "AddressGet")]
         public IActionResult Get()
         {
             IActionResult ret = null;
-            List<AppAddress> list = new List<AppAddress>();
+            List<Address> list = new List<Address>();
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    if (db.Addresses.Count() > 0)
+                    if (db.Address.Count() > 0)
                     {
-                        list = db.Addresses
+                        list = db.Address
                             .OrderBy(r => r.State)
                             .ThenBy(r => r.City)
                             .ThenBy(r => r.PostalCode)
                             .ToList();
-                        ret = StatusCode(StatusCodes.Status200OK, list);
                     }
-                    else
-                    {
-                        ret = StatusCode(StatusCodes.Status404NotFound, "Can't Find Addresses");
-                    }
+                    ret = StatusCode(StatusCodes.Status200OK, list);
                 }
             }
             catch (Exception ex)
@@ -60,20 +52,17 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
-        [HttpGet("{id}")]
-#if RELEASE
-        [Authorize(Policy = "CanAccessAddresses")]
-#endif
+        [HttpGet("getbyid/{id}", Name = "AddressGetByID")]
         public IActionResult Get(int id)
         {
             IActionResult ret = null;
-            AppAddress entity = null;
+            Address entity = null;
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    entity = db.Addresses.Find(id);
+                    entity = db.Address.Find(id);
                     if (entity != null)
                     {
                         ret = StatusCode(StatusCodes.Status200OK, entity);
@@ -81,7 +70,7 @@ namespace TreasurersApp.Controllers
                     else
                     {
                         ret = StatusCode(StatusCodes.Status404NotFound, 
-                                        "Can't Find Address: " + id.ToString());
+                            "Can't Find Address: " + id.ToString());
                     }
                 }
             }
@@ -93,113 +82,131 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
-        [HttpPost(Name = "AddressPost")]
-#if RELEASE
-        [Authorize(Policy = "CanAccessAddresses")]
-#endif
-        public IActionResult Post([FromBody]AppAddress address)
+        [HttpPost("post", Name = "AddressPost")]
+        public IActionResult Post([FromBody]Address address)
         {
             string json = JsonConvert.SerializeObject(address);
-            var returnResult = new AppAddressActionResult(false, new List<string>(), null);
+            var returnResult = new AddressActionResult(false, new List<string>(), null);
             if (address != null)
             {
-                try
+                if (address.AddressId > 0)
                 {
-                    using (var db = new TreasurersAppDbContext(DatabasePath))
+                    returnResult.StatusMessages.Add("Attempting to create a new address, but an Id is present.");
+                }
+                else
+                {
+                    try
                     {
-                        var resultAddress = db.Addresses.Add(address);
-                        db.SaveChanges();
-                        var entity = resultAddress.Entity;
-                        if (entity != null)
+                        using (var db = new BTAContext())
                         {
-                            returnResult.Success = true;
-                            returnResult.StatusMessages.Add("Successfully added address.");
-                            returnResult.Address = entity;
+                            var resultAddress = db.Address.Add(address);
+                            db.SaveChanges();
+                            var entity = resultAddress.Entity;
+                            if (entity != null)
+                            {
+                                returnResult.Success = true;
+                                returnResult.StatusMessages.Add("Successfully added address.");
+                                returnResult.Data = entity;
+                            }
                         }
                     }
-                }
-                catch (Exception e)
-                {
-                    returnResult.Success = false;
-                    returnResult.StatusMessages.Add(e.Message);
-                    returnResult.Address = null;
+                    catch (Exception e)
+                    {
+                        returnResult.Success = false;
+                        returnResult.StatusMessages.Add(e.Message);
+                        returnResult.Data = null;
+                    }
                 }
             }
             else
             {
                 returnResult.Success = false;
                 returnResult.StatusMessages.Add("Empty address posted for add.");
-                returnResult.Address = null;
+                returnResult.Data = null;
             }
             return returnResult.Success ?
                 StatusCode(StatusCodes.Status200OK, returnResult) :
                 StatusCode(StatusCodes.Status500InternalServerError, returnResult);
         }
 
-        [HttpPut(Name = "AddressPut")]
-#if RELEASE
-        [Authorize(Policy = "CanAccessAddresses")]
-#endif
-        public IActionResult Put([FromBody]AppAddress address)
+        [HttpPut("put", Name = "AddressPut")]
+        public IActionResult Put([FromBody]Address address)
         {
             string json = JsonConvert.SerializeObject(address);
-            var returnResult = new AppAddressActionResult(false, new List<string>(), null);
+            var returnResult = new AddressActionResult(false, new List<string>(), null);
             if (address != null)
             {
-                try
+                if (address.AddressId <= 0)
                 {
-                    using (var db = new TreasurersAppDbContext(DatabasePath))
+                    returnResult.StatusMessages.Add("Attempting to update an existing address, but an Id is not present.");
+                }
+                else
+                {
+                    try
                     {
-                        var resultAddress = db.Addresses.SingleOrDefault(x => x.Id == address.Id);
-                        if (resultAddress != null)
+                        using (var db = new BTAContext())
                         {
-                            resultAddress.AddressLine1 = address.AddressLine1;
-                            resultAddress.AddressLine2 = address.AddressLine2;
-                            resultAddress.AddressLine3 = address.AddressLine3;
-                            resultAddress.City = address.City;
-                            resultAddress.State = address.State;
-                            resultAddress.PostalCode = address.PostalCode;
-                            db.SaveChanges();
-                            returnResult.Success = true;
-                            returnResult.Address = resultAddress;
-                            returnResult.StatusMessages.Add("Successfully updated address.");
+                            var resultAddress = db.Address.SingleOrDefault(x => x.AddressId == address.AddressId);
+                            if (resultAddress != null)
+                            {
+                                resultAddress.AddressLine1 = address.AddressLine1;
+                                resultAddress.AddressLine2 = address.AddressLine2;
+                                resultAddress.AddressLine3 = address.AddressLine3;
+                                resultAddress.City = address.City;
+                                resultAddress.State = address.State;
+                                resultAddress.PostalCode = address.PostalCode;
+                                db.SaveChanges();
+                                returnResult.Success = true;
+                                returnResult.Data = resultAddress;
+                                returnResult.StatusMessages.Add("Successfully updated address.");
+                            }
+                            else
+                            {
+                                returnResult.Success = false;
+                                returnResult.StatusMessages.Add(string.Format("Unable to locate address for index: {0}", address.AddressId));
+                                returnResult.Data = null;
+                            }
                         }
                     }
-                }
-                catch (Exception e)
-                {
-                    returnResult.Success = false;
-                    returnResult.StatusMessages.Add(e.Message);
-                    returnResult.Address = null;
+                    catch (Exception e)
+                    {
+                        returnResult.Success = false;
+                        returnResult.StatusMessages.Add(e.Message);
+                        returnResult.Data = null;
+                    }
                 }
             }
             else
             {
                 returnResult.Success = false;
                 returnResult.StatusMessages.Add("Empty address posted for update.");
-                returnResult.Address = null;
+                returnResult.Data = null;
             }
             return returnResult.Success ?
                 StatusCode(StatusCodes.Status200OK, returnResult) :
                 StatusCode(StatusCodes.Status500InternalServerError, returnResult);
         }
 
-        [HttpDelete(Name = "AddressDelete")]
+        [HttpDelete("delete", Name = "AddressDelete")]
         [Authorize(Policy = "CanPerformAdmin")]
         public IActionResult Delete(int id)
         {
-            var returnResult = new AppAddressActionResult(false, new List<string>(), null);
+            var returnResult = new AddressActionResult(false, new List<string>(), null);
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    var resultAddress = db.Addresses.SingleOrDefault(x => x.Id == id);
-                    if (resultAddress != null)
+                    if (db.Address.Any(x => x.AddressId == id) == false)
                     {
-                        db.Addresses.Remove(resultAddress);
+                        returnResult.StatusMessages.Add("Attempted to delete a nonexisting address.");
+                    }
+                    else
+                    {
+                        var resultAddress = db.Address.Single(x => x.AddressId == id);
+                        db.Address.Remove(resultAddress);
                         db.SaveChanges();
                         returnResult.Success = true;
-                        returnResult.Address = resultAddress;
+                        returnResult.Data = resultAddress;
                         returnResult.StatusMessages.Add("Successfully deleted address.");
                     }
                 }
@@ -208,7 +215,7 @@ namespace TreasurersApp.Controllers
             {
                 returnResult.Success = false;
                 returnResult.StatusMessages.Add(e.Message);
-                returnResult.Address = null;
+                returnResult.Data = null;
             }
             return returnResult.Success ?
                 StatusCode(StatusCodes.Status200OK, returnResult) :

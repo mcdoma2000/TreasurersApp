@@ -1,4 +1,5 @@
-<div class="container" style="max-width: 1000px;">
+<div #addressMaintenance id="address-maintenance" class="container" style="max-width: 1000px;">
+  <!-- <p-blockUI [blocked]="uiBlocked" [target]="addressMaintenance"></p-blockUI> -->
   <div class="row">&nbsp;</div>
   <div class="row">&nbsp;</div>
   <div class="row">
@@ -11,80 +12,89 @@
   <div class="row">&nbsp;</div>
   <div class="row">
     <div class="col-md-2">
-      <button type="button" (click)="addAddress()" class="btn btn-primary">Add Address</button>
+      <button type="button" (click)="addAddress()" class="btn btn-primary" style="width: 100%;">Add</button>
     </div>
     <div class="col-md-2">
-      <button type="button" (click)="editAddress()" [disabled]="rowIsSelected === false" class="btn btn-primary">Edit Address</button>
+      <button type="button" (click)="editAddress()" [disabled]="rowIsSelected === false" class="btn btn-primary" style="width: 100%;">Edit</button>
     </div>
     <div class="col-md-2">
-      <button type="button" (click)="deleteAddress()" [disabled]="rowIsSelected === false" class="btn btn-primary">Delete Address</button>
+      <button type="button" (click)="deleteAddress()" [disabled]="rowIsSelected === false" class="btn btn-primary" style="width: 100%;">Delete</button>
+    </div>
+    <div class="col-md-4">&nbsp;</div>
+    <div class="col-md-2">
+      <button id="refresh-grid-data-button" type="button" (click)="refreshGridData()" class="btn btn-primary">Refresh Grid</button>
     </div>
   </div>
   <div class="row">&nbsp;</div>
   <div class="row">
     <div class="col-md-12">
-      <ag-grid-angular #agGrid
-                       style="width: 900px; height: 500px;"
-                       class="ag-theme-dark"
-                       [enableSorting]="true"
-                       [enableFilter]="true"
-                       [suppressClickEdit]="true"
-                       rowSelection="single"
-                       [enableColResize]="true"
-                       [pagination]="true"
-                       [paginationPageSize]="10"
-                       [rowData]="rowData"
-                       [columnDefs]="columnDefs"
-                       (selectionChanged)="onSelectionChanged($event)"
-                       (gridReady)="onGridReady($event)">
-      </ag-grid-angular>
+      <dx-data-grid
+        #addressGrid
+        [dataSource]="rowData"
+        keyExpr="id"
+        [rowAlternationEnabled]="true"
+        [showBorders]="true"
+        [showColumnLines]="true"
+        [showRowLines]="true"
+        (onRowClick)="onRowClick($event)"
+        >
+        <dxo-selection [mode]="'single'"></dxo-selection>
+        <dxo-paging [enabled]="true" [pageIndex]="0" [pageSize]="20"></dxo-paging>
+        <dxo-pager
+          [visible]="true"
+          [allowedPageSizes]="[10,20,30]"
+          [infoText]="'Page {0} of {1} ({2} Addresses)'"
+          [showInfo]="true"
+          [showPageSizeSelector]="true"
+          [showNavigationButtons]="true"></dxo-pager>
+        <dxi-column dataField="addressLine1" caption="Address"></dxi-column>
+        <!--<dxi-column dataField="addressLine2" caption="Line 2"></dxi-column>
+        <dxi-column dataField="addressLine3" caption="Line 3"></dxi-column>-->
+        <dxi-column dataField="city" caption="City"></dxi-column>
+        <dxi-column dataField="state" caption="State"></dxi-column>
+        <dxi-column dataField="postalCode" caption="Zip"></dxi-column>
+      </dx-data-grid>
     </div>
   </div>
   <div class="row">&nbsp;</div>
   <p-toast></p-toast>
   <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle" width="425"></p-confirmDialog>
-  <p-dialog header="Edit Address" [(visible)]="displayEdit">
-    <div class="row">
-      <div class="col-md-3">Address Line 1</div>
-      <div class="col-md-6">
+  <p-dialog header="Edit Address" [(visible)]="displayEdit" width="600">
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Address</div>
+      <div class="col-md-9">
         <input type="text" pInputText [(ngModel)]="addressToEdit.addressLine1" />
       </div>
-      <div class="col-md-3">&nbsp;</div>
     </div>
-    <div class="row">
+    <!--<div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Address Line 2</div>
-      <div class="col-md-6">
+      <div class="col-md-9">
         <input type="text" pInputText [(ngModel)]="addressToEdit.addressLine2" />
       </div>
-      <div class="col-md-3">&nbsp;</div>
     </div>
-    <div class="row">
+    <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Address Line 3</div>
-      <div class="col-md-6">
+      <div class="col-md-9">
         <input type="text" pInputText [(ngModel)]="addressToEdit.addressLine3" />
       </div>
-      <div class="col-md-3">&nbsp;</div>
-    </div>
-    <div class="row">
+    </div>-->
+    <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">City</div>
-      <div class="col-md-6">
+      <div class="col-md-9">
         <input type="text" pInputText [(ngModel)]="addressToEdit.city" />
       </div>
-      <div class="col-md-3">&nbsp;</div>
     </div>
-    <div class="row">
+    <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">State</div>
-      <div class="col-md-6">
+      <div class="col-md-9">
         <input type="text" pInputText [(ngModel)]="addressToEdit.state" />
       </div>
-      <div class="col-md-3">&nbsp;</div>
     </div>
-    <div class="row">
+    <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Postal Code</div>
-      <div class="col-md-6">
+      <div class="col-md-9">
         <input type="text" pInputText [(ngModel)]="addressToEdit.postalCode" />
       </div>
-      <div class="col-md-3">&nbsp;</div>
     </div>
     <p-footer>
       <div class="row">
@@ -99,48 +109,42 @@
       </div>
     </p-footer>
   </p-dialog>
-  <p-dialog header="Add Address" [(visible)]="displayAdd">
-    <div class="row">
-      <div class="col-md-3">Address Line 1</div>
-      <div class="col-md-6">
-        <input type="text" pInputText [(ngModel)]="addressToEdit.AddressLine1" />
+  <p-dialog header="Add Address" [(visible)]="displayAdd" width="600">
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Address</div>
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="addressToEdit.addressLine1" />
       </div>
-      <div class="col-md-3">&nbsp;</div>
     </div>
-    <div class="row">
+    <!--<div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Address Line 2</div>
-      <div class="col-md-6">
-        <input type="text" pInputText [(ngModel)]="addressToEdit.AddressLine2" />
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="addressToEdit.addressLine2" />
       </div>
-      <div class="col-md-3">&nbsp;</div>
     </div>
-    <div class="row">
+    <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Address Line 3</div>
-      <div class="col-md-6">
-        <input type="text" pInputText [(ngModel)]="addressToEdit.AddressLine3" />
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="addressToEdit.addressLine3" />
       </div>
-      <div class="col-md-3">&nbsp;</div>
-    </div>
-    <div class="row">
+    </div>-->
+    <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">City</div>
-      <div class="col-md-6">
-        <input type="text" pInputText [(ngModel)]="addressToEdit.City" />
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="addressToEdit.city" />
       </div>
-      <div class="col-md-3">&nbsp;</div>
     </div>
-    <div class="row">
+    <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">State</div>
-      <div class="col-md-6">
-        <input type="text" pInputText [(ngModel)]="addressToEdit.State" />
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="addressToEdit.state" />
       </div>
-      <div class="col-md-3">&nbsp;</div>
     </div>
-    <div class="row">
+    <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Postal Code</div>
-      <div class="col-md-6">
-        <input type="text" pInputText [(ngModel)]="addressToEdit.PostalCode" />
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="addressToEdit.postalCode" />
       </div>
-      <div class="col-md-3">&nbsp;</div>
     </div>
     <p-footer>
       <div class="row">

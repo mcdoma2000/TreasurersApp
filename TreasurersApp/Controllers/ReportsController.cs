@@ -16,30 +16,27 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace TreasurersApp.Controllers
 {
-    [Produces("application/json")]
     [Route("api/[controller]")]
-    // [Authorize(Policy = "CanAccessReports")]
     public class ReportsController : BaseController
     {
-        public ReportsController(IConfiguration config, ILogger<ReportsController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
+        public ReportsController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache)
             : base(config, logger, env, memoryCache)
         {
         }
 
-        [HttpGet(Name = "GetReports")]
+        [HttpGet("get", Name = "ReportsGet")]
         public IActionResult Get()
         {
             IActionResult ret = null;
             List<Report> list = new List<Report>();
 
-
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    if (db.Reports.Count() > 0)
+                    if (db.Report.Count() > 0)
                     {
-                        list = db.Reports.Where(r => r.Active).OrderBy(r => r.DisplayOrder).ToList();
+                        list = db.Report.Where(r => r.Active ?? false).OrderBy(r => r.DisplayOrder).ToList();
                         ret = StatusCode(StatusCodes.Status200OK, list);
                     }
                     else
@@ -56,7 +53,7 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
-        [HttpGet("{id}", Name = "GetReport")]
+        [HttpGet("getbyid", Name = "ReportsGetById")]
         public IActionResult Get(int id)
         {
             IActionResult ret = null;
@@ -64,16 +61,16 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    entity = db.Reports.Find(id);
+                    entity = db.Report.Find(id);
                     if (entity != null)
                     {
                         ret = StatusCode(StatusCodes.Status200OK, entity);
                     }
                     else
                     {
-                        ret = StatusCode(StatusCodes.Status404NotFound, 
+                        ret = StatusCode(StatusCodes.Status404NotFound,
                                         "Can't Find Report: " + id.ToString());
                     }
                 }
@@ -86,14 +83,15 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
-        [HttpPost("report", Name = "ExecuteReport")]
+        [HttpPost("execute", Name = "ReportExecute")]
         public IActionResult ExecuteReport([FromBody]ReportParameters reportParameters)
         {
             ExcelPackage excel = new ExcelPackage();
             excel.Workbook.Worksheets.Add(reportParameters.ReportName);
-            using (var db = new TreasurersAppDbContext(DatabasePath))
+
+            using (var db = new BTAContext())
             {
-                var rpt = db.Reports.SingleOrDefault(x => x.Name == reportParameters.ReportName);
+                var rpt = db.Report.SingleOrDefault(x => x.Name == reportParameters.ReportName);
                 if (rpt == null)
                 {
                     throw new ArgumentException("An invalid report name was passed", "Report Name");
@@ -102,6 +100,7 @@ namespace TreasurersApp.Controllers
                 var rptHandler = rptFactory.Create(reportParameters.ReportName);
                 rptHandler.ProcessReport(excel, reportParameters, db);
             }
+
             string fileName = string.Format("{0}_{1:yyyyMMdd_hhmmss}.xlsx", reportParameters.ReportName, DateTime.Now);
             var mstream = new MemoryStream();
             excel.SaveAs(mstream);

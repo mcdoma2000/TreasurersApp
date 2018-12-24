@@ -17,7 +17,7 @@ namespace TreasurersApp.Models
 
         public DateTime EndDate { get; set; }
 
-        public List<AppContributor> Contributors { get; set; }
+        public List<Contributor> Contributors { get; set; }
 
         [Range(2000, 2100, ErrorMessage = "Gregorian Year must be greater than 1999 and less than 2101.")]
         public int GregorianYear { get; set; }

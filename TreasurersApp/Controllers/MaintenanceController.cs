@@ -14,37 +14,38 @@ using TreasurersApp.Models;
 
 namespace TreasurersApp.Controllers
 {
-    [Produces("application/json")]
     [Route("api/[controller]")]
-    [Authorize]
     public class MaintenanceController : BaseController
     {
-        public MaintenanceController(IConfiguration config, ILogger<MaintenanceController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
+        public MaintenanceController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache)
             : base(config, logger, env, memoryCache)
         {
         }
 
-        [HttpGet]
+        [HttpGet("get", Name = "UsersGet")]
         [Authorize(Policy = "CanPerformAdmin")]
-        [Route("users")]
         public IActionResult GetUsers()
         {
             IActionResult results = null;
-            List<AppUserEdit> users = new List<AppUserEdit>();
+            List<SecurityUserEdit> users = new List<SecurityUserEdit>();
             try
             {
-                using (var db = new TreasurersAppDbContext(DatabasePath))
+                using (var db = new BTAContext())
                 {
-                    users = db.Users.Select(x => new AppUserEdit()
+                    users = db.User.Select(x => new SecurityUserEdit()
                     {
-                        Id = x.UserId,
+                        UserID = x.UserId,
                         UserName = x.UserName,
                         DisplayName = x.DisplayName,
-                        Password = x.Password,
-                        UserClaims = db.UserClaims.Where(y => y.UserId == x.UserId).ToList()
+                        Password = x.Password
                     }).ToList();
+                    foreach (var u in users)
+                    {
+                        var userClaims = db.UserClaim.Where(x => x.UserId == u.UserID).ToList();
+                        u.Claims = userClaims.Select(x => x.Claim).ToList();
+                    }
+                    results = StatusCode(StatusCodes.Status200OK, users);
                 }
-                results = StatusCode(StatusCodes.Status200OK, users);
             }
             catch (Exception e)
             {
