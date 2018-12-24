@@ -7,7 +7,13 @@ export class Address {
   state: string = null;
   postalCode: string = null;
 
-  constructor(id: number, addressLine1: string, addressLine2: string, addressLine3: string, city: string, state: string, postalCode: string) {
+  constructor(id: number,
+    addressLine1: string,
+     addressLine2: string,
+     addressLine3: string,
+     city: string,
+     state: string,
+     postalCode: string) {
     this.id = id;
     this.addressLine1 = addressLine1;
     this.addressLine2 = addressLine2;
@@ -15,5 +21,9 @@ export class Address {
     this.city = city;
     this.state = state;
     this.postalCode = postalCode;
+  }
+
+  asAddressString() {
+    return this.addressLine1 + ', ' + this.city + ', ' + this.state + ' ' + this.postalCode;
   }
 }

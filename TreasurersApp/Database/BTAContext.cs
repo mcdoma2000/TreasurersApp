@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TreasurersApp.Models;
 
 namespace TreasurersApp.Database
@@ -21,11 +20,12 @@ namespace TreasurersApp.Database
 
         public virtual DbSet<Address> Address { get; set; }
         public virtual DbSet<CashJournal> CashJournal { get; set; }
-        public virtual DbSet<Claim> Claim { get; set; }
         public virtual DbSet<ContributionCategory> ContributionCategory { get; set; }
         public virtual DbSet<ContributionType> ContributionType { get; set; }
         public virtual DbSet<Contributor> Contributor { get; set; }
         public virtual DbSet<Report> Report { get; set; }
+
+        public virtual DbSet<Claim> Claim { get; set; }
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<UserClaim> UserClaim { get; set; }
 

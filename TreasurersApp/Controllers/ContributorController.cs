@@ -165,9 +165,16 @@ namespace TreasurersApp.Controllers
                 {
                     using (var db = new BTAContext())
                     {
-                        var resultContributionType = db.Contributor.Add(contributor);
+                        var contrib = new Contributor()
+                        {
+                            FirstName = contributor.FirstName,
+                            MiddleName = contributor.MiddleName,
+                            LastName = contributor.LastName,
+                            AddressId = contributor.AddressId
+                        };
+                        var resultContributor = db.Contributor.Add(contrib);
                         db.SaveChanges();
-                        var entity = resultContributionType.Entity;
+                        var entity = resultContributor.Entity;
                         if (entity != null)
                         {
                             returnResult.Success = true;
@@ -220,7 +227,7 @@ namespace TreasurersApp.Controllers
                             db.SaveChanges();
                             returnResult.Success = true;
                             returnResult.Data = resultContributor;
-                            returnResult.StatusMessages.Add("Successfully updated contributor type.");
+                            returnResult.StatusMessages.Add("Successfully updated contributor.");
                         }
                         else
                         {
@@ -245,6 +252,41 @@ namespace TreasurersApp.Controllers
             {
                 returnResult.Success = false;
                 returnResult.StatusMessages.Add("Empty contributor posted for update.");
+                returnResult.Data = null;
+            }
+            return StatusCode(StatusCodes.Status200OK, returnResult);
+        }
+
+        [HttpDelete("delete", Name = "ContributorDelete")]
+        public IActionResult Delete(int id)
+        {
+            var returnResult = new ContributorActionResult(false, new List<string>(), null);
+            try
+            {
+                using (var db = new BTAContext())
+                {
+                    if (db.Contributor.Any(x => x.ContributorId == id) == false)
+                    {
+                        returnResult.Success = false;
+                        returnResult.StatusMessages.Add(string.Format("Unable to locate contributor for id: {0}", id));
+                        returnResult.Data = null;
+                    }
+                    else
+                    {
+                        var resultContributor = db.Contributor.Single(x => x.ContributorId == id);
+                        db.Remove(resultContributor);
+                        db.SaveChanges();
+                        returnResult.Success = true;
+                        returnResult.Data = resultContributor;
+                        returnResult.StatusMessages.Add("Successfully deleted contributor.");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e.ToString());
+                returnResult.Success = false;
+                returnResult.StatusMessages.Add("An exception occurred while attempting to delete the contributor.");
                 returnResult.Data = null;
             }
             return StatusCode(StatusCodes.Status200OK, returnResult);

@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-//import { tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { AppUserAuth } from './app-user-auth';
 import { AppUser } from './app-user';
 
-const API_URL = '/api/security/login';
+const API_URL = '/api/security/';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -25,33 +25,17 @@ export class SecurityService {
     // Initialize security object
     this.resetSecurityObject();
 
-    this.http.post<AppUserAuth>(API_URL, entity, httpOptions).subscribe(
-      (resp) => {
-        // Use object assign to update the current object
-        // NOTE: Don't create a new AppUserAuth object
-        //       because that destroys all references to the object
-        Object.assign(this.securityObject, resp);
-        // Store into local storage
-        localStorage.setItem('bearerToken', this.securityObject.bearerToken);
-      },
-      (err) => {
-        console.log(JSON.stringify(err));
-        this.resetSecurityObject();
-      }
-    );
-    return of(this.securityObject);
-
-    //return this.http.post<AppUserAuth>(API_URL + 'login',
-    //  entity, httpOptions).pipe(
-    //    tap(resp => {
-    //      // Use object assign to update the current object
-    //      // NOTE: Don't create a new AppUserAuth object
-    //      //       because that destroys all references to object
-    //      Object.assign(this.securityObject, resp);
-    //      // Store into local storage
-    //      localStorage.setItem('bearerToken',
-    //        this.securityObject.bearerToken);
-    //    }));
+    return this.http.post<AppUserAuth>(API_URL + 'login',
+     entity, httpOptions).pipe(
+       tap(resp => {
+         // Use object assign to update the current object
+         // NOTE: Don't create a new AppUserAuth object
+         //       because that destroys all references to object
+         Object.assign(this.securityObject, resp);
+         // Store into local storage
+         localStorage.setItem('bearerToken',
+           this.securityObject.bearerToken);
+       }));
   }
 
   logout(): void {

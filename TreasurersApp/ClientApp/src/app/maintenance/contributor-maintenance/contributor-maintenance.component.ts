@@ -1,12 +1,14 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { Observable, of, Subscription } from 'rxjs';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { Observable, of } from 'rxjs';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
 import { Contributor } from '../../models/Contributor';
 import { ContributorViewModel } from '../../models/ContributorViewModel';
 import { ContributorService } from './contributor.service';
+import { AddressService } from '../address-maintenance/address.service';
 import { ConfirmationMessage } from '../../models/ConfirmationMessage';
 import { DxDataGridComponent } from 'devextreme-angular/ui/data-grid';
+import { SelectItem } from 'primeng/api';
 
 @Component({
   selector: 'app-contributor-maintenance',
@@ -18,6 +20,7 @@ export class ContributorMaintenanceComponent implements OnInit {
   @ViewChild(DxDataGridComponent) dataGrid: DxDataGridComponent;
 
   uiBlocked = false;
+  addresses: SelectItem[] = [];
   rowData: ContributorViewModel[] = [];
   foundContributor: ContributorViewModel = null;
   rowIsSelected = false;
@@ -27,12 +30,21 @@ export class ContributorMaintenanceComponent implements OnInit {
   displayAdd = false;
 
   constructor(private contributorService: ContributorService,
+    private addressService: AddressService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService) {
   }
 
   ngOnInit() {
     this.contributorService.getContributors().subscribe(resp => { this.rowData = resp; });
+    this.addressService.getAddresses(true).subscribe(resp => {
+      this.addresses = resp.map(function (address) {
+        return {
+          label: address.addressLine1 + ', ' + address.city + ', ' + address.state + ' ' + address.postalCode,
+          value: address.id
+        };
+      });
+    });
   }
 
   addContributor() {
@@ -40,59 +52,22 @@ export class ContributorMaintenanceComponent implements OnInit {
     this.contributorToEdit = this.contributorService.newViewModel();
   }
 
-  deleteContributor() {
-    this.contributorService.getContributorById(this.selectedContributor.id).subscribe(
-      (resp) => {
-        this.contributorToEdit = resp;
-        this.confirmDelete();
-      },
-      (err) => {
-        console.log(JSON.stringify(err));
-      }
-    );
+  editContributor() {
+    this.contributorToEdit.id = this.selectedContributor.id;
+    this.contributorToEdit.firstName = this.selectedContributor.firstName;
+    this.contributorToEdit.middleName = this.selectedContributor.middleName;
+    this.contributorToEdit.lastName = this.selectedContributor.lastName;
+    this.contributorToEdit.addressId = this.selectedContributor.addressId;
+    this.displayEdit = true;
   }
 
-  confirmDelete() {
-    const confMsg = {
-      severity: 'warn',
-      summary: 'Contributor Maintenance: Delete',
-      detail: 'Deleting Contributor...'
-    };
-    this.showConfirmation('Are you certain that you want to delete this record?', 'Delete Confirmation', 'Delete', confMsg, () => {
-      this.uiBlocked = true;
-      this.contributorService.deleteContributor(this.contributorToEdit.id).subscribe(
-        (resp) => {
-          if (resp.success === true) {
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Contributor Maintenance: Delete',
-              detail: resp.statusMessages[0]
-            });
-          } else {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Contributor Maintenance: Delete',
-              detail: 'An error occurred while attempting to delete a contriburo.'
-            });
-            resp.statusMessages.forEach(function (msg) {
-              this.messageService.add({ severity: 'error', summary: 'Contributor Maintenance: Delete', detail: msg });
-            });
-          }
-          this.refreshGridData();
-          this.uiBlocked = false;
-        },
-        (err) => {
-          console.log(JSON.stringify(err));
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Contributor Maintenance: Delete',
-            detail: 'An exception occurred while attempting to delete a contributor.'
-          });
-          this.refreshGridData();
-          this.uiBlocked = false;
-        }
-      );
-    });
+  deleteContributor() {
+    this.contributorToEdit.id = this.selectedContributor.id;
+    this.contributorToEdit.firstName = this.selectedContributor.firstName;
+    this.contributorToEdit.middleName = this.selectedContributor.middleName;
+    this.contributorToEdit.lastName = this.selectedContributor.lastName;
+    this.contributorToEdit.addressId = this.selectedContributor.addressId;
+    this.confirmDelete();
   }
 
   confirmAdd() {
@@ -136,26 +111,70 @@ export class ContributorMaintenanceComponent implements OnInit {
       summary: 'Contributor Maintenance: Update',
       detail: 'Updating Contributor...'
     };
+    const msgService = this.messageService;
     this.showConfirmation('Are you certain that you want to update this record?', 'Update Confirmation', 'Update', confMsg, () => {
       this.uiBlocked = true;
       this.contributorService.updateContributor(this.contributorToEdit).subscribe(
         (resp) => {
           if (resp.success === true) {
-            this.messageService.add({
+            msgService.add({
               severity: 'success',
               summary: 'Contributor Maintenance: Update',
               detail: resp.statusMessages[0]
             });
           } else {
             resp.statusMessages.forEach(function (msg) {
-              this.messageService.add({ severity: 'error', summary: 'Contributor Maintenance: Update', detail: msg });
+              msgService.add({ severity: 'error', summary: 'Contributor Maintenance: Update', detail: msg });
             });
           }
           this.refreshGridData();
           this.uiBlocked = false;
         },
         (err) => {
-          this.messageService.add({ severity: 'error', summary: 'Contributor Maintenance: Update', detail: JSON.stringify(err) });
+          msgService.add({ severity: 'error', summary: 'Contributor Maintenance: Update', detail: JSON.stringify(err) });
+          this.refreshGridData();
+          this.uiBlocked = false;
+        }
+      );
+    });
+  }
+
+  confirmDelete() {
+    const confMsg = {
+      severity: 'warn',
+      summary: 'Contributor Maintenance: Delete',
+      detail: 'Deleting Contributor...'
+    };
+    this.showConfirmation('Are you certain that you want to delete this record?', 'Delete Confirmation', 'Delete', confMsg, () => {
+      this.uiBlocked = true;
+      this.contributorService.deleteContributor(this.contributorToEdit.id).subscribe(
+        (resp) => {
+          if (resp.success === true) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Contributor Maintenance: Delete',
+              detail: resp.statusMessages[0]
+            });
+          } else {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Contributor Maintenance: Delete',
+              detail: 'An error occurred while attempting to delete a contributor.'
+            });
+            resp.statusMessages.forEach(function (msg) {
+              this.messageService.add({ severity: 'error', summary: 'Contributor Maintenance: Delete', detail: msg });
+            });
+          }
+          this.refreshGridData();
+          this.uiBlocked = false;
+        },
+        (err) => {
+          console.log(JSON.stringify(err));
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Contributor Maintenance: Delete',
+            detail: 'An exception occurred while attempting to delete a contributor.'
+          });
           this.refreshGridData();
           this.uiBlocked = false;
         }
@@ -199,29 +218,13 @@ export class ContributorMaintenanceComponent implements OnInit {
     });
   }
 
-  editContributor() {
-    this.contributorService.getContributorById(this.selectedContributor.id).subscribe(
-      (resp) => {
-        this.displayEdit = true;
-        this.contributorToEdit = resp;
-      },
-      (err) => {
-        console.log(JSON.stringify(err));
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Contributor Maintenance: Edit',
-          detail: 'An error occurred while attempting to edit a contributor'
-        });
-      }
-    );
-  }
-
   saveAddClick($event) {
     this.displayAdd = false;
     if (this.shouldSaveAdd()) {
       this.confirmAdd();
     } else {
       this.messageService.add({ severity: 'info', summary: 'Contributor Maintenance: Add', detail: 'No data changed.' });
+      this.refreshGridData();
     }
   }
 
@@ -231,6 +234,7 @@ export class ContributorMaintenanceComponent implements OnInit {
       this.confirmUpdate();
     } else {
       this.messageService.add({ severity: 'info', summary: 'Contributor Maintenance: Edit', detail: 'No data changed.' });
+      this.refreshGridData();
     }
   }
 
@@ -241,13 +245,20 @@ export class ContributorMaintenanceComponent implements OnInit {
 
   private shouldSaveEdit(): boolean {
     let save = false;
-    if (this.selectedContributor.id &&
-        this.contributorService.validateContributorViewModel(this.selectedContributor) &&
-       (this.selectedContributor.firstName !== this.contributorToEdit.firstName ||
-        this.selectedContributor.lastName !== this.contributorToEdit.lastName ||
-        this.selectedContributor.middleName !== this.contributorToEdit.middleName ||
-        this.selectedContributor.addressId !== this.contributorToEdit.addressId)) {
-      save = true;
+    console.log('Selected: ' + JSON.stringify(this.selectedContributor));
+    console.log('Selected: ' + JSON.stringify(this.contributorToEdit));
+    const contribIsValid = this.contributorService.validateContributorViewModel(this.selectedContributor);
+    const firstNameChanged = this.selectedContributor.firstName !== this.contributorToEdit.firstName;
+    const middleNameChanged = this.selectedContributor.middleName !== this.contributorToEdit.middleName;
+    const lastNameChanged = this.selectedContributor.lastName !== this.contributorToEdit.lastName;
+    const addressIdChanged = this.selectedContributor.addressId !== this.contributorToEdit.addressId;
+
+    if (contribIsValid) {
+        if (firstNameChanged || middleNameChanged || lastNameChanged || addressIdChanged) {
+          save = true;
+        }
+    } else {
+      save = false;
     }
     return save;
   }
@@ -269,11 +280,11 @@ export class ContributorMaintenanceComponent implements OnInit {
     this.rowIsSelected = true;
   }
 
-  validateContributor(contrib: Contributor): boolean {
+  validateContributor(contrib: ContributorViewModel): boolean {
     return this.contributorService.validateContributorViewModel(contrib);
   }
 
-  getContributorById(id: number): Observable<Contributor> {
+  getContributorById(id: number): Observable<ContributorViewModel> {
     if (this.rowData.length > 0) {
       this.foundContributor = this.rowData.find(x => x.id === id);
     }
@@ -284,7 +295,7 @@ export class ContributorMaintenanceComponent implements OnInit {
     }
   }
 
-  getContributionCategories(forceReload: boolean = false): Observable<Contributor[]> {
+  getContributionCategories(forceReload: boolean = false): Observable<ContributorViewModel[]> {
     if (this.rowData.length > 0 && forceReload === false) {
       return of(this.rowData);
     } else {

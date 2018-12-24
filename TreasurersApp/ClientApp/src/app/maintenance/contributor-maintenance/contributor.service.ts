@@ -35,7 +35,7 @@ export class ContributorService implements OnInit, OnDestroy {
   }
 
   newContributorFromViewModel(viewModel: ContributorViewModel): Contributor {
-    return new Contributor(viewModel.id, viewModel.firstName, viewModel.middleName, viewModel.lastName, viewModel.addressId);
+    return new Contributor(viewModel.id, viewModel.firstName, viewModel.middleName, viewModel.lastName, [], viewModel.addressId);
   }
 
   newViewModel(): ContributorViewModel {
@@ -70,30 +70,14 @@ export class ContributorService implements OnInit, OnDestroy {
     return this.http.get<ContributorViewModel>(API_URL + '/getvmbyid', options);
   }
 
-  updateContributor(contributor: Contributor): Observable<ContributorActionResult>  {
-    if (this.validateContributor(contributor) === false) {
-      console.log('Attempted to update an invalid contributor.');
-      console.log(JSON.stringify(contributor));
-      const errResult = new ContributorActionResult(this);
-      errResult.contributor = contributor;
-      errResult.statusMessages.push('Attempted to update an invalid contributor.');
-      errResult.success = false;
-      return of(errResult);
-    }
-    return this.http.put<ContributorActionResult>(API_URL + '/put', contributor, this.defaultOptions);
+  updateContributor(contributor: ContributorViewModel): Observable<ContributorActionResult>  {
+    const contrib = this.newContributorFromViewModel(contributor);
+    return this.http.put<ContributorActionResult>(API_URL + '/put', contrib, this.defaultOptions);
   }
 
-  addContributor(contributor: Contributor): Observable<ContributorActionResult> {
-    if (this.validateContributor(contributor) === false) {
-      console.log('Attempted to add an invalid contributor.');
-      console.log(JSON.stringify(contributor));
-      const errResult = new ContributorActionResult(this);
-      errResult.contributor = contributor;
-      errResult.statusMessages.push('Attempted to add an invalid contributor.');
-      errResult.success = false;
-      return of(errResult);
-    }
-    return this.http.post<ContributorActionResult>(API_URL + '/post', contributor, this.defaultOptions);
+  addContributor(contributor: ContributorViewModel): Observable<ContributorActionResult> {
+    const contrib = this.newContributorFromViewModel(contributor);
+    return this.http.post<ContributorActionResult>(API_URL + '/post', contrib, this.defaultOptions);
   }
 
   deleteContributor(id: number): Observable<ContributorActionResult> {
