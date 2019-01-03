@@ -31,9 +31,9 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    if (db.Contributor.Count() > 0)
+                    if (db.Contributors.Count() > 0)
                     {
-                        list = db.Contributor
+                        list = db.Contributors
                             .OrderBy(r => r.LastName)
                             .ThenBy(r => r.FirstName)
                             .ThenBy(r => r.MiddleName)
@@ -60,7 +60,7 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    entity = db.Contributor.Find(id);
+                    entity = db.Contributors.Find(id);
                     if (entity != null)
                     {
                         ret = StatusCode(StatusCodes.Status200OK, entity);
@@ -89,11 +89,9 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    if (db.Contributor.Count() > 0)
+                    if (db.Contributors.Count() > 0)
                     {
-                        list = (from cnt in db.Contributor
-                                join adr in db.Address on cnt.AddressId equals adr.AddressId into cntAdr
-                                from cntadr in cntAdr.DefaultIfEmpty()
+                        list = (from cnt in db.Contributors
                                 orderby cnt.LastName, cnt.FirstName, cnt.MiddleName
                                 select new ContributorViewModel()
                                 {
@@ -101,9 +99,16 @@ namespace TreasurersApp.Controllers
                                     FirstName = cnt.FirstName,
                                     MiddleName = cnt.MiddleName,
                                     LastName = cnt.LastName,
-                                    AddressId = cnt.AddressId,
-                                    AddressText = cntadr != null ?
-                                      string.Format("{0}, {1}, {2} {3}", cntadr.AddressLine1, cntadr.City, cntadr.State, cntadr.PostalCode) : null
+                                    AddressId = cnt.ContributorAddresses.Count == 0 ? 
+                                        (int?)null : 
+                                        cnt.ContributorAddresses.OrderBy(x => x.Preferred).First().Address.AddressId,
+                                    AddressText = cnt.ContributorAddresses.Count > 0 ?
+                                      string.Format("{0}, {1}, {2} {3}", 
+                                        cnt.ContributorAddresses.OrderBy(x => x.Preferred).First().Address.AddressLine1,
+                                        cnt.ContributorAddresses.OrderBy(x => x.Preferred).First().Address.City,
+                                        cnt.ContributorAddresses.OrderBy(x => x.Preferred).First().Address.State,
+                                        cnt.ContributorAddresses.OrderBy(x => x.Preferred).First().Address.PostalCode) : 
+                                      null
                                 }).ToList();
                     }
                     ret = StatusCode(StatusCodes.Status200OK, list);
@@ -128,16 +133,16 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    entity = db.Contributor.SingleOrDefault(x => x.ContributorId == id);
+                    entity = db.Contributors.SingleOrDefault(x => x.ContributorId == id);
                     if (entity != null)
                     {
                         viewModel = new ContributorViewModel(entity);
-                        var entityAddress = db.Address.SingleOrDefault(x => x.AddressId == entity.AddressId);
+                        var entityAddress = entity.ContributorAddresses.OrderByDescending(x => x.Preferred).FirstOrDefault();
                         if (entityAddress != null)
                         {
                             viewModel.AddressText =
                                 string.Format("{0}, {1}, {2} {3}",
-                                    entityAddress.AddressLine1, entityAddress.City, entityAddress.State, entityAddress.PostalCode);
+                                    entityAddress.Address.AddressLine1, entityAddress.Address.City, entityAddress.Address.State, entityAddress.Address.PostalCode);
                         }
                         ret = StatusCode(StatusCodes.Status200OK, viewModel);
                     }
@@ -169,10 +174,9 @@ namespace TreasurersApp.Controllers
                         {
                             FirstName = contributor.FirstName,
                             MiddleName = contributor.MiddleName,
-                            LastName = contributor.LastName,
-                            AddressId = contributor.AddressId
+                            LastName = contributor.LastName
                         };
-                        var resultContributor = db.Contributor.Add(contrib);
+                        var resultContributor = db.Contributors.Add(contrib);
                         db.SaveChanges();
                         var entity = resultContributor.Entity;
                         if (entity != null)
@@ -217,13 +221,12 @@ namespace TreasurersApp.Controllers
                 {
                     using (var db = new BTAContext())
                     {
-                        var resultContributor = db.Contributor.SingleOrDefault(x => x.ContributorId == contributor.ContributorId);
+                        var resultContributor = db.Contributors.SingleOrDefault(x => x.ContributorId == contributor.ContributorId);
                         if (resultContributor != null)
                         {
                             resultContributor.FirstName = contributor.FirstName;
                             resultContributor.MiddleName = contributor.MiddleName;
                             resultContributor.LastName = contributor.LastName;
-                            resultContributor.AddressId = contributor.AddressId;
                             db.SaveChanges();
                             returnResult.Success = true;
                             returnResult.Data = resultContributor;
@@ -265,7 +268,7 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    if (db.Contributor.Any(x => x.ContributorId == id) == false)
+                    if (db.Contributors.Any(x => x.ContributorId == id) == false)
                     {
                         returnResult.Success = false;
                         returnResult.StatusMessages.Add(string.Format("Unable to locate contributor for id: {0}", id));
@@ -273,7 +276,7 @@ namespace TreasurersApp.Controllers
                     }
                     else
                     {
-                        var resultContributor = db.Contributor.Single(x => x.ContributorId == id);
+                        var resultContributor = db.Contributors.Single(x => x.ContributorId == id);
                         db.Remove(resultContributor);
                         db.SaveChanges();
                         returnResult.Success = true;

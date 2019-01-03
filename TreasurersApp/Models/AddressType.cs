@@ -4,25 +4,19 @@ using System.Collections.Generic;
 
 namespace TreasurersApp.Models
 {
-    public partial class Report
+    public class AddressType
     {
         [JsonProperty("id")]
-        public int ReportId { get; set; }
+        public int AddressTypeId { get; set; } // AddressTypeID (Primary key)
 
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } // Name (length: 10)
 
-        [JsonProperty("displayName")]
-        public string DisplayName { get; set; }
-
-        [JsonProperty("configurationJson")]
-        public string ConfigurationJson { get; set; }
+        [JsonProperty("description")]
+        public string Description { get; set; } // Description (length: 50)
 
         [JsonProperty("active")]
-        public bool? Active { get; set; }
-
-        [JsonProperty("displayOrder")]
-        public int DisplayOrder { get; set; }
+        public bool Active { get; set; } // Active
 
         [JsonProperty("createdBy")]
         public System.Guid CreatedBy { get; set; } // CreatedBy
@@ -35,10 +29,5 @@ namespace TreasurersApp.Models
 
         [JsonProperty("lastModifiedDate")]
         public System.DateTime LastModifiedDate { get; set; } // LastModifiedDate
-
-        public Report()
-        {
-            Active = true;
-        }
     }
 }

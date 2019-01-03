@@ -18,11 +18,8 @@ namespace TreasurersApp.Models
         [JsonProperty("contributorId")]
         public int ContributorId { get; set; }
 
-        [JsonProperty("bahaiId")]
-        public string BahaiId { get; set; }
-
-        [JsonProperty("contributionTypeId")]
-        public int ContributionTypeId { get; set; }
+        [JsonProperty("transactionTypeId")]
+        public int TransactionTypeId { get; set; }
 
         [JsonProperty("effectiveDate")]
         public DateTime? EffectiveDate { get; set; }
@@ -40,8 +37,8 @@ namespace TreasurersApp.Models
         public DateTime LastModifiedDate { get; set; }
 
 
-        [JsonProperty("contributionType")]
-        public ContributionType ContributionType { get; set; }
+        [JsonProperty("transactionType")]
+        public TransactionType TransactionType { get; set; }
 
         [JsonProperty("contributor")]
         public Contributor Contributor { get; set; }

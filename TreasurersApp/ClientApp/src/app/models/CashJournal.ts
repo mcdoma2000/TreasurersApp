@@ -1,4 +1,4 @@
-import { ContributionType } from './ContributionType';
+import { TransactionType } from './TransactionType';
 import { Contributor } from './Contributor';
 
 export class CashJournal {
@@ -7,13 +7,13 @@ export class CashJournal {
   amount: number;
   contributorId: number;
   bahaiId: string;
-  contributionTypeId: number;
+  transactionTypeId: number;
   effectiveDate: Date;
   createdBy: string;
   createdDate: Date;
   lastModifiedBy: string;
   lastModifiedDate: Date;
-  contributionType: ContributionType;
+  transactionType: TransactionType;
   contributor: Contributor;
 
   constructor(id: number,
@@ -21,13 +21,13 @@ export class CashJournal {
     amount: number,
     contributorId: number,
     bahaiId: string,
-    contributionTypeId: number,
+    transactionTypeId: number,
     effectiveDate: Date,
     createdBy: string,
     createdDate: Date,
     lastModifiedBy: string,
     lastModifiedDate: Date,
-    contributionType: ContributionType,
+    transactionType: TransactionType,
     contributor: Contributor,
     ) {
       this.id = id;
@@ -35,13 +35,13 @@ export class CashJournal {
       this.amount = amount;
       this.contributorId = contributorId;
       this.bahaiId = bahaiId;
-      this.contributionTypeId = contributionTypeId;
+      this.transactionTypeId = transactionTypeId;
       this.effectiveDate = effectiveDate;
       this.createdBy = createdBy;
       this.createdDate = createdDate;
       this.lastModifiedBy = lastModifiedBy;
       this.lastModifiedDate = lastModifiedDate;
-      this.contributionType = contributionType;
+      this.transactionType = transactionType;
       this.contributor = contributor;
     }
 }

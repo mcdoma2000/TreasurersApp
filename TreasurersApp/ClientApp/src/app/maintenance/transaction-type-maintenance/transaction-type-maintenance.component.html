@@ -1,23 +1,23 @@
-<div #contributionTypeMaintenance id="contribution-type-maintenance" class="container" style="max-width: 1000px;">
+<div #transactionTypeMaintenance id="transaction-type-maintenance" class="container" style="max-width: 1000px;">
   <div class="row">&nbsp;</div>
   <div class="row">&nbsp;</div>
   <div class="row">
     <div class="col-md-12">
       <div class="appCallout">
-        Contribution Type Maintenance
+        Transaction Type Maintenance
       </div>
     </div>
   </div>
   <div class="row">&nbsp;</div>
   <div class="row">
     <div class="col-md-2">
-      <button type="button" (click)="addContributionType()" class="btn btn-primary" style="width: 100%;">Add</button>
+      <button type="button" (click)="addTransactionType()" class="btn btn-primary" style="width: 100%;">Add</button>
     </div>
     <div class="col-md-2">
-      <button type="button" (click)="editContributionType()" [disabled]="rowIsSelected === false" class="btn btn-primary" style="width: 100%;">Edit</button>
+      <button type="button" (click)="editTransactionType()" [disabled]="rowIsSelected === false" class="btn btn-primary" style="width: 100%;">Edit</button>
     </div>
     <div class="col-md-2">
-      <button type="button" (click)="deleteContributionType()" [disabled]="rowIsSelected === false" class="btn btn-primary" style="width: 100%;">Delete</button>
+      <button type="button" (click)="deleteTransactionType()" [disabled]="rowIsSelected === false" class="btn btn-primary" style="width: 100%;">Delete</button>
     </div>
     <div class="col-md-4">&nbsp;</div>
     <div class="col-md-2">
@@ -27,7 +27,7 @@
   <div class="row">&nbsp;</div>
   <div class="row">
     <div class="col-md-12">
-      <dx-data-grid #contributionTypeGrid
+      <dx-data-grid #transactionTypeGrid
                     [dataSource]="rowData"
                     keyExpr="id"
                     [rowAlternationEnabled]="true"
@@ -43,8 +43,8 @@
                    [showInfo]="true"
                    [showPageSizeSelector]="true"
                    [showNavigationButtons]="true"></dxo-pager>
-        <dxi-column dataField="contributionCategoryDescription" caption="Category"></dxi-column>
-        <dxi-column dataField="contributionTypeName" caption="Name"></dxi-column>
+        <dxi-column dataField="transactionCategoryDescription" caption="Category"></dxi-column>
+        <dxi-column dataField="name" caption="Name"></dxi-column>
         <dxi-column dataField="description" caption="Description"></dxi-column>
         <dxi-column dataField="displayOrder" caption="Display Order"></dxi-column>
         <dxi-column dataField="active" caption="Active"></dxi-column>
@@ -61,14 +61,13 @@
         <p-dropdown [options]="categories"
                     [(ngModel)]="ctypeToEdit.contributionCategoryId"
                     placeholder="Select a Category"
-                    #categoryDropdownEdit
-                    ></p-dropdown>
+                    #categoryDropdownEdit></p-dropdown>
       </div>
     </div>
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Name</div>
       <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="ctypeToEdit.contributionTypeName" />
+        <input type="text" pInputText [(ngModel)]="ctypeToEdit.transactionTypeName" />
       </div>
     </div>
     <div class="row" style="padding-bottom: 5px;">
@@ -115,7 +114,7 @@
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Name</div>
       <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="ctypeToEdit.contributionTypeName" />
+        <input type="text" pInputText [(ngModel)]="ctypeToEdit.transactionTypeName" />
       </div>
     </div>
     <div class="row" style="padding-bottom: 5px;">

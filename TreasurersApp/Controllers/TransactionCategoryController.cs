@@ -15,32 +15,32 @@ using TreasurersApp.Models;
 namespace TreasurersApp.Controllers
 {
     [Route("api/[controller]")]
-    public class ContributionCategoryController : BaseController
+    public class TransactionCategoryController : BaseController
     {
-        public ContributionCategoryController(IConfiguration config, ILogger<ContributionCategoryController> logger, IHostingEnvironment env, IMemoryCache memoryCache)
+        public TransactionCategoryController(IConfiguration config, ILogger<TransactionCategoryController> logger, IHostingEnvironment env, IMemoryCache memoryCache)
             : base(config, logger, env, memoryCache)
         {
         }
 
-        [HttpGet("get", Name = "ContributionCategoryGet")]
+        [HttpGet("get", Name = "TransactionCategoryGet")]
         public IActionResult Get(bool includeInactive)
         {
             IActionResult ret = null;
-            List<ContributionCategory> list = new List<ContributionCategory>();
+            List<TransactionCategory> list = new List<TransactionCategory>();
 
             try
             {
                 using (var db = new BTAContext())
                 {
-                    if (db.ContributionCategory.Count() > 0)
+                    if (db.TransactionCategories.Count() > 0)
                     {
                         // If includeInactive == true, return all, otherwise return only active records.
-                        list = db.ContributionCategory
+                        list = db.TransactionCategories
                             .Where(x => (x.Active.HasValue && x.Active.Value) || includeInactive)
                             .OrderBy(p => p.DisplayOrder)
                             .ToList();
-                        ret = StatusCode(StatusCodes.Status200OK, list);
                     }
+                    ret = StatusCode(StatusCodes.Status200OK, list);
                 }
             }
             catch (Exception ex)
@@ -52,17 +52,17 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
-        [HttpGet("getbyid", Name = "ContributionCategoryGetById")]
+        [HttpGet("getbyid", Name = "TransactionCategoryGetById")]
         public IActionResult Get(int id)
         {
             IActionResult ret = null;
-            ContributionCategory entity = null;
+            TransactionCategory entity = null;
 
             try
             {
                 using (var db = new BTAContext())
                 {
-                    entity = db.ContributionCategory.Find(id);
+                    entity = db.TransactionCategories.Find(id);
                     if (entity != null)
                     {
                         ret = StatusCode(StatusCodes.Status200OK, entity);
@@ -83,17 +83,17 @@ namespace TreasurersApp.Controllers
             return ret;
         }
 
-        [HttpPost("post", Name = "ContributionCategoryPost")]
-        public IActionResult Post([FromBody]ContributionCategory entity)
+        [HttpPost("post", Name = "TransactionCategoryPost")]
+        public IActionResult Post([FromBody]TransactionCategory entity)
         {
-            var result = new ContributionCategoryActionResult(false, new List<string>(), null);
+            var result = new TransactionCategoryActionResult(false, new List<string>(), null);
             try
             {
                 if (entity != null)
                 {
                     using (var db = new BTAContext())
                     {
-                        db.ContributionCategory.Add(entity);
+                        db.TransactionCategories.Add(entity);
                         db.SaveChanges();
                         result.Success = true;
                         result.StatusMessages.Add("Successfully added contribution category.");
@@ -118,10 +118,10 @@ namespace TreasurersApp.Controllers
             return StatusCode(StatusCodes.Status200OK, result);
         }
 
-        [HttpPut("put", Name = "ContributionCategoryPut")]
-        public IActionResult Put([FromBody]ContributionCategory entity)
+        [HttpPut("put", Name = "TransactionCategoryPut")]
+        public IActionResult Put([FromBody]TransactionCategory entity)
         {
-            var result = new ContributionCategoryActionResult(false, new List<string>(), null);
+            var result = new TransactionCategoryActionResult(false, new List<string>(), null);
             try
             {
                 if (entity != null)
@@ -154,23 +154,23 @@ namespace TreasurersApp.Controllers
             return StatusCode(StatusCodes.Status200OK, result);
         }
 
-        [HttpDelete("delete", Name = "ContributionCategoryDelete")]
+        [HttpDelete("delete", Name = "TransactionCategoryDelete")]
         [Authorize(Policy = "CanPerformAdmin")]
         public IActionResult Delete(int id)
         {
-            var returnResult = new ContributionCategoryActionResult(false, new List<string>(), null);
+            var returnResult = new TransactionCategoryActionResult(false, new List<string>(), null);
             try
             {
                 using (var db = new BTAContext())
                 {
-                    if (db.ContributionCategory.Any(x => x.ContributionCategoryId == id) == false)
+                    if (db.TransactionCategories.Any(x => x.TransactionCategoryId == id) == false)
                     {
                         returnResult.StatusMessages.Add("Attempted to delete a nonexisting contribution category.");
                     }
                     else
                     {
-                        var resultCategory = db.ContributionCategory.Single(x => x.ContributionCategoryId == id);
-                        db.ContributionCategory.Remove(resultCategory);
+                        var resultCategory = db.TransactionCategories.Single(x => x.TransactionCategoryId == id);
+                        db.TransactionCategories.Remove(resultCategory);
                         db.SaveChanges();
                         returnResult.Success = true;
                         returnResult.Data = resultCategory;

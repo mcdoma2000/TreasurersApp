@@ -33,9 +33,9 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    if (db.Address.Count() > 0)
+                    if (db.Addresses.Count() > 0)
                     {
-                        list = db.Address
+                        list = db.Addresses
                             .OrderBy(r => r.State)
                             .ThenBy(r => r.City)
                             .ThenBy(r => r.PostalCode)
@@ -62,7 +62,7 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    entity = db.Address.Find(id);
+                    entity = db.Addresses.Find(id);
                     if (entity != null)
                     {
                         ret = StatusCode(StatusCodes.Status200OK, entity);
@@ -99,7 +99,7 @@ namespace TreasurersApp.Controllers
                     {
                         using (var db = new BTAContext())
                         {
-                            var resultAddress = db.Address.Add(address);
+                            var resultAddress = db.Addresses.Add(address);
                             db.SaveChanges();
                             var entity = resultAddress.Entity;
                             if (entity != null)
@@ -146,7 +146,7 @@ namespace TreasurersApp.Controllers
                     {
                         using (var db = new BTAContext())
                         {
-                            var resultAddress = db.Address.SingleOrDefault(x => x.AddressId == address.AddressId);
+                            var resultAddress = db.Addresses.SingleOrDefault(x => x.AddressId == address.AddressId);
                             if (resultAddress != null)
                             {
                                 resultAddress.AddressLine1 = address.AddressLine1;
@@ -196,14 +196,14 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    if (db.Address.Any(x => x.AddressId == id) == false)
+                    if (db.Addresses.Any(x => x.AddressId == id) == false)
                     {
                         returnResult.StatusMessages.Add("Attempted to delete a nonexisting address.");
                     }
                     else
                     {
-                        var resultAddress = db.Address.Single(x => x.AddressId == id);
-                        db.Address.Remove(resultAddress);
+                        var resultAddress = db.Addresses.Single(x => x.AddressId == id);
+                        db.Addresses.Remove(resultAddress);
                         db.SaveChanges();
                         returnResult.Success = true;
                         returnResult.Data = resultAddress;

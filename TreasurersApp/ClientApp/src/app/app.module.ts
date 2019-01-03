@@ -43,8 +43,8 @@ import { ReportReceiptsByGregorianYearComponent } from './reports/rrbgy/report-r
 import { StandardReportFormComponent } from './standard-report-form/standard-report-form.component';
 import { AddressMaintenanceComponent } from './maintenance/address-maintenance/address-maintenance.component';
 import { ContributorMaintenanceComponent } from './maintenance/contributor-maintenance/contributor-maintenance.component';
-import { ContributionTypeMaintenanceComponent } from './maintenance/contribution-type-maintenance/contribution-type-maintenance.component';
-import { ContributionCategoryMaintenanceComponent } from './maintenance/contribution-category-maintenance/contribution-category-maintenance.component';
+import { TransactionCategoryMaintenanceComponent } from './maintenance/transaction-category-maintenance/transaction-category-maintenance.component';
+import { TransactionTypeMaintenanceComponent } from './maintenance/transaction-type-maintenance/transaction-type-maintenance.component';
 
 @NgModule({
   declarations: [
@@ -64,8 +64,8 @@ import { ContributionCategoryMaintenanceComponent } from './maintenance/contribu
     StandardReportFormComponent,
     AddressMaintenanceComponent,
     ContributorMaintenanceComponent,
-    ContributionTypeMaintenanceComponent,
-    ContributionCategoryMaintenanceComponent,
+    TransactionCategoryMaintenanceComponent,
+    TransactionTypeMaintenanceComponent,
   ],
   imports: [
     BrowserModule,

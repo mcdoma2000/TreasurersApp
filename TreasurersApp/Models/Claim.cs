@@ -8,7 +8,7 @@ namespace TreasurersApp.Models
     {
         public Claim()
         {
-            UserClaim = new HashSet<UserClaim>();
+            UserClaims = new HashSet<UserClaim>();
         }
 
         [JsonProperty("id")]
@@ -21,6 +21,6 @@ namespace TreasurersApp.Models
         public string ClaimValue { get; set; }
 
         [JsonProperty("userClaims")]
-        public ICollection<UserClaim> UserClaim { get; set; }
+        public ICollection<UserClaim> UserClaims { get; set; }
     }
 }

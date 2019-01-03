@@ -13,27 +13,27 @@ using TreasurersApp.Models;
 namespace TreasurersApp.Controllers
 {
     [Route("api/[controller]")]
-    public class ContributionTypeController : BaseController
+    public class TransactionTypeController : BaseController
     {
-        public ContributionTypeController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache)
+        public TransactionTypeController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache)
             : base(config, logger, env, memoryCache)
         {
         }
 
-        [HttpGet("get", Name = "ContributionTypeGet")]
+        [HttpGet("get", Name = "TransactionTypeGet")]
         public IActionResult Get(bool includeInactive)
         {
             IActionResult ret = null;
-            List<ContributionType> list = new List<ContributionType>();
+            List<TransactionType> list = new List<TransactionType>();
 
             try
             {
                 using (var db = new BTAContext())
                 {
-                    if (db.ContributionType.Count() > 0)
+                    if (db.TransactionTypes.Count() > 0)
                     {
                         // If includeInactive == true, return all, otherwise return only active records.
-                        list = db.ContributionType
+                        list = db.TransactionTypes
                             .Where(x => (x.Active.HasValue && x.Active.Value) || includeInactive)
                             .OrderBy(x => x.DisplayOrder)
                             .ToList();
@@ -43,34 +43,34 @@ namespace TreasurersApp.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "An exception occurred while trying to retrieve contribution types.");
+                Logger.LogError(ex, "An exception occurred while trying to retrieve transaction types.");
                 ret = StatusCode(StatusCodes.Status500InternalServerError);
             }
 
             return ret;
         }
 
-        [HttpGet("getviewmodels", Name = "ContributionTypeGetViewModels")]
+        [HttpGet("getviewmodels", Name = "TransactionTypeGetViewModels")]
         public IActionResult GetViewModels(bool includeInactive)
         {
             IActionResult ret = null;
-            List<ContributionTypeViewModel> list = new List<ContributionTypeViewModel>();
+            List<TransactionTypeViewModel> list = new List<TransactionTypeViewModel>();
 
             try
             {
                 using (var db = new BTAContext())
                 {
-                    if (db.ContributionType.Count() > 0)
+                    if (db.TransactionTypes.Count() > 0)
                     {
                         // If includeInactive == true, return all, otherwise return only active records.
-                        list = db.ContributionType
+                        list = db.TransactionTypes
                             .Where(x => x.Active ?? false || includeInactive)
-                            .Select(x => new ContributionTypeViewModel()
+                            .Select(x => new TransactionTypeViewModel()
                             {
-                                ContributionTypeID = x.ContributionTypeId,
-                                CategoryID = x.CategoryId,
-                                CategoryDescription = x.Category.Description,
-                                ContributionTypeName = x.ContributionTypeName,
+                                TransactionTypeID = x.TransactionTypeId,
+                                TransactionCategoryID = x.TransactionCategoryId,
+                                TransactionCategoryDescription = x.TransactionCategory.Description,
+                                Name = x.Name,
                                 DisplayOrder = x.DisplayOrder,
                                 Active = x.Active ?? false
                             }).ToList();
@@ -80,24 +80,24 @@ namespace TreasurersApp.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "An exception occurred while trying to retrieve contribution types.");
+                Logger.LogError(ex, "An exception occurred while trying to retrieve transaction types.");
                 ret = StatusCode(StatusCodes.Status500InternalServerError);
             }
 
             return ret;
         }
 
-        [HttpGet("getbyid", Name = "ContributionTypeGetByID")]
+        [HttpGet("getbyid", Name = "TransactionTypeGetByID")]
         public IActionResult Get(int id)
         {
             IActionResult ret = null;
-            ContributionType entity = null;
+            TransactionType entity = null;
 
             try
             {
                 using (var db = new BTAContext())
                 {
-                    entity = db.ContributionType.Find(id);
+                    entity = db.TransactionTypes.Find(id);
                     if (entity != null)
                     {
                         ret = StatusCode(StatusCodes.Status200OK, entity);
@@ -105,82 +105,82 @@ namespace TreasurersApp.Controllers
                     else
                     {
                         ret = StatusCode(StatusCodes.Status404NotFound,
-                                        "Can't Find contribution type for id: " + id.ToString());
+                                        "Can't Find transaction type for id: " + id.ToString());
                     }
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "An exception occurred while trying to retrieve a single contribution type.");
+                Logger.LogError(ex, "An exception occurred while trying to retrieve a single transaction type.");
                 ret = StatusCode(StatusCodes.Status500InternalServerError);
             }
 
             return ret;
         }
 
-        [HttpPost("post", Name = "ContributionTypePost")]
-        public IActionResult Post([FromBody]ContributionType contributionType)
+        [HttpPost("post", Name = "TransactionTypePost")]
+        public IActionResult Post([FromBody]TransactionType contributionType)
         {
-            var returnResult = new ContributionTypeActionResult(false, new List<string>(), null);
+            var returnResult = new TransactionTypeActionResult(false, new List<string>(), null);
             if (contributionType != null)
             {
                 try
                 {
                     using (var db = new BTAContext())
                     {
-                        var resultContributionType = db.ContributionType.Add(contributionType);
+                        var resultTransactionType = db.TransactionTypes.Add(contributionType);
                         db.SaveChanges();
-                        var entity = resultContributionType.Entity;
+                        var entity = resultTransactionType.Entity;
                         if (entity != null)
                         {
                             returnResult.Success = true;
-                            returnResult.StatusMessages.Add("Successfully added contribution type.");
+                            returnResult.StatusMessages.Add("Successfully added transaction type.");
                             returnResult.Data = entity;
                         }
                     }
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError(e, "An exception occurred while attempting to add a contribution type.");
+                    Logger.LogError(e, "An exception occurred while attempting to add a transaction type.");
                     returnResult.Success = false;
-                    returnResult.StatusMessages.Add("An exception occurred while attempting to add a contribution type.");
+                    returnResult.StatusMessages.Add("An exception occurred while attempting to add a transaction type.");
                     returnResult.Data = null;
                 }
             }
             else
             {
                 returnResult.Success = false;
-                returnResult.StatusMessages.Add("Empty contribution type posted for add.");
+                returnResult.StatusMessages.Add("Empty transaction type posted for add.");
                 returnResult.Data = null;
             }
             return StatusCode(StatusCodes.Status200OK, returnResult);
         }
 
-        [HttpPut("put", Name = "ContributionTypePut")]
-        public IActionResult Put([FromBody]ContributionType contributionType)
+        [HttpPut("put", Name = "TransactionTypePut")]
+        public IActionResult Put([FromBody]TransactionType contributionType)
         {
-            var returnResult = new ContributionTypeActionResult(false, new List<string>(), null);
+            var returnResult = new TransactionTypeActionResult(false, new List<string>(), null);
             if (contributionType != null)
             {
                 try
                 {
                     using (var db = new BTAContext())
                     {
-                        var resultContributionType = db.ContributionType.SingleOrDefault(x => x.ContributionTypeId == contributionType.ContributionTypeId);
-                        if (resultContributionType != null)
+                        var resultTransactionType = db.TransactionTypes.SingleOrDefault(x => x.TransactionTypeId == contributionType.TransactionTypeId);
+                        if (resultTransactionType != null)
                         {
-                            resultContributionType.CategoryId = contributionType.CategoryId;
-                            resultContributionType.ContributionTypeName = contributionType.ContributionTypeName;
-                            resultContributionType.Description = contributionType.Description;
+                            resultTransactionType.TransactionCategoryId = contributionType.TransactionCategoryId;
+                            resultTransactionType.Name = contributionType.Name;
+                            resultTransactionType.Description = contributionType.Description;
                             db.SaveChanges();
                             returnResult.Success = true;
-                            returnResult.Data = resultContributionType;
-                            returnResult.StatusMessages.Add("Successfully updated contribution type.");
+                            returnResult.Data = resultTransactionType;
+                            returnResult.StatusMessages.Add("Successfully updated transaction type.");
                         }
                         else
                         {
                             returnResult.Success = false;
-                            returnResult.StatusMessages.Add(string.Format("Unable to locate contribution type for id: {0}", contributionType.ContributionTypeId));
+                            returnResult.StatusMessages.Add(string.Format("Unable to locate transaction type for id: {0}", contributionType.TransactionTypeId));
                             returnResult.Data = null;
                         }
                     }
@@ -195,34 +195,34 @@ namespace TreasurersApp.Controllers
             else
             {
                 returnResult.Success = false;
-                returnResult.StatusMessages.Add("Empty contribution type posted for update.");
+                returnResult.StatusMessages.Add("Empty transaction type posted for update.");
                 returnResult.Data = null;
             }
             return StatusCode(StatusCodes.Status200OK, returnResult);
         }
 
-        [HttpDelete("delete", Name = "ContributionTypeDelete")]
+        [HttpDelete("delete", Name = "TransactionTypeDelete")]
         public IActionResult Delete(int id)
         {
-            var returnResult = new ContributionTypeActionResult(false, new List<string>(), null);
+            var returnResult = new TransactionTypeActionResult(false, new List<string>(), null);
             try
             {
                 using (var db = new BTAContext())
                 {
-                    if (db.ContributionType.Any(x => x.ContributionTypeId == id) == false)
+                    if (db.TransactionTypes.Any(x => x.TransactionTypeId == id) == false)
                     {
                         returnResult.Success = false;
-                        returnResult.StatusMessages.Add(string.Format("Unable to locate contribution type for id: {0}", id));
+                        returnResult.StatusMessages.Add(string.Format("Unable to locate transaction type for id: {0}", id));
                         returnResult.Data = null;
                     }
                     else
                     {
-                        var resultContributionType = db.ContributionType.Single(x => x.ContributionTypeId == id);
-                        db.Remove(resultContributionType);
+                        var resultTransactionType = db.TransactionTypes.Single(x => x.TransactionTypeId == id);
+                        db.Remove(resultTransactionType);
                         db.SaveChanges();
                         returnResult.Success = true;
-                        returnResult.Data = resultContributionType;
-                        returnResult.StatusMessages.Add("Successfully deleted contribution type.");
+                        returnResult.Data = resultTransactionType;
+                        returnResult.StatusMessages.Add("Successfully deleted transaction type.");
                     }
                 }
             }
@@ -230,7 +230,7 @@ namespace TreasurersApp.Controllers
             {
                 Logger.LogError(e.ToString());
                 returnResult.Success = false;
-                returnResult.StatusMessages.Add("An exception occurred while attempting to delete the contribution type.");
+                returnResult.StatusMessages.Add("An exception occurred while attempting to delete the transaction type.");
                 returnResult.Data = null;
             }
             return StatusCode(StatusCodes.Status200OK, returnResult);

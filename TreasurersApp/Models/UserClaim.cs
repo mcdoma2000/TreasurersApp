@@ -21,5 +21,10 @@ namespace TreasurersApp.Models
 
         [JsonProperty("user")]
         public User User { get; set; }
+
+        public UserClaim()
+        {
+            UserClaimId = System.Guid.NewGuid();
+        }
     }
 }

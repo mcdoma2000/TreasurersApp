@@ -1,23 +1,23 @@
-<div #contributionCategoryMaintenance id="contribution-category-maintenance" class="container" style="max-width: 1000px;">
+<div #transactionCategoryMaintenance id="transaction-category-maintenance" class="container" style="max-width: 1000px;">
   <div class="row">&nbsp;</div>
   <div class="row">&nbsp;</div>
   <div class="row">
     <div class="col-md-12">
       <div class="appCallout">
-        Contribution Category Maintenance
+        Transaction Category Maintenance
       </div>
     </div>
   </div>
   <div class="row">&nbsp;</div>
   <div class="row">
     <div class="col-md-2">
-      <button type="button" (click)="addContributionCategory()" class="btn btn-primary" style="width: 100%;">Add</button>
+      <button type="button" (click)="addTransactionCategory()" class="btn btn-primary" style="width: 100%;">Add</button>
     </div>
     <div class="col-md-2">
-      <button type="button" (click)="editContributionCategory()" [disabled]="rowIsSelected === false" class="btn btn-primary" style="width: 100%;">Edit</button>
+      <button type="button" (click)="editTransactionCategory()" [disabled]="rowIsSelected === false" class="btn btn-primary" style="width: 100%;">Edit</button>
     </div>
     <div class="col-md-2">
-      <button type="button" (click)="deleteContributionCategory()" [disabled]="rowIsSelected === false" class="btn btn-primary" style="width: 100%;">Delete</button>
+      <button type="button" (click)="deleteTransactionCategory()" [disabled]="rowIsSelected === false" class="btn btn-primary" style="width: 100%;">Delete</button>
     </div>
     <div class="col-md-4">&nbsp;</div>
     <div class="col-md-2">
@@ -27,7 +27,7 @@
   <div class="row">&nbsp;</div>
   <div class="row">
     <div class="col-md-12">
-      <dx-data-grid #contributionCategoryGrid
+      <dx-data-grid #transactionCategoryGrid
                     [dataSource]="rowData"
                     keyExpr="id"
                     [rowAlternationEnabled]="true"
@@ -39,11 +39,11 @@
         <dxo-paging [enabled]="true" [pageIndex]="0" [pageSize]="10"></dxo-paging>
         <dxo-pager [visible]="true"
                    [allowedPageSizes]="[10,20]"
-                   [infoText]="'Page {0} of {1} ({2} Contribution Categories)'"
+                   [infoText]="'Page {0} of {1} ({2} Transaction Categories)'"
                    [showInfo]="true"
                    [showPageSizeSelector]="true"
                    [showNavigationButtons]="true"></dxo-pager>
-        <dxi-column dataField="contributionCategoryName" caption="Name"></dxi-column>
+        <dxi-column dataField="name" caption="Name"></dxi-column>
         <dxi-column dataField="description" caption="Description"></dxi-column>
         <dxi-column dataField="displayOrder" caption="Display Order"></dxi-column>
         <dxi-column dataField="active" caption="Active"></dxi-column>
@@ -53,29 +53,29 @@
   <div class="row">&nbsp;</div>
   <p-toast></p-toast>
   <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle" width="425"></p-confirmDialog>
-  <p-dialog header="Edit Contribution Type" [(visible)]="displayEdit" width="600">
+  <p-dialog header="Edit Transaction Category" [(visible)]="displayEdit" width="600">
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Name</div>
       <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="ccatToEdit.contributionCategoryName" required />
+        <input type="text" pInputText [(ngModel)]="tcatToEdit.name" required />
       </div>
     </div>
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Description</div>
       <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="ccatToEdit.description" required />
+        <input type="text" pInputText [(ngModel)]="tcatToEdit.description" required />
       </div>
     </div>
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Display Order</div>
       <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="ccatToEdit.displayOrder" required />
+        <input type="text" pInputText [(ngModel)]="tcatToEdit.displayOrder" required />
       </div>
     </div>
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Active</div>
       <div class="col-md-9">
-        <p-checkbox [(ngModel)]="ccatToEdit.active" binary="true" required></p-checkbox>
+        <p-checkbox [(ngModel)]="tcatToEdit.active" binary="true" required></p-checkbox>
       </div>
     </div>
     <p-footer>
@@ -91,29 +91,29 @@
       </div>
     </p-footer>
   </p-dialog>
-  <p-dialog header="Add Contribution Type" [(visible)]="displayAdd" width="600">
+  <p-dialog header="Add Transaction Category" [(visible)]="displayAdd" width="600">
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Name</div>
       <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="ccatToEdit.contributionCategoryName" required />
+        <input type="text" pInputText [(ngModel)]="tcatToEdit.name" required />
       </div>
     </div>
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Description</div>
       <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="ccatToEdit.description" required />
+        <input type="text" pInputText [(ngModel)]="tcatToEdit.description" required />
       </div>
     </div>
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Display Order</div>
       <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="ccatToEdit.displayOrder" required />
+        <input type="text" pInputText [(ngModel)]="tcatToEdit.displayOrder" required />
       </div>
     </div>
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Active</div>
       <div class="col-md-9">
-        <p-checkbox [(ngModel)]="ccatToEdit.active" binary="true" required></p-checkbox>
+        <p-checkbox [(ngModel)]="tcatToEdit.active" binary="true" required></p-checkbox>
       </div>
     </div>
     <p-footer>

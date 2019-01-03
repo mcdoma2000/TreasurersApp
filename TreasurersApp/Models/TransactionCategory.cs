@@ -4,25 +4,27 @@ using System.Collections.Generic;
 
 namespace TreasurersApp.Models
 {
-    public partial class Report
+    public partial class TransactionCategory
     {
-        [JsonProperty("id")]
-        public int ReportId { get; set; }
+        public TransactionCategory()
+        {
+            TransactionTypes = new HashSet<TransactionType>();
+        }
 
-        [JsonProperty("name")]
+        [JsonProperty("id")]
+        public int TransactionCategoryId { get; set; }
+
+        [JsonProperty("contributionCategoryName")]
         public string Name { get; set; }
 
-        [JsonProperty("displayName")]
-        public string DisplayName { get; set; }
-
-        [JsonProperty("configurationJson")]
-        public string ConfigurationJson { get; set; }
-
-        [JsonProperty("active")]
-        public bool? Active { get; set; }
+        [JsonProperty("description")]
+        public string Description { get; set; }
 
         [JsonProperty("displayOrder")]
         public int DisplayOrder { get; set; }
+
+        [JsonProperty("active")]
+        public bool? Active { get; set; }
 
         [JsonProperty("createdBy")]
         public System.Guid CreatedBy { get; set; } // CreatedBy
@@ -36,9 +38,7 @@ namespace TreasurersApp.Models
         [JsonProperty("lastModifiedDate")]
         public System.DateTime LastModifiedDate { get; set; } // LastModifiedDate
 
-        public Report()
-        {
-            Active = true;
-        }
+        [JsonProperty("transactionTypes")]
+        public ICollection<TransactionType> TransactionTypes { get; set; }
     }
 }

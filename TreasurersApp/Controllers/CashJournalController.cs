@@ -32,9 +32,9 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    if (db.CashJournal.Count() > 0)
+                    if (db.CashJournals.Count() > 0)
                     {
-                        list = db.CashJournal.OrderBy(p => p.CreatedDate).ToList();
+                        list = db.CashJournals.OrderBy(p => p.CreatedDate).ToList();
                         ret = StatusCode(StatusCodes.Status200OK, list);
                     }
                     else
@@ -61,7 +61,7 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    entity = db.CashJournal.Find(id);
+                    entity = db.CashJournals.Find(id);
                     if (entity != null)
                     {
                         ret = StatusCode(StatusCodes.Status200OK, entity);
@@ -93,7 +93,7 @@ namespace TreasurersApp.Controllers
                 {
                     using (var db = new BTAContext())
                     {
-                        db.CashJournal.Add(entity);
+                        db.CashJournals.Add(entity);
                         db.SaveChanges();
                         ret = StatusCode(StatusCodes.Status201Created, entity);
                     }

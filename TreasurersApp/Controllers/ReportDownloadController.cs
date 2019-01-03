@@ -32,7 +32,7 @@ namespace TreasurersApp.Controllers
 
             using (var db = new BTAContext())
             {
-                var rpt = db.Report.SingleOrDefault(x => x.Name == reportParms.ReportName);
+                var rpt = db.Reports.SingleOrDefault(x => x.Name == reportParms.ReportName);
                 if (rpt == null)
                 {
                     throw new ArgumentException("An invalid report name was passed", "Report Name");

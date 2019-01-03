@@ -34,11 +34,11 @@ namespace TreasurersApp.Utilities.Security
             using (var db = new BTAContext())
             {
                 // Attempt to validate user
-                authUser = db.User.FirstOrDefault(u => u.UserName.ToLower() == user.UserName.ToLower() && u.Password == user.Password);
+                authUser = db.Users.FirstOrDefault(u => u.UserName.ToLower() == user.UserName.ToLower() && u.Password == user.Password);
                 if (authUser != null)
                 {
-                    db.Entry(authUser).Collection(x => x.UserClaim).Load();
-                    foreach (var uc in authUser.UserClaim)
+                    db.Entry(authUser).Collection(x => x.UserClaims).Load();
+                    foreach (var uc in authUser.UserClaims)
                     {
                         db.Entry(uc).Reference(x => x.Claim).Load();
                     }
@@ -65,7 +65,7 @@ namespace TreasurersApp.Utilities.Security
             ret.BearerToken = new Guid().ToString();
 
             // Get all claims for this user
-            ret.Claims = authUser.UserClaim.Select(x => new ClaimViewModel() { ClaimId = x.ClaimId, ClaimType = x.Claim.ClaimType, ClaimValue = x.Claim.ClaimValue }).ToList();
+            ret.Claims = authUser.UserClaims.Select(x => new ClaimViewModel() { ClaimId = x.ClaimId, ClaimType = x.Claim.ClaimType, ClaimValue = x.Claim.ClaimValue }).ToList();
 
             // Set JWT bearer token
             ret.BearerToken = BuildJwtToken(ret);

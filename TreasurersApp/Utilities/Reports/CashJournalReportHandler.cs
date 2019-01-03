@@ -12,7 +12,7 @@ namespace TreasurersApp.Utilities.Reports
             var workSheet = excel.Workbook.Worksheets[reportParameters.ReportName];
             workSheet.Cells[1, 1].Value = "I have successfully processed the report!";
             BTAContext dc = (BTAContext)db;
-            var reports = dc.Report;
+            var reports = dc.Reports;
             int whichRow = 2;
             foreach (var rpt in reports)
             {

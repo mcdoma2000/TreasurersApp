@@ -34,9 +34,9 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    if (db.Report.Count() > 0)
+                    if (db.Reports.Count() > 0)
                     {
-                        list = db.Report.Where(r => r.Active ?? false).OrderBy(r => r.DisplayOrder).ToList();
+                        list = db.Reports.Where(r => r.Active ?? false).OrderBy(r => r.DisplayOrder).ToList();
                         ret = StatusCode(StatusCodes.Status200OK, list);
                     }
                     else
@@ -63,7 +63,7 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    entity = db.Report.Find(id);
+                    entity = db.Reports.Find(id);
                     if (entity != null)
                     {
                         ret = StatusCode(StatusCodes.Status200OK, entity);
@@ -91,7 +91,7 @@ namespace TreasurersApp.Controllers
 
             using (var db = new BTAContext())
             {
-                var rpt = db.Report.SingleOrDefault(x => x.Name == reportParameters.ReportName);
+                var rpt = db.Reports.SingleOrDefault(x => x.Name == reportParameters.ReportName);
                 if (rpt == null)
                 {
                     throw new ArgumentException("An invalid report name was passed", "Report Name");

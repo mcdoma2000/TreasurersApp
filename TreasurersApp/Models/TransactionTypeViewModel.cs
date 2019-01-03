@@ -4,19 +4,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TreasurersApp.Models
 {
-    public class ContributionTypeViewModel
+    public class TransactionTypeViewModel
     {
         [JsonProperty("id")]
-        public int ContributionTypeID { get; set; }
+        public int TransactionTypeID { get; set; }
 
-        [JsonProperty("contributionCategoryId")]
-        public int CategoryID { get; set; }
+        [JsonProperty("transactionCategoryId")]
+        public int TransactionCategoryID { get; set; }
 
         [JsonProperty("contributionCategoryDescription")]
-        public string CategoryDescription { get; set; }
+        public string TransactionCategoryDescription { get; set; }
 
-        [JsonProperty("contributionTypeName")]
-        public string ContributionTypeName { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
 
         [JsonProperty("description")]
         public string Description { get; set; }

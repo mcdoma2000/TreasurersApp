@@ -33,7 +33,6 @@ namespace TreasurersApp.Models
             this.FirstName = contributor.FirstName;
             this.MiddleName = contributor.MiddleName;
             this.LastName = contributor.LastName;
-            this.AddressId = contributor.AddressId;
             this.AddressText = null;
         }
 

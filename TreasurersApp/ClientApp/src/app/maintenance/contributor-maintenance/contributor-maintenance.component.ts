@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
-import { Contributor } from '../../models/Contributor';
 import { ContributorViewModel } from '../../models/ContributorViewModel';
 import { ContributorService } from './contributor.service';
 import { AddressService } from '../address-maintenance/address.service';

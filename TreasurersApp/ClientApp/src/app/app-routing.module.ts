@@ -14,8 +14,8 @@ import { ReportReceiptsByGregorianYearComponent } from './reports/rrbgy/report-r
 import { AuthGuard } from './security/auth.guard';
 import { AddressMaintenanceComponent } from './maintenance/address-maintenance/address-maintenance.component';
 import { ContributorMaintenanceComponent } from './maintenance/contributor-maintenance/contributor-maintenance.component';
-import { ContributionTypeMaintenanceComponent } from './maintenance/contribution-type-maintenance/contribution-type-maintenance.component';
-import { ContributionCategoryMaintenanceComponent } from './maintenance/contribution-category-maintenance/contribution-category-maintenance.component';
+import { TransactionTypeMaintenanceComponent } from './maintenance/transaction-type-maintenance/transaction-type-maintenance.component';
+import { TransactionCategoryMaintenanceComponent } from './maintenance/transaction-category-maintenance/transaction-category-maintenance.component';
 
 const routes: Routes = [
   {
@@ -77,14 +77,14 @@ const routes: Routes = [
     data: { claimType: 'canPerformAdmin' }
   },
   {
-    path: 'maintenance/contributiontype',
-    component: ContributionTypeMaintenanceComponent,
+    path: 'maintenance/transactiontype',
+    component: TransactionTypeMaintenanceComponent,
     canActivate: [AuthGuard],
     data: { claimType: 'canPerformAdmin' }
   },
   {
-    path: 'maintenance/contributioncategory',
-    component: ContributionCategoryMaintenanceComponent,
+    path: 'maintenance/transactioncategory',
+    component: TransactionCategoryMaintenanceComponent,
     canActivate: [AuthGuard],
     data: { claimType: 'canPerformAdmin' }
   },
