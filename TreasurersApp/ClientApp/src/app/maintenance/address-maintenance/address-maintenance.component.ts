@@ -5,8 +5,9 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { Address } from '../../models/Address';
 import { AddressService } from './address.service';
 import { ConfirmationMessage } from '../../models/ConfirmationMessage';
-import * as $ from 'jquery';
 import { DxDataGridComponent } from 'devextreme-angular/ui/data-grid';
+import { AddressRequest } from 'src/app/models/AddressRequest';
+import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
   selector: 'app-address-maintenance',
@@ -21,13 +22,14 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   rowData: Address[] = [];
   foundAddress: Address = null;
   rowIsSelected = false;
-  selectedAddress = new Address(null, null, null, null, null, null, null);
-  addressToEdit = new Address(null, null, null, null, null, null, null);
+  selectedAddress = new Address(null, null, null, null, null, null, null, null, null, null, null);
+  addressToEdit = new Address(null, null, null, null, null, null, null, null, null, null, null);
   displayEdit = false;
   displayAdd = false;
 
   constructor(private addressService: AddressService,
               private confirmationService: ConfirmationService,
+              private securityService: SecurityService,
               private messageService: MessageService) {
   }
 
@@ -45,8 +47,18 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
 
   deleteAddress() {
     this.addressToEdit =
-      new Address(this.selectedAddress.id, this.selectedAddress.addressLine1, this.selectedAddress.addressLine2,
-        this.selectedAddress.addressLine3, this.selectedAddress.city, this.selectedAddress.state, this.selectedAddress.postalCode);
+      new Address(
+        this.selectedAddress.id,
+        this.selectedAddress.addressLine1,
+        this.selectedAddress.addressLine2,
+        this.selectedAddress.addressLine3,
+        this.selectedAddress.city,
+        this.selectedAddress.state,
+        this.selectedAddress.postalCode,
+        this.selectedAddress.createdBy,
+        this.selectedAddress.createdDate,
+        this.selectedAddress.lastModifiedBy,
+        this.selectedAddress.lastModifiedDate);
     this.confirmDelete();
   }
 
@@ -63,7 +75,11 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
           if (resp.success === true) {
             this.messageService.add({ severity: 'success', summary: 'Address Maintenance: Delete', detail: resp.statusMessages[0] });
           } else {
-            this.messageService.add({ severity: 'error', summary: 'Address Maintenance: Delete', detail: 'An error occurred while attempting to delete an address.' });
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Address Maintenance: Delete',
+              detail: 'An error occurred while attempting to delete an address.'
+            });
             resp.statusMessages.forEach(function (msg) {
               this.messageService.add({ severity: 'error', summary: 'Address Maintenance: Delete', detail: msg });
             });
@@ -88,7 +104,10 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
     };
     this.showConfirmation('Are you certain that you want to add this record?', 'Add Confirmation', 'Add', confMsg, () => {
       this.uiBlocked = true;
-      this.addressService.addAddress(this.addressToEdit).subscribe(
+      const request = new AddressRequest();
+      request.userName = this.securityService.loggedInUserName();
+      request.data = this.addressToEdit;
+      this.addressService.addAddress(request).subscribe(
         (resp) => {
           if (resp.success === true) {
             this.messageService.add({ severity: 'success', summary: 'Address Maintenance: Add', detail: resp.statusMessages[0] });
@@ -118,7 +137,10 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
     };
     this.showConfirmation('Are you certain that you want to update this record?', 'Update Confirmation', 'Update', confMsg, () => {
       this.uiBlocked = true;
-      this.addressService.updateAddress(this.addressToEdit).subscribe(
+      const request = new AddressRequest();
+      request.userName = this.securityService.loggedInUserName();
+      request.data = this.addressToEdit;
+      this.addressService.updateAddress(request).subscribe(
         (resp) => {
           if (resp.success === true) {
             this.messageService.add({ severity: 'success', summary: 'Address Maintenance: Update', detail: resp.statusMessages[0] });
@@ -178,9 +200,19 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   editAddress() {
     this.displayEdit = true;
     this.addressToEdit =
-      new Address(this.selectedAddress.id, this.selectedAddress.addressLine1, this.selectedAddress.addressLine2,
-        this.selectedAddress.addressLine3, this.selectedAddress.city, this.selectedAddress.state, this.selectedAddress.postalCode);
-  }
+    new Address(
+      this.selectedAddress.id,
+      this.selectedAddress.addressLine1,
+      this.selectedAddress.addressLine2,
+      this.selectedAddress.addressLine3,
+      this.selectedAddress.city,
+      this.selectedAddress.state,
+      this.selectedAddress.postalCode,
+      this.selectedAddress.createdBy,
+      this.selectedAddress.createdDate,
+      this.selectedAddress.lastModifiedBy,
+      this.selectedAddress.lastModifiedDate);
+}
 
   saveAddClick($event) {
     this.displayEdit = false;
@@ -232,14 +264,19 @@ export class AddressMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   onRowClick(e) {
-    this.selectedAddress = new Address(
-      e.data.id,
-      e.data.addressLine1,
-      e.data.addressLine2,
-      e.data.addressLine3,
-      e.data.city,
-      e.data.state,
-      e.data.postalCode);
+    this.selectedAddress =
+      new Address(
+        e.data.id,
+        e.data.addressLine1,
+        e.data.addressLine2,
+        e.data.addressLine3,
+        e.data.city,
+        e.data.state,
+        e.data.postalCode,
+        e.data.createdBy,
+        e.data.createdDate,
+        e.data.lastModifiedBy,
+        e.data.lastModifiedDate);
     this.rowIsSelected = true;
   }
 

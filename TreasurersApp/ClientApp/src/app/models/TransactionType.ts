@@ -5,18 +5,30 @@ export class TransactionType {
   description: string = null;
   displayOrder: number = null;
   active = false;
+  createdBy: string = null;
+  createdDate: Date = null;
+  lastModifiedBy: string = null;
+  lastModifiedDate: Date = null;
 
   constructor(id: number,
     transactionCategoryId: number,
     name: string,
     description: string,
     displayOrder: number,
-    active: boolean) {
+    active: boolean,
+    createdBy: string,
+    createdDate: Date,
+    lastModifiedBy: string,
+    lastModifiedDate: Date) {
     this.id = id;
     this.transactionCategoryId = transactionCategoryId;
     this.name = name;
     this.description = description;
     this.displayOrder = displayOrder;
     this.active = active;
+    this.createdBy = createdBy;
+    this.createdDate = createdDate;
+    this.lastModifiedBy = lastModifiedBy;
+    this.lastModifiedDate = lastModifiedDate;
   }
 }

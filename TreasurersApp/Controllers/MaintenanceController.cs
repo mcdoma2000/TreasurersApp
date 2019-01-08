@@ -32,7 +32,7 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    users = db.Users.Select(x => new SecurityUserEdit()
+                    users = db.User.Select(x => new SecurityUserEdit()
                     {
                         UserID = x.UserId,
                         UserName = x.UserName,
@@ -41,7 +41,7 @@ namespace TreasurersApp.Controllers
                     }).ToList();
                     foreach (var u in users)
                     {
-                        var userClaims = db.UserClaims.Where(x => x.UserId == u.UserID).ToList();
+                        var userClaims = db.UserClaim.Where(x => x.UserId == u.UserID).ToList();
                         u.Claims = userClaims.Select(x => x.Claim).ToList();
                     }
                     results = StatusCode(StatusCodes.Status200OK, users);

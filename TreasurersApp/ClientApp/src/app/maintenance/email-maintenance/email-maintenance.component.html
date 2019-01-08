@@ -1,0 +1,99 @@
+<div #emailMaintenance id="email-maintenance" class="container" style="max-width: 1000px;">
+  <!-- <p-blockUI [blocked]="uiBlocked" [target]="emailMaintenance"></p-blockUI> -->
+  <div class="row">&nbsp;</div>
+  <div class="row">&nbsp;</div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="appCallout">
+        Email Maintenance
+      </div>
+    </div>
+  </div>
+  <div class="row">&nbsp;</div>
+  <div class="row">
+    <div class="col-md-2">
+      <button type="button" (click)="addEmail()" class="btn btn-primary" style="width: 100%;">Add</button>
+    </div>
+    <div class="col-md-2">
+      <button type="button" (click)="editEmail()" [disabled]="rowIsSelected === false" class="btn btn-primary" style="width: 100%;">Edit</button>
+    </div>
+    <div class="col-md-2">
+      <button type="button" (click)="deleteEmail()" [disabled]="rowIsSelected === false" class="btn btn-primary" style="width: 100%;">Delete</button>
+    </div>
+    <div class="col-md-4">&nbsp;</div>
+    <div class="col-md-2">
+      <button id="refresh-grid-data-button" type="button" (click)="refreshGridData()" class="btn btn-primary">Refresh Grid</button>
+    </div>
+  </div>
+  <div class="row">&nbsp;</div>
+  <div class="row">
+    <div class="col-md-12">
+      <dx-data-grid
+        #emailGrid
+        [dataSource]="rowData"
+        keyExpr="id"
+        [rowAlternationEnabled]="true"
+        [showBorders]="true"
+        [showColumnLines]="true"
+        [showRowLines]="true"
+        (onRowClick)="onRowClick($event)"
+        >
+        <dxo-selection [mode]="'single'"></dxo-selection>
+        <dxo-paging [enabled]="true" [pageIndex]="0" [pageSize]="20"></dxo-paging>
+        <dxo-pager
+          [visible]="true"
+          [allowedPageSizes]="[10,20,30]"
+          [infoText]="'Page {0} of {1} ({2} Emails)'"
+          [showInfo]="true"
+          [showPageSizeSelector]="true"
+          [showNavigationButtons]="true"></dxo-pager>
+        <dxi-column dataField="email" caption="Email"></dxi-column>
+      </dx-data-grid>
+    </div>
+  </div>
+  <div class="row">&nbsp;</div>
+  <p-toast></p-toast>
+  <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle" width="425"></p-confirmDialog>
+  <p-dialog header="Edit Email" [(visible)]="displayEdit" width="600">
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Email</div>
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="emailToEdit.email" />
+      </div>
+    </div>
+    <p-footer>
+      <div class="row">
+        <div class="col-md-3">&nbsp;</div>
+        <div class="col-md-3">
+          <p-button label="Save" (click)="saveEditClick($event)"></p-button>
+        </div>
+        <div class="col-md-3">
+          <p-button label="Cancel" (click)="cancelEditClick($event)"></p-button>
+        </div>
+        <div class="col-md-3">&nbsp;</div>
+      </div>
+    </p-footer>
+  </p-dialog>
+  <p-dialog header="Add Email" [(visible)]="displayAdd" width="600">
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Email</div>
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="emailToEdit.email" />
+      </div>
+    </div>
+    <p-footer>
+      <div class="row">
+        <div class="col-md-3">&nbsp;</div>
+        <div class="col-md-3">
+          <p-button label="Save" (click)="saveAddClick($event)"></p-button>
+        </div>
+        <div class="col-md-3">
+          <p-button label="Cancel" (click)="cancelAddClick($event)"></p-button>
+        </div>
+        <div class="col-md-3">&nbsp;</div>
+      </div>
+    </p-footer>
+  </p-dialog>
+  <div class="row">&nbsp;</div>
+  <div class="row">&nbsp;</div>
+</div>

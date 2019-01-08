@@ -6,11 +6,13 @@ using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Memory;
+using TreasurersApp.Database;
 
 namespace TreasurersApp.Controllers
 {
     public class BaseController : Controller
     {
+        public static readonly Guid UnknownUserGuid = Guid.Parse("00000000-0000-0000-0000-000000000000");
         private readonly ILogger _logger;
         private readonly IConfiguration _config;
         private readonly IHostingEnvironment _env;
@@ -38,6 +40,23 @@ namespace TreasurersApp.Controllers
             {
                 throw new InvalidDataException("Database path is missing.");
             }
+        }
+
+        public Guid GetUserGuidFromUserName(string userName)
+        {
+            Guid userGuid = UnknownUserGuid;
+            using (var db = new BTAContext())
+            {
+                foreach (var usr in db.User)
+                {
+                    if (usr.UserName == userName)
+                    {
+                        userGuid = usr.UserId;
+                        break;
+                    }
+                }
+            }
+            return userGuid;
         }
 
         protected IActionResult HandleException(Exception ex, string msg)

@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.uiBlocked = true;
     this.securitySub = this.securityService.login(this.user)
       .subscribe(resp => {
-        console.log(JSON.stringify(resp));
+        // console.log(JSON.stringify(resp));
         this.loggedInEmitter.emit(null);
         this.securityObject = resp;
         if (this.returnUrl) {

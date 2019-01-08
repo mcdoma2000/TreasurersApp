@@ -32,10 +32,17 @@
           <li class="nav-item dropdown" *hasClaim="'canPerformAdmin'">
             <a class="nav-link dropdown-toggle" href="#" id="maintenanceMenu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Maintenance </a>
             <div class="dropdown-menu" aria-labelledby="maintenanceMenu">
+              <a class="dropdown-item" routerLink="/maintenance/types/transactioncategory">Transaction Category Maintenance</a>
+              <a class="dropdown-item" routerLink="/maintenance/types/transactiontype">Transaction Type Maintenance</a>
+              <div class="dropdown-divider"><hr/></div>
+              <a class="dropdown-item" routerLink="/maintenance/types/addresstype">Address Type Maintenance</a>
+              <a class="dropdown-item" routerLink="/maintenance/types/emailtype">Email Type Maintenance</a>
+              <a class="dropdown-item" routerLink="/maintenance/types/phonetype">Phone Type Maintenance</a>
+              <div class="dropdown-divider"><hr/></div>
               <a class="dropdown-item" routerLink="/maintenance/address">Address Maintenance</a>
+              <a class="dropdown-item" routerLink="/maintenance/email">Email Maintenance</a>
+              <a class="dropdown-item" routerLink="/maintenance/phone">Phone Maintenance</a>
               <a class="dropdown-item" routerLink="/maintenance/contributor">Contributor Maintenance</a>
-              <a class="dropdown-item" routerLink="/maintenance/transactioncategory">Transaction Category Maintenance</a>
-              <a class="dropdown-item" routerLink="/maintenance/transactiontype">Transaction Type Maintenance</a>
             </div>
           </li>
         </ng-container>

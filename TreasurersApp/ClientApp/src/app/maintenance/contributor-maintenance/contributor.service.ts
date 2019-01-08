@@ -6,6 +6,8 @@ import * as _ from 'lodash';
 import { Contributor } from '../../models/Contributor';
 import { ContributorViewModel } from '../../models/ContributorViewModel';
 import { ContributorActionResult } from '../../models/ContributorActionResult';
+import { ContributorRequest } from 'src/app/models/ContributorRequest';
+import { SecurityService } from 'src/app/security/security.service';
 
 const API_URL = '/api/contributor';
 
@@ -31,11 +33,22 @@ export class ContributorService implements OnInit, OnDestroy {
   }
 
   newContributor(): Contributor {
-    return new Contributor(0, null, null, null, null);
+    return new Contributor(0, null, null, null, null, null, null, null, null, null);
   }
 
   newContributorFromViewModel(viewModel: ContributorViewModel): Contributor {
-    return new Contributor(viewModel.id, viewModel.firstName, viewModel.middleName, viewModel.lastName, [], viewModel.addressId);
+    return new Contributor(
+      viewModel.id,
+      viewModel.firstName,
+      viewModel.middleName,
+      viewModel.lastName,
+      viewModel.bahaiId,
+      viewModel.contributions,
+      viewModel.createdBy,
+      viewModel.createdDate,
+      viewModel.lastModifiedBy,
+      viewModel.lastModifiedDate
+    );
   }
 
   newViewModel(): ContributorViewModel {
@@ -70,14 +83,12 @@ export class ContributorService implements OnInit, OnDestroy {
     return this.http.get<ContributorViewModel>(API_URL + '/getvmbyid', options);
   }
 
-  updateContributor(contributor: ContributorViewModel): Observable<ContributorActionResult>  {
-    const contrib = this.newContributorFromViewModel(contributor);
-    return this.http.put<ContributorActionResult>(API_URL + '/put', contrib, this.defaultOptions);
+  updateContributor(request: ContributorRequest): Observable<ContributorActionResult>  {
+    return this.http.put<ContributorActionResult>(API_URL + '/put', request, this.defaultOptions);
   }
 
-  addContributor(contributor: ContributorViewModel): Observable<ContributorActionResult> {
-    const contrib = this.newContributorFromViewModel(contributor);
-    return this.http.post<ContributorActionResult>(API_URL + '/post', contrib, this.defaultOptions);
+  addContributor(request: ContributorRequest): Observable<ContributorActionResult> {
+    return this.http.post<ContributorActionResult>(API_URL + '/post', request, this.defaultOptions);
   }
 
   deleteContributor(id: number): Observable<ContributorActionResult> {

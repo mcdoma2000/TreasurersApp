@@ -6,14 +6,22 @@ export class Address {
   city: string = null;
   state: string = null;
   postalCode: string = null;
+  createdBy: string = null;
+  createdDate: Date = null;
+  lastModifiedBy: string = null;
+  lastModifiedDate: Date = null;
 
   constructor(id: number,
     addressLine1: string,
-     addressLine2: string,
-     addressLine3: string,
-     city: string,
-     state: string,
-     postalCode: string) {
+    addressLine2: string,
+    addressLine3: string,
+    city: string,
+    state: string,
+    postalCode: string,
+    createdBy: string,
+    createdDate: Date,
+    lastModifiedBy: string,
+    lastModifiedDate: Date) {
     this.id = id;
     this.addressLine1 = addressLine1;
     this.addressLine2 = addressLine2;
@@ -21,6 +29,10 @@ export class Address {
     this.city = city;
     this.state = state;
     this.postalCode = postalCode;
+    this.createdBy = createdBy;
+    this.createdDate = createdDate;
+    this.lastModifiedBy = lastModifiedBy;
+    this.lastModifiedDate = lastModifiedDate;
   }
 
   asAddressString() {

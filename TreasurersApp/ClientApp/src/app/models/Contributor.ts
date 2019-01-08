@@ -5,15 +5,32 @@ export class Contributor {
   firstName: string = null;
   middleName: string = null;
   lastName: string = null;
-  addressId: number = null;
+  bahaiId: string = null;
   contributions: CashJournal[];
+  createdBy: string = null;
+  createdDate: Date = null;
+  lastModifiedBy: string = null;
+  lastModifiedDate: Date = null;
 
-  constructor(id: number, firstName: string, middleName: string, lastName: string, contributions: CashJournal[], addressId?: number ) {
+  constructor(id: number,
+    firstName: string,
+    middleName: string,
+    lastName: string,
+    bahaiId: string,
+    contributions: CashJournal[],
+    createdBy: string,
+    createdDate: Date,
+    lastModifiedBy: string,
+    lastModifiedDate: Date) {
     this.id = id;
     this.firstName = firstName;
     this.middleName = middleName;
     this.lastName = lastName;
-    this.addressId = addressId;
+    this.bahaiId = bahaiId;
     this.contributions = contributions;
-  }
+    this.createdBy = createdBy;
+    this.createdDate = createdDate;
+    this.lastModifiedBy = lastModifiedBy;
+    this.lastModifiedDate = lastModifiedDate;
+ }
 }

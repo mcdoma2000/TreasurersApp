@@ -39,11 +39,10 @@
         <dxo-paging [enabled]="true" [pageIndex]="0" [pageSize]="10"></dxo-paging>
         <dxo-pager [visible]="true"
                    [allowedPageSizes]="[10,20]"
-                   [infoText]="'Page {0} of {1} ({2} Contribution Types)'"
+                   [infoText]="'Page {0} of {1} ({2} Transaction Types)'"
                    [showInfo]="true"
                    [showPageSizeSelector]="true"
                    [showNavigationButtons]="true"></dxo-pager>
-        <dxi-column dataField="transactionCategoryDescription" caption="Category"></dxi-column>
         <dxi-column dataField="name" caption="Name"></dxi-column>
         <dxi-column dataField="description" caption="Description"></dxi-column>
         <dxi-column dataField="displayOrder" caption="Display Order"></dxi-column>
@@ -54,12 +53,12 @@
   <div class="row">&nbsp;</div>
   <p-toast></p-toast>
   <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle" width="425"></p-confirmDialog>
-  <p-dialog header="Edit Contribution Type" [(visible)]="displayEdit" width="600">
+  <p-dialog header="Edit Transaction Type" [(visible)]="displayEdit" width="600">
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Category</div>
       <div class="col-md-9">
         <p-dropdown [options]="categories"
-                    [(ngModel)]="ctypeToEdit.contributionCategoryId"
+                    [(ngModel)]="ttypeToEdit.transactionCategoryId"
                     placeholder="Select a Category"
                     #categoryDropdownEdit></p-dropdown>
       </div>
@@ -67,25 +66,25 @@
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Name</div>
       <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="ctypeToEdit.transactionTypeName" />
+        <input type="text" pInputText [(ngModel)]="ttypeToEdit.name" />
       </div>
     </div>
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Description</div>
       <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="ctypeToEdit.description" />
+        <input type="text" pInputText [(ngModel)]="ttypeToEdit.description" />
       </div>
     </div>
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Display Order</div>
       <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="ctypeToEdit.displayOrder" required />
+        <input type="text" pInputText [(ngModel)]="ttypeToEdit.displayOrder" required />
       </div>
     </div>
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Active</div>
       <div class="col-md-9">
-        <p-checkbox [(ngModel)]="ctypeToEdit.active" binary="true" required></p-checkbox>
+        <p-checkbox [(ngModel)]="ttypeToEdit.active" binary="true" required></p-checkbox>
       </div>
     </div>
     <p-footer>
@@ -101,12 +100,12 @@
       </div>
     </p-footer>
   </p-dialog>
-  <p-dialog header="Add Contribution Type" [(visible)]="displayAdd" width="600">
+  <p-dialog header="Add Transaction Type" [(visible)]="displayAdd" width="600">
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Category</div>
       <div class="col-md-9">
         <p-dropdown [options]="categories"
-                    [(ngModel)]="ctypeToEdit.contributionCategoryId"
+                    [(ngModel)]="ttypeToEdit.transactionCategoryId"
                     placeholder="Select a Category"
                     #categoryDropdownAdd></p-dropdown>
       </div>
@@ -114,25 +113,25 @@
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Name</div>
       <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="ctypeToEdit.transactionTypeName" />
+        <input type="text" pInputText [(ngModel)]="ttypeToEdit.name" />
       </div>
     </div>
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Description</div>
       <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="ctypeToEdit.description" />
+        <input type="text" pInputText [(ngModel)]="ttypeToEdit.description" />
       </div>
     </div>
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Display Order</div>
       <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="ctypeToEdit.displayOrder" required />
+        <input type="text" pInputText [(ngModel)]="ttypeToEdit.displayOrder" required />
       </div>
     </div>
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Active</div>
       <div class="col-md-9">
-        <p-checkbox [(ngModel)]="ctypeToEdit.active" binary="true" required></p-checkbox>
+        <p-checkbox [(ngModel)]="ttypeToEdit.active" binary="true" required></p-checkbox>
       </div>
     </div>
     <p-footer>

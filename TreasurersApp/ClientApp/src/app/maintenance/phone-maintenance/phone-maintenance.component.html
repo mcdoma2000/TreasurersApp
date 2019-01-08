@@ -1,0 +1,98 @@
+<div #phoneMaintenance id="phone-maintenance" class="container" style="max-width: 1000px;">
+  <div class="row">&nbsp;</div>
+  <div class="row">&nbsp;</div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="appCallout">
+        Phone Maintenance
+      </div>
+    </div>
+  </div>
+  <div class="row">&nbsp;</div>
+  <div class="row">
+    <div class="col-md-2">
+      <button type="button" (click)="addPhone()" class="btn btn-primary" style="width: 100%;">Add</button>
+    </div>
+    <div class="col-md-2">
+      <button type="button" (click)="editPhone()" [disabled]="rowIsSelected === false" class="btn btn-primary" style="width: 100%;">Edit</button>
+    </div>
+    <div class="col-md-2">
+      <button type="button" (click)="deletePhone()" [disabled]="rowIsSelected === false" class="btn btn-primary" style="width: 100%;">Delete</button>
+    </div>
+    <div class="col-md-4">&nbsp;</div>
+    <div class="col-md-2">
+      <button id="refresh-grid-data-button" type="button" (click)="refreshGridData()" class="btn btn-primary">Refresh Grid</button>
+    </div>
+  </div>
+  <div class="row">&nbsp;</div>
+  <div class="row">
+    <div class="col-md-12">
+      <dx-data-grid
+        #phoneGrid
+        [dataSource]="rowData"
+        keyExpr="id"
+        [rowAlternationEnabled]="true"
+        [showBorders]="true"
+        [showColumnLines]="true"
+        [showRowLines]="true"
+        (onRowClick)="onRowClick($event)"
+        >
+        <dxo-selection [mode]="'single'"></dxo-selection>
+        <dxo-paging [enabled]="true" [pageIndex]="0" [pageSize]="20"></dxo-paging>
+        <dxo-pager
+          [visible]="true"
+          [allowedPageSizes]="[10,20,30]"
+          [infoText]="'Page {0} of {1} ({2} Phones)'"
+          [showInfo]="true"
+          [showPageSizeSelector]="true"
+          [showNavigationButtons]="true"></dxo-pager>
+        <dxi-column dataField="phoneNumber" caption="Phone"></dxi-column>
+      </dx-data-grid>
+    </div>
+  </div>
+  <div class="row">&nbsp;</div>
+  <p-toast></p-toast>
+  <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle" width="425"></p-confirmDialog>
+  <p-dialog header="Edit Phone" [(visible)]="displayEdit" width="600">
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Phone</div>
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="phoneToEdit.phoneNumber" />
+      </div>
+    </div>
+    <p-footer>
+      <div class="row">
+        <div class="col-md-3">&nbsp;</div>
+        <div class="col-md-3">
+          <p-button label="Save" (click)="saveEditClick($event)"></p-button>
+        </div>
+        <div class="col-md-3">
+          <p-button label="Cancel" (click)="cancelEditClick($event)"></p-button>
+        </div>
+        <div class="col-md-3">&nbsp;</div>
+      </div>
+    </p-footer>
+  </p-dialog>
+  <p-dialog header="Add Phone" [(visible)]="displayAdd" width="600">
+    <div class="row" style="padding-bottom: 5px;">
+      <div class="col-md-3">Phone</div>
+      <div class="col-md-9">
+        <input type="text" pInputText [(ngModel)]="phoneToEdit.phoneNumber" />
+      </div>
+    </div>
+    <p-footer>
+      <div class="row">
+        <div class="col-md-3">&nbsp;</div>
+        <div class="col-md-3">
+          <p-button label="Save" (click)="saveAddClick($event)"></p-button>
+        </div>
+        <div class="col-md-3">
+          <p-button label="Cancel" (click)="cancelAddClick($event)"></p-button>
+        </div>
+        <div class="col-md-3">&nbsp;</div>
+      </div>
+    </p-footer>
+  </p-dialog>
+  <div class="row">&nbsp;</div>
+  <div class="row">&nbsp;</div>
+</div>

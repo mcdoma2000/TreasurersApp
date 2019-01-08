@@ -18,25 +18,25 @@ namespace TreasurersApp.Database
         {
         }
 
-        public DbSet<Address> Addresses { get; set; } // Address
-        public DbSet<AddressType> AddressTypes { get; set; } // AddressType
-        public DbSet<CashJournal> CashJournals { get; set; } // CashJournal
-        public DbSet<Contributor> Contributors { get; set; } // Contributor
-        public DbSet<ContributorAddress> ContributorAddresses { get; set; } // ContributorAddress
-        public DbSet<ContributorEmailAddress> ContributorEmailAddresses { get; set; } // ContributorEmailAddress
-        public DbSet<ContributorPhoneNumber> ContributorPhoneNumbers { get; set; } // ContributorPhoneNumber
-        public DbSet<EmailAddress> EmailAddresses { get; set; } // EmailAddress
-        public DbSet<EmailType> EmailTypes { get; set; } // EmailType
-        public DbSet<PhoneNumber> PhoneNumbers { get; set; } // PhoneNumber
-        public DbSet<PhoneType> PhoneTypes { get; set; } // PhoneType
-        public DbSet<Report> Reports { get; set; } // Report
-        public DbSet<TransactionCategory> TransactionCategories { get; set; } // TransactionCategory
-        public DbSet<TransactionType> TransactionTypes { get; set; } // TransactionType
+        public DbSet<Address> Address { get; set; } // Address
+        public DbSet<AddressType> AddressType { get; set; } // AddressType
+        public DbSet<CashJournal> CashJournal { get; set; } // CashJournal
+        public DbSet<Contributor> Contributor { get; set; } // Contributor
+        public DbSet<ContributorAddress> ContributorAddress { get; set; } // ContributorAddress
+        public DbSet<ContributorEmailAddress> ContributorEmailAddress { get; set; } // ContributorEmailAddress
+        public DbSet<ContributorPhoneNumber> ContributorPhoneNumber { get; set; } // ContributorPhoneNumber
+        public DbSet<EmailAddress> EmailAddress { get; set; } // EmailAddress
+        public DbSet<EmailType> EmailType { get; set; } // EmailType
+        public DbSet<PhoneNumber> PhoneNumber { get; set; } // PhoneNumber
+        public DbSet<PhoneType> PhoneType { get; set; } // PhoneType
+        public DbSet<Report> Report { get; set; } // Report
+        public DbSet<TransactionCategory> TransactionCategory { get; set; } // TransactionCategory
+        public DbSet<TransactionType> TransactionType { get; set; } // TransactionType
 
-        public DbSet<Claim> Claims { get; set; } // Claim
-        public DbSet<History> Histories { get; set; } // History
-        public DbSet<User> Users { get; set; } // User
-        public DbSet<UserClaim> UserClaims { get; set; } // UserClaim
+        public DbSet<Claim> Claim { get; set; } // Claim
+        public DbSet<History> History { get; set; } // History
+        public DbSet<User> User { get; set; } // User
+        public DbSet<UserClaim> UserClaim { get; set; } // UserClaim
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

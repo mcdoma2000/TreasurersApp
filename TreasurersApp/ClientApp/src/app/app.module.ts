@@ -45,6 +45,11 @@ import { AddressMaintenanceComponent } from './maintenance/address-maintenance/a
 import { ContributorMaintenanceComponent } from './maintenance/contributor-maintenance/contributor-maintenance.component';
 import { TransactionCategoryMaintenanceComponent } from './maintenance/transaction-category-maintenance/transaction-category-maintenance.component';
 import { TransactionTypeMaintenanceComponent } from './maintenance/transaction-type-maintenance/transaction-type-maintenance.component';
+import { PhoneMaintenanceComponent } from './maintenance/phone-maintenance/phone-maintenance.component';
+import { EmailMaintenanceComponent } from './maintenance/email-maintenance/email-maintenance.component';
+import { AddressTypeMaintenanceComponent } from './maintenance/address-type-maintenance/address-type-maintenance.component';
+import { PhoneTypeMaintenanceComponent } from './maintenance/phone-type-maintenance/phone-type-maintenance.component';
+import { EmailTypeMaintenanceComponent } from './maintenance/email-type-maintenance/email-type-maintenance.component';
 
 @NgModule({
   declarations: [
@@ -62,10 +67,15 @@ import { TransactionTypeMaintenanceComponent } from './maintenance/transaction-t
     ReportReceiptsByContributionComponent,
     ReportReceiptsByGregorianYearComponent,
     StandardReportFormComponent,
-    AddressMaintenanceComponent,
     ContributorMaintenanceComponent,
     TransactionCategoryMaintenanceComponent,
     TransactionTypeMaintenanceComponent,
+    AddressMaintenanceComponent,
+    AddressTypeMaintenanceComponent,
+    PhoneMaintenanceComponent,
+    PhoneTypeMaintenanceComponent,
+    EmailMaintenanceComponent,
+    EmailTypeMaintenanceComponent
   ],
   imports: [
     BrowserModule,

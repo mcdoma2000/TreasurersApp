@@ -28,7 +28,7 @@
   <div class="row">&nbsp;</div>
   <div class="row">
     <div class="col-md-12">
-      <dx-data-grid #contributionCategoryGrid
+      <dx-data-grid #contributorGrid
                     [dataSource]="rowData"
                     keyExpr="id"
                     [rowAlternationEnabled]="true"
@@ -47,7 +47,9 @@
         <dxi-column dataField="firstName" caption="First Name"></dxi-column>
         <dxi-column dataField="middleName" caption="Middle Name"></dxi-column>
         <dxi-column dataField="lastName" caption="Last Name"></dxi-column>
-        <dxi-column dataField="addressText" caption="Address"></dxi-column>
+        <dxi-column dataField="emailAddress" caption="Preferred Email"></dxi-column>
+        <dxi-column dataField="phoneNumber" caption="Preferred Phone"></dxi-column>
+        <dxi-column dataField="addressText" caption="Preferred Address"></dxi-column>
       </dx-data-grid>
     </div>
   </div>

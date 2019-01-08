@@ -32,10 +32,10 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    if (db.TransactionCategories.Count() > 0)
+                    if (db.TransactionCategory.Count() > 0)
                     {
                         // If includeInactive == true, return all, otherwise return only active records.
-                        list = db.TransactionCategories
+                        list = db.TransactionCategory
                             .Where(x => (x.Active.HasValue && x.Active.Value) || includeInactive)
                             .OrderBy(p => p.DisplayOrder)
                             .ToList();
@@ -62,7 +62,7 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    entity = db.TransactionCategories.Find(id);
+                    entity = db.TransactionCategory.Find(id);
                     if (entity != null)
                     {
                         ret = StatusCode(StatusCodes.Status200OK, entity);
@@ -84,20 +84,26 @@ namespace TreasurersApp.Controllers
         }
 
         [HttpPost("post", Name = "TransactionCategoryPost")]
-        public IActionResult Post([FromBody]TransactionCategory entity)
+        public IActionResult Post([FromBody]TransactionCategoryRequest request)
         {
+            Guid userGuid = GetUserGuidFromUserName(request.UserName);
             var result = new TransactionCategoryActionResult(false, new List<string>(), null);
             try
             {
-                if (entity != null)
+                if (request != null)
                 {
                     using (var db = new BTAContext())
                     {
-                        db.TransactionCategories.Add(entity);
+                        DateTime now = DateTime.Now;
+                        request.Data.CreatedBy = userGuid;
+                        request.Data.CreatedDate = now;
+                        request.Data.LastModifiedBy = userGuid;
+                        request.Data.LastModifiedDate = now;
+                        db.TransactionCategory.Add(request.Data);
                         db.SaveChanges();
                         result.Success = true;
                         result.StatusMessages.Add("Successfully added contribution category.");
-                        result.Data = entity;
+                        result.Data = request.Data;
                     }
                 }
                 else
@@ -119,19 +125,22 @@ namespace TreasurersApp.Controllers
         }
 
         [HttpPut("put", Name = "TransactionCategoryPut")]
-        public IActionResult Put([FromBody]TransactionCategory entity)
+        public IActionResult Put([FromBody]TransactionCategoryRequest request)
         {
+            var userGuid = GetUserGuidFromUserName(request.UserName);
             var result = new TransactionCategoryActionResult(false, new List<string>(), null);
             try
             {
-                if (entity != null)
+                if (request != null)
                 {
                     using (var db = new BTAContext())
                     {
-                        db.Update(entity);
+                        request.Data.LastModifiedBy = userGuid;
+                        request.Data.LastModifiedDate = DateTime.Now;
+                        db.Update(request.Data);
                         db.SaveChanges();
                         result.Success = true;
-                        result.Data = entity;
+                        result.Data = request.Data;
                         result.StatusMessages.Add("Successfully updated contribution category.");
                     }
                 }
@@ -163,14 +172,14 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    if (db.TransactionCategories.Any(x => x.TransactionCategoryId == id) == false)
+                    if (db.TransactionCategory.Any(x => x.TransactionCategoryId == id) == false)
                     {
                         returnResult.StatusMessages.Add("Attempted to delete a nonexisting contribution category.");
                     }
                     else
                     {
-                        var resultCategory = db.TransactionCategories.Single(x => x.TransactionCategoryId == id);
-                        db.TransactionCategories.Remove(resultCategory);
+                        var resultCategory = db.TransactionCategory.Single(x => x.TransactionCategoryId == id);
+                        db.TransactionCategory.Remove(resultCategory);
                         db.SaveChanges();
                         returnResult.Success = true;
                         returnResult.Data = resultCategory;

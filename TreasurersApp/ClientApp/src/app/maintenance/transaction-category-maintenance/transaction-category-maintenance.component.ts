@@ -6,6 +6,8 @@ import { TransactionCategory } from '../../models/TransactionCategory';
 import { TransactionCategoryService } from './transaction-category.service';
 import { ConfirmationMessage } from '../../models/ConfirmationMessage';
 import { DxDataGridComponent } from 'devextreme-angular/ui/data-grid';
+import { TransactionCategoryRequest } from 'src/app/models/TransactionCategoryRequest';
+import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
   selector: 'app-transaction-category-maintenance',
@@ -27,6 +29,7 @@ export class TransactionCategoryMaintenanceComponent implements OnInit {
   displayAdd = false;
 
   constructor(private transactionCategoryService: TransactionCategoryService,
+    private securityService: SecurityService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService) {
   }
@@ -46,7 +49,11 @@ export class TransactionCategoryMaintenanceComponent implements OnInit {
         this.selectedTransactionCategory.name,
         this.selectedTransactionCategory.description,
         this.selectedTransactionCategory.displayOrder,
-        this.selectedTransactionCategory.active);
+        this.selectedTransactionCategory.active,
+        this.selectedTransactionCategory.createdBy,
+        this.selectedTransactionCategory.createdDate,
+        this.selectedTransactionCategory.lastModifiedBy,
+        this.selectedTransactionCategory.lastModifiedDate);
     this.confirmDelete();
   }
 
@@ -104,7 +111,10 @@ export class TransactionCategoryMaintenanceComponent implements OnInit {
     };
     this.showConfirmation('Are you certain that you want to add this record?', 'Add Confirmation', 'Add', confMsg, () => {
       this.uiBlocked = true;
-      this.transactionCategoryService.addTransactionCategory(this.tcatToEdit).subscribe(
+      const request = new TransactionCategoryRequest();
+      request.userName = this.securityService.loggedInUserName();
+      request.data = this.tcatToEdit;
+      this.transactionCategoryService.addTransactionCategory(request).subscribe(
         (resp) => {
           if (resp.success === true) {
             this.messageService.add({
@@ -143,7 +153,10 @@ export class TransactionCategoryMaintenanceComponent implements OnInit {
     };
     this.showConfirmation('Are you certain that you want to update this record?', 'Update Confirmation', 'Update', confMsg, () => {
       this.uiBlocked = true;
-      this.transactionCategoryService.updateTransactionCategory(this.tcatToEdit).subscribe(
+      const request = new TransactionCategoryRequest();
+      request.userName = this.securityService.loggedInUserName();
+      request.data = this.tcatToEdit;
+      this.transactionCategoryService.updateTransactionCategory(request).subscribe(
         (resp) => {
           if (resp.success === true) {
             this.messageService.add({
@@ -211,7 +224,11 @@ export class TransactionCategoryMaintenanceComponent implements OnInit {
         this.selectedTransactionCategory.name,
         this.selectedTransactionCategory.description,
         this.selectedTransactionCategory.displayOrder,
-        this.selectedTransactionCategory.active);
+        this.selectedTransactionCategory.active,
+        this.selectedTransactionCategory.createdBy,
+        this.selectedTransactionCategory.createdDate,
+        this.selectedTransactionCategory.lastModifiedBy,
+        this.selectedTransactionCategory.lastModifiedDate);
   }
 
   saveAddClick($event) {
@@ -263,7 +280,16 @@ export class TransactionCategoryMaintenanceComponent implements OnInit {
 
   onRowClick(e) {
     this.selectedTransactionCategory =
-      new TransactionCategory(e.data.id, e.data.transactionCategoryName, e.data.description, e.data.displayOrder, e.data.active);
+      new TransactionCategory(
+        e.data.id,
+        e.data.transactionCategoryName,
+        e.data.description,
+        e.data.displayOrder,
+        e.data.active,
+        e.data.createdBy,
+        e.data.createdDate,
+        e.data.lastModifiedBy,
+        e.data.lastModifiedDate);
     this.rowIsSelected = true;
   }
 

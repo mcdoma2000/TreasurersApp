@@ -34,7 +34,7 @@ namespace TreasurersApp.Utilities.Security
             using (var db = new BTAContext())
             {
                 // Attempt to validate user
-                authUser = db.Users.FirstOrDefault(u => u.UserName.ToLower() == user.UserName.ToLower() && u.Password == user.Password);
+                authUser = db.User.FirstOrDefault(u => u.UserName.ToLower() == user.UserName.ToLower() && u.Password == user.Password);
                 if (authUser != null)
                 {
                     db.Entry(authUser).Collection(x => x.UserClaims).Load();

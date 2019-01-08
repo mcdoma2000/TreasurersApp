@@ -13,9 +13,14 @@ import { ReportReceiptsByContributionComponent } from './reports/rrbc/report-rec
 import { ReportReceiptsByGregorianYearComponent } from './reports/rrbgy/report-receipts-by-gregorian-year.component';
 import { AuthGuard } from './security/auth.guard';
 import { AddressMaintenanceComponent } from './maintenance/address-maintenance/address-maintenance.component';
+import { PhoneMaintenanceComponent } from './maintenance/phone-maintenance/phone-maintenance.component';
+import { EmailMaintenanceComponent } from './maintenance/email-maintenance/email-maintenance.component';
 import { ContributorMaintenanceComponent } from './maintenance/contributor-maintenance/contributor-maintenance.component';
 import { TransactionTypeMaintenanceComponent } from './maintenance/transaction-type-maintenance/transaction-type-maintenance.component';
 import { TransactionCategoryMaintenanceComponent } from './maintenance/transaction-category-maintenance/transaction-category-maintenance.component';
+import { AddressTypeMaintenanceComponent } from './maintenance/address-type-maintenance/address-type-maintenance.component';
+import { PhoneTypeMaintenanceComponent } from './maintenance/phone-type-maintenance/phone-type-maintenance.component';
+import { EmailTypeMaintenanceComponent } from './maintenance/email-type-maintenance/email-type-maintenance.component';
 
 const routes: Routes = [
   {
@@ -71,20 +76,50 @@ const routes: Routes = [
     data: { claimType: 'canPerformAdmin' }
   },
   {
+    path: 'maintenance/email',
+    component: EmailMaintenanceComponent,
+    canActivate: [AuthGuard],
+    data: { claimType: 'canPerformAdmin' }
+  },
+  {
+    path: 'maintenance/phone',
+    component: PhoneMaintenanceComponent,
+    canActivate: [AuthGuard],
+    data: { claimType: 'canPerformAdmin' }
+  },
+  {
     path: 'maintenance/contributor',
     component: ContributorMaintenanceComponent,
     canActivate: [AuthGuard],
     data: { claimType: 'canPerformAdmin' }
   },
   {
-    path: 'maintenance/transactiontype',
+    path: 'maintenance/types/transactiontype',
     component: TransactionTypeMaintenanceComponent,
     canActivate: [AuthGuard],
     data: { claimType: 'canPerformAdmin' }
   },
   {
-    path: 'maintenance/transactioncategory',
+    path: 'maintenance/types/transactioncategory',
     component: TransactionCategoryMaintenanceComponent,
+    canActivate: [AuthGuard],
+    data: { claimType: 'canPerformAdmin' }
+  },
+  {
+    path: 'maintenance/types/addresstype',
+    component: AddressTypeMaintenanceComponent,
+    canActivate: [AuthGuard],
+    data: { claimType: 'canPerformAdmin' }
+  },
+  {
+    path: 'maintenance/types/phonetype',
+    component: PhoneTypeMaintenanceComponent,
+    canActivate: [AuthGuard],
+    data: { claimType: 'canPerformAdmin' }
+  },
+  {
+    path: 'maintenance/types/emailtype',
+    component: EmailTypeMaintenanceComponent,
     canActivate: [AuthGuard],
     data: { claimType: 'canPerformAdmin' }
   },

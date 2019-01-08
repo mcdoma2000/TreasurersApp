@@ -5,6 +5,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { TransactionCategory } from '../../models/TransactionCategory';
 import { TransactionCategoryActionResult } from '../../models/TransactionCategoryActionResult';
 import * as moment from 'moment';
+import { TransactionCategoryRequest } from 'src/app/models/TransactionCategoryRequest';
 
 
 const TRANSACTIONCATEGORY_API_URL = '/api/TransactionCategory';
@@ -24,7 +25,7 @@ export class TransactionCategoryService {
   constructor(private http: HttpClient) { }
 
   newTransactionCategory(): TransactionCategory {
-    return new TransactionCategory(0, null, null, null, null);
+    return new TransactionCategory(0, null, null, null, null, null, null, null, null);
   }
 
   getTransactionCategories(forceReload: boolean = false, includeInactive: boolean = false): Observable<TransactionCategory[]> {
@@ -58,20 +59,12 @@ export class TransactionCategoryService {
     return true;
   }
 
-  updateTransactionCategory(transactionCategory: TransactionCategory): Observable<TransactionCategoryActionResult> {
-    if (this.validateTransactionCategory(transactionCategory) === false) {
-      console.log('Attempted to update an invalid transaction category.');
-      console.log(JSON.stringify(TransactionCategory));
-    }
-    return this.http.put<TransactionCategoryActionResult>(TRANSACTIONCATEGORY_API_URL + '/put', transactionCategory, this.httpOptions);
+  updateTransactionCategory(request: TransactionCategoryRequest): Observable<TransactionCategoryActionResult> {
+    return this.http.put<TransactionCategoryActionResult>(TRANSACTIONCATEGORY_API_URL + '/put', request, this.httpOptions);
   }
 
-  addTransactionCategory(transactionCategory: TransactionCategory): Observable<TransactionCategoryActionResult> {
-    if (this.validateTransactionCategory(transactionCategory) === false) {
-      console.log('Attempted to add an invalid transaction category.');
-      console.log(JSON.stringify(TransactionCategory));
-    }
-    return this.http.post<TransactionCategoryActionResult>(TRANSACTIONCATEGORY_API_URL + '/post', transactionCategory, this.httpOptions);
+  addTransactionCategory(request: TransactionCategoryRequest): Observable<TransactionCategoryActionResult> {
+    return this.http.post<TransactionCategoryActionResult>(TRANSACTIONCATEGORY_API_URL + '/post', request, this.httpOptions);
   }
 
   deleteTransactionCategory(transactionCategoryId: number): Observable<TransactionCategoryActionResult> {

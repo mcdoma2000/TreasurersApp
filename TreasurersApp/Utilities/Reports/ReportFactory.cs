@@ -15,7 +15,7 @@ namespace TreasurersApp.Utilities.Reports
         public ReportFactory(DbContext db)
         {
             var dc = db as BTAContext;
-            foreach (var rpt in dc.Reports.Where(x => x.Active ?? false).OrderBy(x => x.DisplayOrder).ToList())
+            foreach (var rpt in dc.Report.Where(x => x.Active ?? false).OrderBy(x => x.DisplayOrder).ToList())
             {
                 reportsByName.Add(rpt.Name, rpt);
             }

@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Address } from '../../models/Address';
+import { AddressRequest } from '../../models/AddressRequest';
 import { AddressActionResult } from '../../models/AddressActionResult';
 
 const ADDRESS_API_URL = '/api/address';
@@ -23,7 +24,7 @@ export class AddressService {
   constructor(private http: HttpClient) { }
 
   newAddress(): Address {
-    return new Address(0, null, null, null, null, null, null);
+    return new Address(0, null, null, null, null, null, null, null, null, null, null);
   }
 
   getAddresses(forceReload: boolean = false): Observable<Address[]> {
@@ -51,13 +52,12 @@ export class AddressService {
     return true;
   }
 
-  updateAddress(address: Address): Observable<AddressActionResult> {
-    return this.http.put<AddressActionResult>(ADDRESS_API_URL + '/put', address, this.httpOptions);
+  updateAddress(addressRequest: AddressRequest): Observable<AddressActionResult> {
+    return this.http.put<AddressActionResult>(ADDRESS_API_URL + '/put', addressRequest, this.httpOptions);
   }
 
-  addAddress(address: Address): Observable<AddressActionResult> {
-    address.id = 0;
-    return this.http.post<AddressActionResult>(ADDRESS_API_URL + '/post', address, this.httpOptions);
+  addAddress(addressRequest: AddressRequest): Observable<AddressActionResult> {
+    return this.http.post<AddressActionResult>(ADDRESS_API_URL + '/post', addressRequest, this.httpOptions);
   }
 
   deleteAddress(addressId: number): Observable<AddressActionResult> {

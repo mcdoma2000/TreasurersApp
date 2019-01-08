@@ -30,10 +30,10 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    if (db.TransactionTypes.Count() > 0)
+                    if (db.TransactionType.Count() > 0)
                     {
                         // If includeInactive == true, return all, otherwise return only active records.
-                        list = db.TransactionTypes
+                        list = db.TransactionType
                             .Where(x => (x.Active.HasValue && x.Active.Value) || includeInactive)
                             .OrderBy(x => x.DisplayOrder)
                             .ToList();
@@ -60,10 +60,10 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    if (db.TransactionTypes.Count() > 0)
+                    if (db.TransactionType.Count() > 0)
                     {
                         // If includeInactive == true, return all, otherwise return only active records.
-                        list = db.TransactionTypes
+                        list = db.TransactionType
                             .Where(x => x.Active ?? false || includeInactive)
                             .Select(x => new TransactionTypeViewModel()
                             {
@@ -97,7 +97,7 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    entity = db.TransactionTypes.Find(id);
+                    entity = db.TransactionType.Find(id);
                     if (entity != null)
                     {
                         ret = StatusCode(StatusCodes.Status200OK, entity);
@@ -119,16 +119,22 @@ namespace TreasurersApp.Controllers
         }
 
         [HttpPost("post", Name = "TransactionTypePost")]
-        public IActionResult Post([FromBody]TransactionType contributionType)
+        public IActionResult Post([FromBody]TransactionTypeRequest request)
         {
+            Guid userGuid = GetUserGuidFromUserName(request.UserName);
             var returnResult = new TransactionTypeActionResult(false, new List<string>(), null);
-            if (contributionType != null)
+            if (request != null)
             {
                 try
                 {
                     using (var db = new BTAContext())
                     {
-                        var resultTransactionType = db.TransactionTypes.Add(contributionType);
+                        DateTime now = DateTime.Now;
+                        request.Data.CreatedBy = userGuid;
+                        request.Data.CreatedDate = now;
+                        request.Data.LastModifiedBy = userGuid;
+                        request.Data.LastModifiedDate = now;
+                        var resultTransactionType = db.TransactionType.Add(request.Data);
                         db.SaveChanges();
                         var entity = resultTransactionType.Entity;
                         if (entity != null)
@@ -157,21 +163,22 @@ namespace TreasurersApp.Controllers
         }
 
         [HttpPut("put", Name = "TransactionTypePut")]
-        public IActionResult Put([FromBody]TransactionType contributionType)
+        public IActionResult Put([FromBody]TransactionTypeRequest request)
         {
+            Guid userGuid = GetUserGuidFromUserName(request.UserName);
             var returnResult = new TransactionTypeActionResult(false, new List<string>(), null);
-            if (contributionType != null)
+            if (request != null)
             {
                 try
                 {
                     using (var db = new BTAContext())
                     {
-                        var resultTransactionType = db.TransactionTypes.SingleOrDefault(x => x.TransactionTypeId == contributionType.TransactionTypeId);
+                        var resultTransactionType = db.TransactionType.SingleOrDefault(x => x.TransactionTypeId == request.Data.TransactionTypeId);
                         if (resultTransactionType != null)
                         {
-                            resultTransactionType.TransactionCategoryId = contributionType.TransactionCategoryId;
-                            resultTransactionType.Name = contributionType.Name;
-                            resultTransactionType.Description = contributionType.Description;
+                            resultTransactionType.TransactionCategoryId = request.Data.TransactionCategoryId;
+                            resultTransactionType.Name = request.Data.Name;
+                            resultTransactionType.Description = request.Data.Description;
                             db.SaveChanges();
                             returnResult.Success = true;
                             returnResult.Data = resultTransactionType;
@@ -180,7 +187,7 @@ namespace TreasurersApp.Controllers
                         else
                         {
                             returnResult.Success = false;
-                            returnResult.StatusMessages.Add(string.Format("Unable to locate transaction type for id: {0}", contributionType.TransactionTypeId));
+                            returnResult.StatusMessages.Add(string.Format("Unable to locate transaction type for id: {0}", request.Data.TransactionTypeId));
                             returnResult.Data = null;
                         }
                     }
@@ -209,7 +216,7 @@ namespace TreasurersApp.Controllers
             {
                 using (var db = new BTAContext())
                 {
-                    if (db.TransactionTypes.Any(x => x.TransactionTypeId == id) == false)
+                    if (db.TransactionType.Any(x => x.TransactionTypeId == id) == false)
                     {
                         returnResult.Success = false;
                         returnResult.StatusMessages.Add(string.Format("Unable to locate transaction type for id: {0}", id));
@@ -217,7 +224,7 @@ namespace TreasurersApp.Controllers
                     }
                     else
                     {
-                        var resultTransactionType = db.TransactionTypes.Single(x => x.TransactionTypeId == id);
+                        var resultTransactionType = db.TransactionType.Single(x => x.TransactionTypeId == id);
                         db.Remove(resultTransactionType);
                         db.SaveChanges();
                         returnResult.Success = true;

@@ -26,16 +26,19 @@ export class SecurityService {
     this.resetSecurityObject();
 
     return this.http.post<AppUserAuth>(API_URL + 'login',
-     entity, httpOptions).pipe(
+      entity, httpOptions).pipe(
        tap(resp => {
-         // Use object assign to update the current object
-         // NOTE: Don't create a new AppUserAuth object
-         //       because that destroys all references to object
-         Object.assign(this.securityObject, resp);
-         // Store into local storage
-         localStorage.setItem('bearerToken',
-           this.securityObject.bearerToken);
-       }));
+          // Use object assign to update the current object
+          // NOTE: Don't create a new AppUserAuth object
+          //       because that destroys all references to object
+          Object.assign(this.securityObject, resp);
+          // Store into local storage
+          localStorage.setItem('bearerToken', this.securityObject.bearerToken);
+      }));
+  }
+
+  loggedInUserName(): string {
+    return this.securityObject.userName;
   }
 
   logout(): void {
@@ -49,7 +52,7 @@ export class SecurityService {
 
     this.securityObject.claims = [];
 
-    localStorage.removeItem('"bearerToken"');
+    localStorage.removeItem('bearerToken');
   }
 
   // This method can be called a couple of different ways
@@ -101,7 +104,7 @@ export class SecurityService {
       }
       // Attempt to find the claim
       ret = auth.claims.find(function (c) {
-        console.log(c);
+        // console.log(c);
         return c.claimType.toLowerCase() === clmType && c.claimValue === clmVal;
       }) != null;
     }

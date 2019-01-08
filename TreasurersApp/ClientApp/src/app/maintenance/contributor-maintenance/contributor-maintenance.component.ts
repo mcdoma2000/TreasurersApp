@@ -8,6 +8,8 @@ import { AddressService } from '../address-maintenance/address.service';
 import { ConfirmationMessage } from '../../models/ConfirmationMessage';
 import { DxDataGridComponent } from 'devextreme-angular/ui/data-grid';
 import { SelectItem } from 'primeng/api';
+import { ContributorRequest } from 'src/app/models/ContributorRequest';
+import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
   selector: 'app-contributor-maintenance',
@@ -30,6 +32,7 @@ export class ContributorMaintenanceComponent implements OnInit {
 
   constructor(private contributorService: ContributorService,
     private addressService: AddressService,
+    private securityService: SecurityService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService) {
   }
@@ -77,7 +80,10 @@ export class ContributorMaintenanceComponent implements OnInit {
     };
     this.showConfirmation('Are you certain that you want to add this record?', 'Add Confirmation', 'Add', confMsg, () => {
       this.uiBlocked = true;
-      this.contributorService.addContributor(this.contributorToEdit).subscribe(
+      const request = new ContributorRequest();
+      request.userName = this.securityService.loggedInUserName();
+      request.data = this.contributorToEdit;
+      this.contributorService.addContributor(request).subscribe(
         (resp) => {
           if (resp.success === true) {
             this.messageService.add({ severity: 'success', summary: 'Contributor Maintenance: Add', detail: resp.statusMessages[0] });
@@ -113,7 +119,10 @@ export class ContributorMaintenanceComponent implements OnInit {
     const msgService = this.messageService;
     this.showConfirmation('Are you certain that you want to update this record?', 'Update Confirmation', 'Update', confMsg, () => {
       this.uiBlocked = true;
-      this.contributorService.updateContributor(this.contributorToEdit).subscribe(
+      const request = new ContributorRequest();
+      request.userName = this.securityService.loggedInUserName();
+      request.data = this.contributorToEdit;
+      this.contributorService.updateContributor(request).subscribe(
         (resp) => {
           if (resp.success === true) {
             msgService.add({
