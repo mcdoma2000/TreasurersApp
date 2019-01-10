@@ -31,6 +31,24 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Database\BTA.ldf" />
+    <None Remove="Database\BTA.mdf" />
+    <None Remove="Database\BTA_log.ldf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Database\BTA.ldf">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Database\BTA.mdf">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Database\BTA_log.ldf">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="System">
       <HintPath>System</HintPath>
     </Reference>
