@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace TreasurersApp.Models
@@ -7,11 +8,15 @@ namespace TreasurersApp.Models
     {
         public SecurityUserAuth() : base()
         {
+            UserId = Guid.Parse("00000000-0000-0000-0000-000000000000");
             UserName = "";
             BearerToken = string.Empty;
             IsAuthenticated = false;
             Claims = new List<ClaimViewModel>();
         }
+
+        [JsonProperty("userId")]
+        public Guid UserId { get; set; }
 
         [JsonProperty("userName")]
         public string UserName { get; set; }

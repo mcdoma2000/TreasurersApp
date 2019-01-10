@@ -53,7 +53,7 @@ export class TransactionCategoryService {
   }
 
   validateTransactionCategory(transactionCategory: TransactionCategory): boolean {
-    if (!transactionCategory.name || !transactionCategory.description) {
+    if (!transactionCategory.name || !transactionCategory.description || !transactionCategory.displayOrder || transactionCategory.active === null) {
       return false;
     }
     return true;

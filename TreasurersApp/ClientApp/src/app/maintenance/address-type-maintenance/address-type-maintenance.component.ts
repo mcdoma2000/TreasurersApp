@@ -119,6 +119,10 @@ export class AddressTypeMaintenanceComponent implements OnInit, OnDestroy {
       const request = new AddressTypeRequest();
       request.userName = this.securityService.loggedInUserName();
       request.data = this.addressTypeToEdit;
+      request.data.createdDate = new Date();
+      request.data.createdBy = this.securityService.loggedInUserId();
+      request.data.lastModifiedDate = new Date();
+      request.data.lastModifiedBy = this.securityService.loggedInUserId();
       this.addressTypeService.addAddressType(request).subscribe(
         (resp) => {
           if (resp.success === true) {
@@ -152,6 +156,8 @@ export class AddressTypeMaintenanceComponent implements OnInit, OnDestroy {
       const request = new AddressTypeRequest();
       request.userName = this.securityService.loggedInUserName();
       request.data = this.addressTypeToEdit;
+      request.data.lastModifiedDate = new Date();
+      request.data.lastModifiedBy = this.securityService.loggedInUserId();
       this.addressTypeService.updateAddressType(request).subscribe(
         (resp) => {
           if (resp.success === true) {

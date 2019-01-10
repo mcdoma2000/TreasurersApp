@@ -4,10 +4,9 @@ using System.Collections.Generic;
 
 namespace TreasurersApp.Models
 {
-    public partial class AddressTypeRequest : WebRequest<AddressType>
+    public class AddressTypeRequest : WebRequest<AddressType>
     {
-        public AddressTypeRequest(string userName, AddressType addressType)
-            : base(userName, addressType)
+        public AddressTypeRequest(string userName, AddressType addressType) : base(userName, addressType)
         {
 
         }

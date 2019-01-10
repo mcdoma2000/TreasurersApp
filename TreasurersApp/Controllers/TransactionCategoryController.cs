@@ -86,7 +86,6 @@ namespace TreasurersApp.Controllers
         [HttpPost("post", Name = "TransactionCategoryPost")]
         public IActionResult Post([FromBody]TransactionCategoryRequest request)
         {
-            Guid userGuid = GetUserGuidFromUserName(request.UserName);
             var result = new TransactionCategoryActionResult(false, new List<string>(), null);
             try
             {
@@ -94,11 +93,6 @@ namespace TreasurersApp.Controllers
                 {
                     using (var db = new BTAContext())
                     {
-                        DateTime now = DateTime.Now;
-                        request.Data.CreatedBy = userGuid;
-                        request.Data.CreatedDate = now;
-                        request.Data.LastModifiedBy = userGuid;
-                        request.Data.LastModifiedDate = now;
                         db.TransactionCategory.Add(request.Data);
                         db.SaveChanges();
                         result.Success = true;
@@ -127,7 +121,6 @@ namespace TreasurersApp.Controllers
         [HttpPut("put", Name = "TransactionCategoryPut")]
         public IActionResult Put([FromBody]TransactionCategoryRequest request)
         {
-            var userGuid = GetUserGuidFromUserName(request.UserName);
             var result = new TransactionCategoryActionResult(false, new List<string>(), null);
             try
             {
@@ -135,8 +128,6 @@ namespace TreasurersApp.Controllers
                 {
                     using (var db = new BTAContext())
                     {
-                        request.Data.LastModifiedBy = userGuid;
-                        request.Data.LastModifiedDate = DateTime.Now;
                         db.Update(request.Data);
                         db.SaveChanges();
                         result.Success = true;

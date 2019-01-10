@@ -119,6 +119,10 @@ export class PhoneTypeMaintenanceComponent implements OnInit, OnDestroy {
       const request = new PhoneTypeRequest();
       request.userName = this.securityService.loggedInUserName();
       request.data = this.phoneTypeToEdit;
+      request.data.createdDate = new Date();
+      request.data.createdBy = this.securityService.loggedInUserId();
+      request.data.lastModifiedDate = new Date();
+      request.data.lastModifiedBy = this.securityService.loggedInUserId();
       this.phoneTypeService.addPhoneType(request).subscribe(
         (resp) => {
           if (resp.success === true) {
@@ -152,6 +156,8 @@ export class PhoneTypeMaintenanceComponent implements OnInit, OnDestroy {
       const request = new PhoneTypeRequest();
       request.userName = this.securityService.loggedInUserName();
       request.data = this.phoneTypeToEdit;
+      request.data.lastModifiedDate = new Date();
+      request.data.lastModifiedBy = this.securityService.loggedInUserId();
       this.phoneTypeService.updatePhoneType(request).subscribe(
         (resp) => {
           if (resp.success === true) {

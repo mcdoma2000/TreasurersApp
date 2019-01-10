@@ -86,7 +86,6 @@ namespace TreasurersApp.Controllers
         public IActionResult Post([FromBody]AddressRequest request)
         {
             string json = JsonConvert.SerializeObject(request);
-            Guid userGuid = GetUserGuidFromUserName(request.UserName);
             var returnResult = new AddressActionResult(false, new List<string>(), null);
             if (request != null)
             {
@@ -100,11 +99,6 @@ namespace TreasurersApp.Controllers
                     {
                         using (var db = new BTAContext())
                         {
-                            var now = DateTime.Now;
-                            request.Data.CreatedBy = userGuid;
-                            request.Data.CreatedDate = now;
-                            request.Data.LastModifiedBy = userGuid;
-                            request.Data.LastModifiedDate = now;
                             var resultAddress = db.Address.Add(request.Data);
                             db.SaveChanges();
                             var entity = resultAddress.Entity;
@@ -139,7 +133,6 @@ namespace TreasurersApp.Controllers
         public IActionResult Put([FromBody]AddressRequest request)
         {
             string json = JsonConvert.SerializeObject(request);
-            Guid userGuid = GetUserGuidFromUserName(request.UserName);
             var returnResult = new AddressActionResult(false, new List<string>(), null);
             if (request != null)
             {
@@ -162,8 +155,6 @@ namespace TreasurersApp.Controllers
                                 resultAddress.City = request.Data.City;
                                 resultAddress.State = request.Data.State;
                                 resultAddress.PostalCode = request.Data.PostalCode;
-                                resultAddress.LastModifiedBy = userGuid;
-                                resultAddress.LastModifiedDate = DateTime.Now;
                                 db.SaveChanges();
                                 returnResult.Success = true;
                                 returnResult.Data = resultAddress;

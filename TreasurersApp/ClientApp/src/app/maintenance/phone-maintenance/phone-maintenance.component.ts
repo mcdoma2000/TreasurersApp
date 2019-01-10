@@ -105,6 +105,10 @@ export class PhoneMaintenanceComponent implements OnInit, OnDestroy {
       const request = new PhoneNumberRequest();
       request.userName = this.securityService.loggedInUserName();
       request.data = this.phoneToEdit;
+      request.data.createdDate = new Date();
+      request.data.createdBy = this.securityService.loggedInUserId();
+      request.data.lastModifiedDate = new Date();
+      request.data.lastModifiedBy = this.securityService.loggedInUserId();
       this.phoneService.addPhone(request).subscribe(
         (resp) => {
           if (resp.success === true) {
@@ -138,6 +142,8 @@ export class PhoneMaintenanceComponent implements OnInit, OnDestroy {
       const request = new PhoneNumberRequest();
       request.userName = this.securityService.loggedInUserName();
       request.data = this.phoneToEdit;
+      request.data.lastModifiedDate = new Date();
+      request.data.lastModifiedBy = this.securityService.loggedInUserId();
       this.phoneService.updatePhone(request).subscribe(
         (resp) => {
           if (resp.success === true) {

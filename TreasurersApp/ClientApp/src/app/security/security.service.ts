@@ -41,6 +41,10 @@ export class SecurityService {
     return this.securityObject.userName;
   }
 
+  loggedInUserId(): string {
+    return this.securityObject.userId;
+  }
+
   logout(): void {
     this.resetSecurityObject();
   }

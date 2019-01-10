@@ -82,7 +82,6 @@ namespace TreasurersApp.Controllers
         public IActionResult Post([FromBody]PhoneNumberRequest request)
         {
             string json = JsonConvert.SerializeObject(request);
-            Guid userGuid = GetUserGuidFromUserName(request.UserName);
             var returnResult = new PhoneNumberActionResult(false, new List<string>(), null);
             if (request != null)
             {
@@ -96,11 +95,6 @@ namespace TreasurersApp.Controllers
                     {
                         using (var db = new BTAContext())
                         {
-                            var now = DateTime.Now;
-                            request.Data.CreatedBy = userGuid;
-                            request.Data.CreatedDate = now;
-                            request.Data.LastModifiedDate = now;
-                            request.Data.LastModifiedBy = userGuid;
                             var resultAddress = db.PhoneNumber.Add(request.Data);
                             db.SaveChanges();
                             var entity = resultAddress.Entity;
@@ -135,7 +129,6 @@ namespace TreasurersApp.Controllers
         public IActionResult Put([FromBody]PhoneNumberRequest request)
         {
             string json = JsonConvert.SerializeObject(request);
-            Guid userGuid = GetUserGuidFromUserName(request.UserName);
             var returnResult = new PhoneNumberActionResult(false, new List<string>(), null);
             if (request != null)
             {
@@ -153,8 +146,6 @@ namespace TreasurersApp.Controllers
                             if (resultPhone != null)
                             {
                                 resultPhone.PhoneNumber_ = request.Data.PhoneNumber_;
-                                resultPhone.LastModifiedDate = DateTime.Now;
-                                resultPhone.LastModifiedBy = userGuid;
                                 db.SaveChanges();
                                 returnResult.Success = true;
                                 returnResult.Data = resultPhone;

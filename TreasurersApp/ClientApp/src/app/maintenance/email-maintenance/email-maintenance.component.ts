@@ -105,6 +105,10 @@ export class EmailMaintenanceComponent implements OnInit, OnDestroy {
       const request = new EmailAddressRequest();
       request.userName = this.securityService.loggedInUserName();
       request.data = this.emailToEdit;
+      request.data.createdDate = new Date();
+      request.data.createdBy = this.securityService.loggedInUserId();
+      request.data.lastModifiedDate = new Date();
+      request.data.lastModifiedBy = this.securityService.loggedInUserId();
       this.emailService.addEmail(request).subscribe(
         (resp) => {
           if (resp.success === true) {
@@ -138,6 +142,8 @@ export class EmailMaintenanceComponent implements OnInit, OnDestroy {
       const request = new EmailAddressRequest();
       request.userName = this.securityService.loggedInUserName();
       request.data = this.emailToEdit;
+      request.data.lastModifiedDate = new Date();
+      request.data.lastModifiedBy = this.securityService.loggedInUserId();
       this.emailService.updateEmail(request).subscribe(
         (resp) => {
           if (resp.success === true) {

@@ -8,6 +8,8 @@ import { ActivatedRoute, Router, ActivationStart } from '@angular/router';
 })
 export class ReportsComponent implements OnInit, OnDestroy {
 
+  currentReportName: string = null;
+
   constructor(private route: ActivatedRoute, private router: Router) {
   }
 

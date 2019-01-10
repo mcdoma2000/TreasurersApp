@@ -119,6 +119,10 @@ export class EmailTypeMaintenanceComponent implements OnInit, OnDestroy {
       const request = new EmailTypeRequest();
       request.userName = this.securityService.loggedInUserName();
       request.data = this.emailTypeToEdit;
+      request.data.createdDate = new Date();
+      request.data.createdBy = this.securityService.loggedInUserId();
+      request.data.lastModifiedDate = new Date();
+      request.data.lastModifiedBy = this.securityService.loggedInUserId();
       this.emailTypeService.addEmailType(request).subscribe(
         (resp) => {
           if (resp.success === true) {
@@ -152,6 +156,10 @@ export class EmailTypeMaintenanceComponent implements OnInit, OnDestroy {
       const request = new EmailTypeRequest();
       request.userName = this.securityService.loggedInUserName();
       request.data = this.emailTypeToEdit;
+      request.data.createdDate = new Date();
+      request.data.createdBy = this.securityService.loggedInUserId();
+      request.data.lastModifiedDate = new Date();
+      request.data.lastModifiedBy = this.securityService.loggedInUserId();
       this.emailTypeService.updateEmailType(request).subscribe(
         (resp) => {
           if (resp.success === true) {

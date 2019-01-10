@@ -83,6 +83,10 @@ export class ContributorMaintenanceComponent implements OnInit {
       const request = new ContributorRequest();
       request.userName = this.securityService.loggedInUserName();
       request.data = this.contributorToEdit;
+      request.data.createdDate = new Date();
+      request.data.createdBy = this.securityService.loggedInUserId();
+      request.data.lastModifiedDate = new Date();
+      request.data.lastModifiedBy = this.securityService.loggedInUserId();
       this.contributorService.addContributor(request).subscribe(
         (resp) => {
           if (resp.success === true) {
@@ -122,6 +126,8 @@ export class ContributorMaintenanceComponent implements OnInit {
       const request = new ContributorRequest();
       request.userName = this.securityService.loggedInUserName();
       request.data = this.contributorToEdit;
+      request.data.lastModifiedDate = new Date();
+      request.data.lastModifiedBy = this.securityService.loggedInUserId();
       this.contributorService.updateContributor(request).subscribe(
         (resp) => {
           if (resp.success === true) {

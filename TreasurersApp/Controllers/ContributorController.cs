@@ -165,26 +165,13 @@ namespace TreasurersApp.Controllers
         public IActionResult Post([FromBody]ContributorRequest request)
         {
             var returnResult = new ContributorActionResult(false, new List<string>(), null);
-            Guid userGuid = GetUserGuidFromUserName(request.UserName);
             if (request != null)
             {
                 try
                 {
                     using (var db = new BTAContext())
                     {
-                        DateTime now = DateTime.Now;
-                        var contrib = new Contributor()
-                        {
-                            FirstName = request.Data.FirstName,
-                            MiddleName = request.Data.MiddleName,
-                            LastName = request.Data.LastName,
-                            BahaiId = request.Data.BahaiId,
-                            CreatedBy = userGuid,
-                            CreatedDate = now,
-                            LastModifiedBy = userGuid,
-                            LastModifiedDate = now
-                        };
-                        var resultContributor = db.Contributor.Add(contrib);
+                        var resultContributor = db.Contributor.Add(request.Data);
                         db.SaveChanges();
                         var entity = resultContributor.Entity;
                         if (entity != null)
@@ -235,6 +222,9 @@ namespace TreasurersApp.Controllers
                             resultContributor.FirstName = request.Data.FirstName;
                             resultContributor.MiddleName = request.Data.MiddleName;
                             resultContributor.LastName = request.Data.LastName;
+                            resultContributor.BahaiId = request.Data.BahaiId;
+                            resultContributor.LastModifiedBy = request.Data.LastModifiedBy;
+                            resultContributor.LastModifiedDate = request.Data.LastModifiedDate;
                             db.SaveChanges();
                             returnResult.Success = true;
                             returnResult.Data = resultContributor;

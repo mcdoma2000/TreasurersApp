@@ -82,7 +82,6 @@ namespace TreasurersApp.Controllers
         public IActionResult Post([FromBody]EmailTypeRequest request)
         {
             string json = JsonConvert.SerializeObject(request);
-            Guid userGuid = GetUserGuidFromUserName(request.UserName);
             var returnResult = new EmailTypeActionResult(false, new List<string>(), null);
             if (request != null)
             {
@@ -96,11 +95,6 @@ namespace TreasurersApp.Controllers
                     {
                         using (var db = new BTAContext())
                         {
-                            var now = DateTime.Now;
-                            request.Data.CreatedBy = userGuid;
-                            request.Data.CreatedDate = now;
-                            request.Data.LastModifiedDate = now;
-                            request.Data.LastModifiedBy = userGuid;
                             var resultAddress = db.EmailType.Add(request.Data);
                             db.SaveChanges();
                             var entity = resultAddress.Entity;
@@ -135,7 +129,6 @@ namespace TreasurersApp.Controllers
         public IActionResult Put([FromBody]EmailTypeRequest request)
         {
             string json = JsonConvert.SerializeObject(request);
-            Guid userGuid = GetUserGuidFromUserName(request.UserName);
             var returnResult = new EmailTypeActionResult(false, new List<string>(), null);
             if (request != null)
             {
@@ -155,8 +148,6 @@ namespace TreasurersApp.Controllers
                                 resultEmailType.Name = request.Data.Name;
                                 resultEmailType.Description = request.Data.Description;
                                 resultEmailType.Active = request.Data.Active;
-                                resultEmailType.LastModifiedDate = DateTime.Now;
-                                resultEmailType.LastModifiedBy = userGuid;
                                 db.SaveChanges();
                                 returnResult.Success = true;
                                 returnResult.Data = resultEmailType;

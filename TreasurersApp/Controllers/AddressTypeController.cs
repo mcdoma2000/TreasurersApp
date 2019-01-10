@@ -82,7 +82,6 @@ namespace TreasurersApp.Controllers
         public IActionResult Post([FromBody]AddressTypeRequest request)
         {
             string json = JsonConvert.SerializeObject(request);
-            Guid userGuid = GetUserGuidFromUserName(request.UserName);
             var returnResult = new AddressTypeActionResult(false, new List<string>(), null);
             if (request != null)
             {
@@ -97,10 +96,6 @@ namespace TreasurersApp.Controllers
                         using (var db = new BTAContext())
                         {
                             var now = DateTime.Now;
-                            request.Data.CreatedBy = userGuid;
-                            request.Data.CreatedDate = now;
-                            request.Data.LastModifiedDate = now;
-                            request.Data.LastModifiedBy = userGuid;
                             var resultAddress = db.AddressType.Add(request.Data);
                             db.SaveChanges();
                             var entity = resultAddress.Entity;
@@ -135,7 +130,6 @@ namespace TreasurersApp.Controllers
         public IActionResult Put([FromBody]AddressTypeRequest request)
         {
             string json = JsonConvert.SerializeObject(request);
-            Guid userGuid = GetUserGuidFromUserName(request.UserName);
             var returnResult = new AddressTypeActionResult(false, new List<string>(), null);
             if (request != null)
             {
@@ -155,8 +149,6 @@ namespace TreasurersApp.Controllers
                                 resultPhone.Name = request.Data.Name;
                                 resultPhone.Description = request.Data.Description;
                                 resultPhone.Active = request.Data.Active;
-                                resultPhone.LastModifiedDate = DateTime.Now;
-                                resultPhone.LastModifiedBy = userGuid;
                                 db.SaveChanges();
                                 returnResult.Success = true;
                                 returnResult.Data = resultPhone;

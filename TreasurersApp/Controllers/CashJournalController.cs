@@ -83,19 +83,19 @@ namespace TreasurersApp.Controllers
         }
 
         [HttpPost("/post", Name = "CashJournalPost")]
-        public IActionResult Post([FromBody]CashJournal entity)
+        public IActionResult Post([FromBody]CashJournalRequest request)
         {
             IActionResult ret = null;
 
             try
             {
-                if (entity != null)
+                if (request != null && request.Data != null)
                 {
                     using (var db = new BTAContext())
                     {
-                        db.CashJournal.Add(entity);
+                        db.CashJournal.Add(request.Data);
                         db.SaveChanges();
-                        ret = StatusCode(StatusCodes.Status201Created, entity);
+                        ret = StatusCode(StatusCodes.Status201Created, request.Data);
                     }
                 }
                 else
@@ -118,7 +118,7 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                if (request != null)
+                if (request != null && request.Data != null)
                 {
                     using (var db = new BTAContext())
                     {

@@ -53,7 +53,7 @@
   <div class="row">&nbsp;</div>
   <p-toast></p-toast>
   <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle" width="425"></p-confirmDialog>
-  <p-dialog header="Edit Transaction Type" [(visible)]="displayEdit" width="600">
+  <p-dialog header="Edit Transaction Type" [(visible)]="displayEdit" [style]="{width: '600px', height: '600px'}">
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Category</div>
       <div class="col-md-9">
@@ -100,7 +100,7 @@
       </div>
     </p-footer>
   </p-dialog>
-  <p-dialog header="Add Transaction Type" [(visible)]="displayAdd" width="600">
+  <p-dialog header="Add Transaction Type" [(visible)]="displayAdd">
     <div class="row" style="padding-bottom: 5px;">
       <div class="col-md-3">Category</div>
       <div class="col-md-9">

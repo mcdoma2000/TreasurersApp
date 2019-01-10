@@ -33,6 +33,9 @@ export class ReportCashJournalComponent implements OnInit, AfterViewInit {
   executeReport(): void {
     this.stdRptForm.reportParameters.reportName = this.stdRptForm.reportName;
     this.reportParameters = JSON.stringify(this.stdRptForm.reportParameters);
+    console.log(this.reportParameters);
+    const rptPrm: HTMLElement = document.getElementById('paramJson') as HTMLElement;
+    rptPrm.setAttribute('value', this.reportParameters);
     const element: HTMLElement = document.getElementById('submitButton') as HTMLElement;
     element.click();
   }

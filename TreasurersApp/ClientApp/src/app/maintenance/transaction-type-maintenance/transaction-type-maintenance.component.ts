@@ -10,6 +10,7 @@ import { DxDataGridComponent } from 'devextreme-angular/ui/data-grid';
 import { SecurityService } from 'src/app/security/security.service';
 import { TransactionTypeRequest } from 'src/app/models/TransactionTypeRequest';
 import { TransactionCategoryService } from '../transaction-category-maintenance/transaction-category.service';
+import { SelectItem } from 'primeng/api';
 
 @Component({
   selector: 'app-transaction-type-maintenance',
@@ -23,7 +24,7 @@ export class TransactionTypeMaintenanceComponent implements OnInit {
   uiBlocked = false;
   types: TransactionType[] = [];
   rowData: TransactionType[] = [];
-  categories: TransactionCategory[] = [];
+  categories: SelectItem[] = [];
   foundTransactionType: TransactionType = null;
   rowIsSelected = false;
   selectedTransactionType: TransactionType = this.transactionTypeService.newTransactionType();
@@ -39,7 +40,14 @@ export class TransactionTypeMaintenanceComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.transactionCategoryService.getTransactionCategories(true).subscribe(resp => { this.categories = resp; });
+    this.transactionCategoryService.getTransactionCategories(true, false).subscribe(resp => {
+      this.categories = resp.map(function (category) {
+        return {
+          label: category.description,
+          value: category.id
+        };
+      });
+    });
     this.transactionTypeService.getTransactionTypes(true).subscribe(resp => { this.rowData = resp; });
   }
 
@@ -121,6 +129,10 @@ export class TransactionTypeMaintenanceComponent implements OnInit {
       const request = new TransactionTypeRequest();
       request.userName = this.securityService.loggedInUserName();
       request.data = this.ttypeToEdit;
+      request.data.createdDate = new Date();
+      request.data.createdBy = this.securityService.loggedInUserId();
+      request.data.lastModifiedDate = new Date();
+      request.data.lastModifiedBy = this.securityService.loggedInUserId();
       this.transactionTypeService.addTransactionType(request).subscribe(
         (resp) => {
           if (resp.success === true) {
@@ -163,6 +175,8 @@ export class TransactionTypeMaintenanceComponent implements OnInit {
       const request = new TransactionTypeRequest();
       request.userName = this.securityService.loggedInUserName();
       request.data = this.ttypeToEdit;
+      request.data.lastModifiedDate = new Date();
+      request.data.lastModifiedBy = this.securityService.loggedInUserId();
       this.transactionTypeService.updateTransactionType(request).subscribe(
         (resp) => {
           if (resp.success === true) {
@@ -265,10 +279,10 @@ export class TransactionTypeMaintenanceComponent implements OnInit {
 
   private shouldSaveEdit(): boolean {
     let save = false;
-    if (this.selectedTransactionType.id &&
-      this.transactionTypeService.validateTransactionType(this.selectedTransactionType) &&
+    if (this.selectedTransactionType.id && this.transactionTypeService.validateTransactionType(this.selectedTransactionType) &&
       (this.selectedTransactionType.name !== this.ttypeToEdit.name ||
        this.selectedTransactionType.description !== this.ttypeToEdit.description ||
+       this.selectedTransactionType.displayOrder !== this.ttypeToEdit.displayOrder ||
        this.selectedTransactionType.active === null)) {
       save = true;
     }

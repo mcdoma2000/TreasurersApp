@@ -121,7 +121,6 @@ namespace TreasurersApp.Controllers
         [HttpPost("post", Name = "TransactionTypePost")]
         public IActionResult Post([FromBody]TransactionTypeRequest request)
         {
-            Guid userGuid = GetUserGuidFromUserName(request.UserName);
             var returnResult = new TransactionTypeActionResult(false, new List<string>(), null);
             if (request != null)
             {
@@ -129,11 +128,6 @@ namespace TreasurersApp.Controllers
                 {
                     using (var db = new BTAContext())
                     {
-                        DateTime now = DateTime.Now;
-                        request.Data.CreatedBy = userGuid;
-                        request.Data.CreatedDate = now;
-                        request.Data.LastModifiedBy = userGuid;
-                        request.Data.LastModifiedDate = now;
                         var resultTransactionType = db.TransactionType.Add(request.Data);
                         db.SaveChanges();
                         var entity = resultTransactionType.Entity;
@@ -165,7 +159,6 @@ namespace TreasurersApp.Controllers
         [HttpPut("put", Name = "TransactionTypePut")]
         public IActionResult Put([FromBody]TransactionTypeRequest request)
         {
-            Guid userGuid = GetUserGuidFromUserName(request.UserName);
             var returnResult = new TransactionTypeActionResult(false, new List<string>(), null);
             if (request != null)
             {
@@ -179,7 +172,10 @@ namespace TreasurersApp.Controllers
                             resultTransactionType.TransactionCategoryId = request.Data.TransactionCategoryId;
                             resultTransactionType.Name = request.Data.Name;
                             resultTransactionType.Description = request.Data.Description;
+                            resultTransactionType.DisplayOrder = request.Data.DisplayOrder;
+                            resultTransactionType.Active = request.Data.Active;
                             db.SaveChanges();
+
                             returnResult.Success = true;
                             returnResult.Data = resultTransactionType;
                             returnResult.StatusMessages.Add("Successfully updated transaction type.");

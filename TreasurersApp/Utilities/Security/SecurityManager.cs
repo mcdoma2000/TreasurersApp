@@ -60,6 +60,7 @@ namespace TreasurersApp.Utilities.Security
             List<UserClaim> claims = new List<UserClaim>();
 
             // Set User Properties
+            ret.UserId = authUser.UserId;
             ret.UserName = authUser.UserName;
             ret.IsAuthenticated = true;
             ret.BearerToken = new Guid().ToString();

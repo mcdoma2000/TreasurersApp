@@ -35,7 +35,7 @@ export class TransactionCategoryMaintenanceComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.transactionCategoryService.getTransactionCategories(true).subscribe(resp => { this.rowData = resp; });
+    this.transactionCategoryService.getTransactionCategories(true, true).subscribe(resp => { this.rowData = resp; });
   }
 
   addTransactionCategory() {
@@ -114,6 +114,10 @@ export class TransactionCategoryMaintenanceComponent implements OnInit {
       const request = new TransactionCategoryRequest();
       request.userName = this.securityService.loggedInUserName();
       request.data = this.tcatToEdit;
+      request.data.createdDate = new Date();
+      request.data.createdBy = this.securityService.loggedInUserId();
+      request.data.lastModifiedDate = new Date();
+      request.data.lastModifiedBy = this.securityService.loggedInUserId();
       this.transactionCategoryService.addTransactionCategory(request).subscribe(
         (resp) => {
           if (resp.success === true) {
@@ -156,6 +160,8 @@ export class TransactionCategoryMaintenanceComponent implements OnInit {
       const request = new TransactionCategoryRequest();
       request.userName = this.securityService.loggedInUserName();
       request.data = this.tcatToEdit;
+      request.data.lastModifiedDate = new Date();
+      request.data.lastModifiedBy = this.securityService.loggedInUserId();
       this.transactionCategoryService.updateTransactionCategory(request).subscribe(
         (resp) => {
           if (resp.success === true) {
@@ -257,10 +263,11 @@ export class TransactionCategoryMaintenanceComponent implements OnInit {
   private shouldSaveEdit(): boolean {
     let save = false;
     if (this.selectedTransactionCategory.id &&
-      this.transactionCategoryService
-        .validateTransactionCategory(this.selectedTransactionCategory) &&
+      this.transactionCategoryService.validateTransactionCategory(this.selectedTransactionCategory) &&
       (this.selectedTransactionCategory.name !== this.tcatToEdit.name ||
-        this.selectedTransactionCategory.description !== this.tcatToEdit.description)) {
+       this.selectedTransactionCategory.description !== this.tcatToEdit.description ||
+       this.selectedTransactionCategory.displayOrder !== this.tcatToEdit.displayOrder ||
+       this.selectedTransactionCategory.active !== this.tcatToEdit.active)) {
       save = true;
     }
     return save;
@@ -282,7 +289,7 @@ export class TransactionCategoryMaintenanceComponent implements OnInit {
     this.selectedTransactionCategory =
       new TransactionCategory(
         e.data.id,
-        e.data.transactionCategoryName,
+        e.data.name,
         e.data.description,
         e.data.displayOrder,
         e.data.active,
@@ -311,11 +318,11 @@ export class TransactionCategoryMaintenanceComponent implements OnInit {
     }
   }
 
-  getTransactionCategories(forceReload: boolean = false): Observable<TransactionCategory[]> {
+  getTransactionCategories(forceReload: boolean = false, includeInactive: boolean = false): Observable<TransactionCategory[]> {
     if (this.rowData.length > 0 && forceReload === false) {
       return of(this.rowData);
     } else {
-      this.transactionCategoryService.getTransactionCategories().subscribe(
+      this.transactionCategoryService.getTransactionCategories(forceReload, includeInactive).subscribe(
         (resp) => {
           this.rowData = resp;
           return of(this.rowData);

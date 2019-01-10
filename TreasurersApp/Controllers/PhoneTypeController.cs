@@ -82,7 +82,6 @@ namespace TreasurersApp.Controllers
         public IActionResult Post([FromBody]PhoneTypeRequest request)
         {
             string json = JsonConvert.SerializeObject(request);
-            Guid userGuid = GetUserGuidFromUserName(request.UserName);
             var returnResult = new PhoneTypeActionResult(false, new List<string>(), null);
             if (request != null)
             {
@@ -96,11 +95,6 @@ namespace TreasurersApp.Controllers
                     {
                         using (var db = new BTAContext())
                         {
-                            var now = DateTime.Now;
-                            request.Data.CreatedBy = userGuid;
-                            request.Data.CreatedDate = now;
-                            request.Data.LastModifiedDate = now;
-                            request.Data.LastModifiedBy = userGuid;
                             var resultAddress = db.PhoneType.Add(request.Data);
                             db.SaveChanges();
                             var entity = resultAddress.Entity;
@@ -135,7 +129,6 @@ namespace TreasurersApp.Controllers
         public IActionResult Put([FromBody]PhoneTypeRequest request)
         {
             string json = JsonConvert.SerializeObject(request);
-            Guid userGuid = GetUserGuidFromUserName(request.UserName);
             var returnResult = new PhoneTypeActionResult(false, new List<string>(), null);
             if (request != null)
             {
@@ -155,8 +148,6 @@ namespace TreasurersApp.Controllers
                                 resultPhoneType.Name = request.Data.Name;
                                 resultPhoneType.Description = request.Data.Description;
                                 resultPhoneType.Active = request.Data.Active;
-                                resultPhoneType.LastModifiedDate = DateTime.Now;
-                                resultPhoneType.LastModifiedBy = userGuid;
                                 db.SaveChanges();
                                 returnResult.Success = true;
                                 returnResult.Data = resultPhoneType;

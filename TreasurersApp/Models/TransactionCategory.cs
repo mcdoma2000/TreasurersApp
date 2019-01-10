@@ -14,7 +14,7 @@ namespace TreasurersApp.Models
         [JsonProperty("id")]
         public int TransactionCategoryId { get; set; }
 
-        [JsonProperty("contributionCategoryName")]
+        [JsonProperty("name")]
         public string Name { get; set; }
 
         [JsonProperty("description")]
