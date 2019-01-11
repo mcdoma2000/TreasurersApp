@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.Logging.Log4Net;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
+using TreasurersApp.Database;
 
 namespace TreasurersApp
 {
@@ -76,6 +78,15 @@ namespace TreasurersApp
                 .AddJsonOptions(options => 
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver()
                 );
+
+            string whereWorking = Configuration["DevelopmentLocation"] ?? "Home";
+            string environment = "Development"; // TODO: fix this to read the ASPNETCORE_ENVIRONMENT value
+            string key = string.Format("ConnectionStrings:{0}:{1}", environment, whereWorking);
+            string connectionStringToUse = Configuration[key];
+            services.AddDbContext<BTAContext>(options =>
+            {
+                options.UseSqlServer(connectionStringToUse);
+            });
 			
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

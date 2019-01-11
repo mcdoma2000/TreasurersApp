@@ -134,7 +134,7 @@ CREATE TABLE [dbo].[Contributor] (
     [FirstName]  NVARCHAR (100) NOT NULL,
     [MiddleName] NVARCHAR (100) NULL,
     [LastName]   NVARCHAR (100) NOT NULL,
-	[BahaiID] nvarchar(50) NULL,
+    [BahaiID] nvarchar(50) NULL,
     [CreatedBy]          UNIQUEIDENTIFIER NOT NULL,
     [CreatedDate]        DATETIME         NOT NULL,
     [LastModifiedBy]     UNIQUEIDENTIFIER NOT NULL,
@@ -153,8 +153,8 @@ CREATE TABLE [dbo].[ContributorAddress] (
     [CreatedDate]        DATETIME         NOT NULL,
     [LastModifiedBy]     UNIQUEIDENTIFIER NOT NULL,
     [LastModifiedDate]   DATETIME         NOT NULL,
-	CONSTRAINT [FK_ContributorAddress_Contributor] FOREIGN KEY ([ContributorID]) REFERENCES [dbo].[Contributor] ([ContributorID]),
-	CONSTRAINT [FK_ContributorAddress_Address] FOREIGN KEY ([AddressID]) REFERENCES [dbo].[Address] ([AddressID]),
+    CONSTRAINT [FK_ContributorAddress_Contributor] FOREIGN KEY ([ContributorID]) REFERENCES [dbo].[Contributor] ([ContributorID]),
+    CONSTRAINT [FK_ContributorAddress_Address] FOREIGN KEY ([AddressID]) REFERENCES [dbo].[Address] ([AddressID]),
     PRIMARY KEY CLUSTERED ([ContributorAddressID] ASC)
 );
 GO
@@ -168,8 +168,8 @@ CREATE TABLE [dbo].[ContributorEmailAddress] (
     [CreatedDate]        DATETIME         NOT NULL,
     [LastModifiedBy]     UNIQUEIDENTIFIER NOT NULL,
     [LastModifiedDate]   DATETIME         NOT NULL,
-	CONSTRAINT [FK_ContributorEmailAddress_Contributor] FOREIGN KEY ([ContributorID]) REFERENCES [dbo].[Contributor] ([ContributorID]),
-	CONSTRAINT [FK_ContributorEmailAddress_EmailAddress] FOREIGN KEY ([EmailAddressID]) REFERENCES [dbo].[EmailAddress] ([EmailAddressID]),
+    CONSTRAINT [FK_ContributorEmailAddress_Contributor] FOREIGN KEY ([ContributorID]) REFERENCES [dbo].[Contributor] ([ContributorID]),
+    CONSTRAINT [FK_ContributorEmailAddress_EmailAddress] FOREIGN KEY ([EmailAddressID]) REFERENCES [dbo].[EmailAddress] ([EmailAddressID]),
     PRIMARY KEY CLUSTERED ([ContributorEmailAddressID] ASC)
 );
 GO
@@ -183,8 +183,8 @@ CREATE TABLE [dbo].[ContributorPhoneNumber] (
     [CreatedDate]        DATETIME         NOT NULL,
     [LastModifiedBy]     UNIQUEIDENTIFIER NOT NULL,
     [LastModifiedDate]   DATETIME         NOT NULL,
-	CONSTRAINT [FK_ContributorPhoneNumber_Contributor] FOREIGN KEY ([ContributorID]) REFERENCES [dbo].[Contributor] ([ContributorID]),
-	CONSTRAINT [FK_ContributorPhoneNumber_PhoneNumber] FOREIGN KEY ([PhoneNumberID]) REFERENCES [dbo].[PhoneNumber] ([PhoneNumberID]),
+    CONSTRAINT [FK_ContributorPhoneNumber_Contributor] FOREIGN KEY ([ContributorID]) REFERENCES [dbo].[Contributor] ([ContributorID]),
+    CONSTRAINT [FK_ContributorPhoneNumber_PhoneNumber] FOREIGN KEY ([PhoneNumberID]) REFERENCES [dbo].[PhoneNumber] ([PhoneNumberID]),
     PRIMARY KEY CLUSTERED ([ContributorPhoneNumberID] ASC)
 );
 GO
@@ -230,12 +230,12 @@ UNIQUE (Name)
 GO
 
 CREATE TABLE [Security].[History] (
-	[HistoryID] INT IDENTITY(1,1) NOT NULL,
-	[IdChanged] INT NOT NULL,
-	[RecordJson] nvarchar(max) NOT NULL,
+    [HistoryID] INT IDENTITY(1,1) NOT NULL,
+    [IdChanged] INT NOT NULL,
+    [RecordJson] nvarchar(max) NOT NULL,
     [CreatedBy]          UNIQUEIDENTIFIER NOT NULL,
     [CreatedDate]        DATETIME         NOT NULL,
-	PRIMARY KEY CLUSTERED ([HistoryID])
+    PRIMARY KEY CLUSTERED ([HistoryID])
 );
 GO
 
@@ -284,8 +284,8 @@ GO
 
 CREATE NONCLUSTERED INDEX [UIX_SecurityUserClaim_ClaimID_UserID] ON [Security].[UserClaim]
 (
-	[ClaimID] ASC,
-	[UserID] ASC
+    [ClaimID] ASC,
+    [UserID] ASC
 )
 GO
 

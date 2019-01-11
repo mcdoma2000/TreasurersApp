@@ -18,8 +18,8 @@ namespace TreasurersApp.Controllers
     [Route("api/[controller]")]
     public class EmailTypeController : BaseController
     {
-        public EmailTypeController(IConfiguration config, ILogger<EmailTypeController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
-            : base(config, logger, env, memoryCache)
+        public EmailTypeController(IConfiguration config, ILogger<EmailTypeController> logger, IHostingEnvironment env, IMemoryCache memoryCache, BTAContext context) 
+            : base(config, logger, env, memoryCache, context)
         {
         }
 
@@ -31,14 +31,11 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BTAContext())
+                if (Context.EmailType.Count() > 0)
                 {
-                    if (db.EmailType.Count() > 0)
-                    {
-                        list = db.EmailType.ToList();
-                    }
-                    ret = StatusCode(StatusCodes.Status200OK, list);
+                    list = Context.EmailType.ToList();
                 }
+                ret = StatusCode(StatusCodes.Status200OK, list);
             }
             catch (Exception ex)
             {
@@ -56,18 +53,25 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BTAContext())
+                entity = Context.EmailType.Find(id);
+                if (entity != null)
                 {
-                    entity = db.EmailType.Find(id);
-                    if (entity != null)
-                    {
-                        ret = StatusCode(StatusCodes.Status200OK, entity);
-                    }
-                    else
-                    {
-                        ret = StatusCode(StatusCodes.Status404NotFound, 
-                            "Can't Find Address: " + id.ToString());
-                    }
+                    ret = StatusCode(StatusCodes.Status200OK, entity);
+                }
+                else
+                {
+                    ret = StatusCode(StatusCodes.Status404NotFound,
+                        "Can't Find Address: " + id.ToString());
+                }
+                entity = Context.EmailType.Find(id);
+                if (entity != null)
+                {
+                    ret = StatusCode(StatusCodes.Status200OK, entity);
+                }
+                else
+                {
+                    ret = StatusCode(StatusCodes.Status404NotFound,
+                        "Can't Find Address: " + id.ToString());
                 }
             }
             catch (Exception ex)
@@ -93,17 +97,14 @@ namespace TreasurersApp.Controllers
                 {
                     try
                     {
-                        using (var db = new BTAContext())
+                        var resultAddress = Context.EmailType.Add(request.Data);
+                        Context.SaveChanges();
+                        var entity = resultAddress.Entity;
+                        if (entity != null)
                         {
-                            var resultAddress = db.EmailType.Add(request.Data);
-                            db.SaveChanges();
-                            var entity = resultAddress.Entity;
-                            if (entity != null)
-                            {
-                                returnResult.Success = true;
-                                returnResult.StatusMessages.Add("Successfully added email type.");
-                                returnResult.Data = entity;
-                            }
+                            returnResult.Success = true;
+                            returnResult.StatusMessages.Add("Successfully added email type.");
+                            returnResult.Data = entity;
                         }
                     }
                     catch (Exception e)
@@ -140,25 +141,22 @@ namespace TreasurersApp.Controllers
                 {
                     try
                     {
-                        using (var db = new BTAContext())
+                        var resultEmailType = Context.EmailType.SingleOrDefault(x => x.EmailTypeId == request.Data.EmailTypeId);
+                        if (resultEmailType != null)
                         {
-                            var resultEmailType = db.EmailType.SingleOrDefault(x => x.EmailTypeId == request.Data.EmailTypeId);
-                            if (resultEmailType != null)
-                            {
-                                resultEmailType.Name = request.Data.Name;
-                                resultEmailType.Description = request.Data.Description;
-                                resultEmailType.Active = request.Data.Active;
-                                db.SaveChanges();
-                                returnResult.Success = true;
-                                returnResult.Data = resultEmailType;
-                                returnResult.StatusMessages.Add("Successfully updated email type.");
-                            }
-                            else
-                            {
-                                returnResult.Success = false;
-                                returnResult.StatusMessages.Add(string.Format("Unable to locate email type for index: {0}", request.Data.EmailTypeId));
-                                returnResult.Data = null;
-                            }
+                            resultEmailType.Name = request.Data.Name;
+                            resultEmailType.Description = request.Data.Description;
+                            resultEmailType.Active = request.Data.Active;
+                            Context.SaveChanges();
+                            returnResult.Success = true;
+                            returnResult.Data = resultEmailType;
+                            returnResult.StatusMessages.Add("Successfully updated email type.");
+                        }
+                        else
+                        {
+                            returnResult.Success = false;
+                            returnResult.StatusMessages.Add(string.Format("Unable to locate email type for index: {0}", request.Data.EmailTypeId));
+                            returnResult.Data = null;
                         }
                     }
                     catch (Exception e)
@@ -187,21 +185,18 @@ namespace TreasurersApp.Controllers
             var returnResult = new EmailTypeActionResult(false, new List<string>(), null);
             try
             {
-                using (var db = new BTAContext())
+                if (Context.EmailType.Any(x => x.EmailTypeId == id) == false)
                 {
-                    if (db.EmailType.Any(x => x.EmailTypeId == id) == false)
-                    {
-                        returnResult.StatusMessages.Add("Attempted to delete a nonexisting email type.");
-                    }
-                    else
-                    {
-                        var resultEmailType = db.EmailType.Single(x => x.EmailTypeId == id);
-                        db.EmailType.Remove(resultEmailType);
-                        db.SaveChanges();
-                        returnResult.Success = true;
-                        returnResult.Data = resultEmailType;
-                        returnResult.StatusMessages.Add("Successfully deleted email type.");
-                    }
+                    returnResult.StatusMessages.Add("Attempted to delete a nonexisting email type.");
+                }
+                else
+                {
+                    var resultEmailType = Context.EmailType.Single(x => x.EmailTypeId == id);
+                    Context.EmailType.Remove(resultEmailType);
+                    Context.SaveChanges();
+                    returnResult.Success = true;
+                    returnResult.Data = resultEmailType;
+                    returnResult.StatusMessages.Add("Successfully deleted email type.");
                 }
             }
             catch (Exception e)

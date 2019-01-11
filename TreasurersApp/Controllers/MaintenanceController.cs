@@ -17,8 +17,8 @@ namespace TreasurersApp.Controllers
     [Route("api/[controller]")]
     public class MaintenanceController : BaseController
     {
-        public MaintenanceController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache)
-            : base(config, logger, env, memoryCache)
+        public MaintenanceController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache, BTAContext context)
+            : base(config, logger, env, memoryCache, context)
         {
         }
 
@@ -30,22 +30,19 @@ namespace TreasurersApp.Controllers
             List<SecurityUserEdit> users = new List<SecurityUserEdit>();
             try
             {
-                using (var db = new BTAContext())
+                users = Context.User.Select(x => new SecurityUserEdit()
                 {
-                    users = db.User.Select(x => new SecurityUserEdit()
-                    {
-                        UserID = x.UserId,
-                        UserName = x.UserName,
-                        DisplayName = x.DisplayName,
-                        Password = x.Password
-                    }).ToList();
-                    foreach (var u in users)
-                    {
-                        var userClaims = db.UserClaim.Where(x => x.UserId == u.UserID).ToList();
-                        u.Claims = userClaims.Select(x => x.Claim).ToList();
-                    }
-                    results = StatusCode(StatusCodes.Status200OK, users);
+                    UserID = x.UserId,
+                    UserName = x.UserName,
+                    DisplayName = x.DisplayName,
+                    Password = x.Password
+                }).ToList();
+                foreach (var u in users)
+                {
+                    var userClaims = Context.UserClaim.Where(x => x.UserId == u.UserID).ToList();
+                    u.Claims = userClaims.Select(x => x.Claim).ToList();
                 }
+                results = StatusCode(StatusCodes.Status200OK, users);
             }
             catch (Exception e)
             {

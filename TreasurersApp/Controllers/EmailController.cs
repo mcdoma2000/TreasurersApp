@@ -18,8 +18,8 @@ namespace TreasurersApp.Controllers
     [Route("api/[controller]")]
     public class EmailController : BaseController
     {
-        public EmailController(IConfiguration config, ILogger<EmailController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
-            : base(config, logger, env, memoryCache)
+        public EmailController(IConfiguration config, ILogger<EmailController> logger, IHostingEnvironment env, IMemoryCache memoryCache, BTAContext context) 
+            : base(config, logger, env, memoryCache, context)
         {
         }
 
@@ -31,16 +31,13 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BTAContext())
+                if (Context.EmailAddress.Count() > 0)
                 {
-                    if (db.EmailAddress.Count() > 0)
-                    {
-                        list = db.EmailAddress
-                            .OrderBy(r => r.Email)
-                            .ToList();
-                    }
-                    ret = StatusCode(StatusCodes.Status200OK, list);
+                    list = Context.EmailAddress
+                        .OrderBy(r => r.Email)
+                        .ToList();
                 }
+                ret = StatusCode(StatusCodes.Status200OK, list);
             }
             catch (Exception ex)
             {
@@ -58,18 +55,15 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BTAContext())
+                entity = Context.EmailAddress.Find(id);
+                if (entity != null)
                 {
-                    entity = db.EmailAddress.Find(id);
-                    if (entity != null)
-                    {
-                        ret = StatusCode(StatusCodes.Status200OK, entity);
-                    }
-                    else
-                    {
-                        ret = StatusCode(StatusCodes.Status404NotFound, 
-                            "Can't Find Address: " + id.ToString());
-                    }
+                    ret = StatusCode(StatusCodes.Status200OK, entity);
+                }
+                else
+                {
+                    ret = StatusCode(StatusCodes.Status404NotFound,
+                        "Can't Find Address: " + id.ToString());
                 }
             }
             catch (Exception ex)
@@ -95,18 +89,15 @@ namespace TreasurersApp.Controllers
                 {
                     try
                     {
-                        using (var db = new BTAContext())
+                        var now = DateTime.Now;
+                        var resultEmailAddress = Context.EmailAddress.Add(request.Data);
+                        Context.SaveChanges();
+                        var entity = resultEmailAddress.Entity;
+                        if (entity != null)
                         {
-                            var now = DateTime.Now;
-                            var resultEmailAddress = db.EmailAddress.Add(request.Data);
-                            db.SaveChanges();
-                            var entity = resultEmailAddress.Entity;
-                            if (entity != null)
-                            {
-                                returnResult.Success = true;
-                                returnResult.StatusMessages.Add("Successfully added email address.");
-                                returnResult.Data = entity;
-                            }
+                            returnResult.Success = true;
+                            returnResult.StatusMessages.Add("Successfully added email address.");
+                            returnResult.Data = entity;
                         }
                     }
                     catch (Exception e)
@@ -143,23 +134,20 @@ namespace TreasurersApp.Controllers
                 {
                     try
                     {
-                        using (var db = new BTAContext())
+                        var resultEmail = Context.EmailAddress.SingleOrDefault(x => x.EmailAddressId == request.Data.EmailAddressId);
+                        if (resultEmail != null)
                         {
-                            var resultEmail = db.EmailAddress.SingleOrDefault(x => x.EmailAddressId == request.Data.EmailAddressId);
-                            if (resultEmail != null)
-                            {
-                                resultEmail.Email = request.Data.Email;
-                                db.SaveChanges();
-                                returnResult.Success = true;
-                                returnResult.Data = resultEmail;
-                                returnResult.StatusMessages.Add("Successfully updated address.");
-                            }
-                            else
-                            {
-                                returnResult.Success = false;
-                                returnResult.StatusMessages.Add(string.Format("Unable to locate email address for index: {0}", request.Data.EmailAddressId));
-                                returnResult.Data = null;
-                            }
+                            resultEmail.Email = request.Data.Email;
+                            Context.SaveChanges();
+                            returnResult.Success = true;
+                            returnResult.Data = resultEmail;
+                            returnResult.StatusMessages.Add("Successfully updated address.");
+                        }
+                        else
+                        {
+                            returnResult.Success = false;
+                            returnResult.StatusMessages.Add(string.Format("Unable to locate email address for index: {0}", request.Data.EmailAddressId));
+                            returnResult.Data = null;
                         }
                     }
                     catch (Exception e)
@@ -188,21 +176,18 @@ namespace TreasurersApp.Controllers
             var returnResult = new EmailAddressActionResult(false, new List<string>(), null);
             try
             {
-                using (var db = new BTAContext())
+                if (Context.EmailAddress.Any(x => x.EmailAddressId == id) == false)
                 {
-                    if (db.EmailAddress.Any(x => x.EmailAddressId == id) == false)
-                    {
-                        returnResult.StatusMessages.Add("Attempted to delete a nonexisting email address.");
-                    }
-                    else
-                    {
-                        var resultAddress = db.EmailAddress.Single(x => x.EmailAddressId == id);
-                        db.EmailAddress.Remove(resultAddress);
-                        db.SaveChanges();
-                        returnResult.Success = true;
-                        returnResult.Data = resultAddress;
-                        returnResult.StatusMessages.Add("Successfully deleted email address.");
-                    }
+                    returnResult.StatusMessages.Add("Attempted to delete a nonexisting email address.");
+                }
+                else
+                {
+                    var resultAddress = Context.EmailAddress.Single(x => x.EmailAddressId == id);
+                    Context.EmailAddress.Remove(resultAddress);
+                    Context.SaveChanges();
+                    returnResult.Success = true;
+                    returnResult.Data = resultAddress;
+                    returnResult.StatusMessages.Add("Successfully deleted email address.");
                 }
             }
             catch (Exception e)

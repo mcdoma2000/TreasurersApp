@@ -18,8 +18,8 @@ namespace TreasurersApp.Controllers
     [Route("api/[controller]")]
     public class AddressTypeController : BaseController
     {
-        public AddressTypeController(IConfiguration config, ILogger<AddressTypeController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
-            : base(config, logger, env, memoryCache)
+        public AddressTypeController(IConfiguration config, ILogger<AddressTypeController> logger, IHostingEnvironment env, IMemoryCache memoryCache, BTAContext context) 
+            : base(config, logger, env, memoryCache, context)
         {
         }
 
@@ -31,14 +31,11 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BTAContext())
+                if (Context.AddressType.Count() > 0)
                 {
-                    if (db.AddressType.Count() > 0)
-                    {
-                        list = db.AddressType.ToList();
-                    }
-                    ret = StatusCode(StatusCodes.Status200OK, list);
+                    list = Context.AddressType.ToList();
                 }
+                ret = StatusCode(StatusCodes.Status200OK, list);
             }
             catch (Exception ex)
             {
@@ -56,18 +53,15 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BTAContext())
+                entity = Context.AddressType.Find(id);
+                if (entity != null)
                 {
-                    entity = db.AddressType.Find(id);
-                    if (entity != null)
-                    {
-                        ret = StatusCode(StatusCodes.Status200OK, entity);
-                    }
-                    else
-                    {
-                        ret = StatusCode(StatusCodes.Status404NotFound, 
-                            "Can't Find Address: " + id.ToString());
-                    }
+                    ret = StatusCode(StatusCodes.Status200OK, entity);
+                }
+                else
+                {
+                    ret = StatusCode(StatusCodes.Status404NotFound,
+                        "Can't Find Address: " + id.ToString());
                 }
             }
             catch (Exception ex)
@@ -93,18 +87,15 @@ namespace TreasurersApp.Controllers
                 {
                     try
                     {
-                        using (var db = new BTAContext())
+                        var now = DateTime.Now;
+                        var resultAddress = Context.AddressType.Add(request.Data);
+                        Context.SaveChanges();
+                        var entity = resultAddress.Entity;
+                        if (entity != null)
                         {
-                            var now = DateTime.Now;
-                            var resultAddress = db.AddressType.Add(request.Data);
-                            db.SaveChanges();
-                            var entity = resultAddress.Entity;
-                            if (entity != null)
-                            {
-                                returnResult.Success = true;
-                                returnResult.StatusMessages.Add("Successfully added address type.");
-                                returnResult.Data = entity;
-                            }
+                            returnResult.Success = true;
+                            returnResult.StatusMessages.Add("Successfully added address type.");
+                            returnResult.Data = entity;
                         }
                     }
                     catch (Exception e)
@@ -141,25 +132,22 @@ namespace TreasurersApp.Controllers
                 {
                     try
                     {
-                        using (var db = new BTAContext())
+                        var resultPhone = Context.AddressType.SingleOrDefault(x => x.AddressTypeId == request.Data.AddressTypeId);
+                        if (resultPhone != null)
                         {
-                            var resultPhone = db.AddressType.SingleOrDefault(x => x.AddressTypeId == request.Data.AddressTypeId);
-                            if (resultPhone != null)
-                            {
-                                resultPhone.Name = request.Data.Name;
-                                resultPhone.Description = request.Data.Description;
-                                resultPhone.Active = request.Data.Active;
-                                db.SaveChanges();
-                                returnResult.Success = true;
-                                returnResult.Data = resultPhone;
-                                returnResult.StatusMessages.Add("Successfully updated address type.");
-                            }
-                            else
-                            {
-                                returnResult.Success = false;
-                                returnResult.StatusMessages.Add(string.Format("Unable to locate address type for index: {0}", request.Data.AddressTypeId));
-                                returnResult.Data = null;
-                            }
+                            resultPhone.Name = request.Data.Name;
+                            resultPhone.Description = request.Data.Description;
+                            resultPhone.Active = request.Data.Active;
+                            Context.SaveChanges();
+                            returnResult.Success = true;
+                            returnResult.Data = resultPhone;
+                            returnResult.StatusMessages.Add("Successfully updated address type.");
+                        }
+                        else
+                        {
+                            returnResult.Success = false;
+                            returnResult.StatusMessages.Add(string.Format("Unable to locate address type for index: {0}", request.Data.AddressTypeId));
+                            returnResult.Data = null;
                         }
                     }
                     catch (Exception e)
@@ -188,21 +176,18 @@ namespace TreasurersApp.Controllers
             var returnResult = new AddressTypeActionResult(false, new List<string>(), null);
             try
             {
-                using (var db = new BTAContext())
+                if (Context.AddressType.Any(x => x.AddressTypeId == id) == false)
                 {
-                    if (db.AddressType.Any(x => x.AddressTypeId == id) == false)
-                    {
-                        returnResult.StatusMessages.Add("Attempted to delete a nonexisting address type.");
-                    }
-                    else
-                    {
-                        var resultAddressType = db.AddressType.Single(x => x.AddressTypeId == id);
-                        db.AddressType.Remove(resultAddressType);
-                        db.SaveChanges();
-                        returnResult.Success = true;
-                        returnResult.Data = resultAddressType;
-                        returnResult.StatusMessages.Add("Successfully deleted address type.");
-                    }
+                    returnResult.StatusMessages.Add("Attempted to delete a nonexisting address type.");
+                }
+                else
+                {
+                    var resultAddressType = Context.AddressType.Single(x => x.AddressTypeId == id);
+                    Context.AddressType.Remove(resultAddressType);
+                    Context.SaveChanges();
+                    returnResult.Success = true;
+                    returnResult.Data = resultAddressType;
+                    returnResult.StatusMessages.Add("Successfully deleted address type.");
                 }
             }
             catch (Exception e)

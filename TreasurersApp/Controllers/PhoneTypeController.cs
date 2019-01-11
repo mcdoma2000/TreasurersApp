@@ -18,8 +18,8 @@ namespace TreasurersApp.Controllers
     [Route("api/[controller]")]
     public class PhoneTypeController : BaseController
     {
-        public PhoneTypeController(IConfiguration config, ILogger<PhoneTypeController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
-            : base(config, logger, env, memoryCache)
+        public PhoneTypeController(IConfiguration config, ILogger<PhoneTypeController> logger, IHostingEnvironment env, IMemoryCache memoryCache, BTAContext context) 
+            : base(config, logger, env, memoryCache, context)
         {
         }
 
@@ -31,14 +31,11 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BTAContext())
+                if (Context.PhoneType.Count() > 0)
                 {
-                    if (db.PhoneType.Count() > 0)
-                    {
-                        list = db.PhoneType.ToList();
-                    }
-                    ret = StatusCode(StatusCodes.Status200OK, list);
+                    list = Context.PhoneType.ToList();
                 }
+                ret = StatusCode(StatusCodes.Status200OK, list);
             }
             catch (Exception ex)
             {
@@ -56,18 +53,15 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BTAContext())
+                entity = Context.PhoneType.Find(id);
+                if (entity != null)
                 {
-                    entity = db.PhoneType.Find(id);
-                    if (entity != null)
-                    {
-                        ret = StatusCode(StatusCodes.Status200OK, entity);
-                    }
-                    else
-                    {
-                        ret = StatusCode(StatusCodes.Status404NotFound, 
-                            "Can't Find Address: " + id.ToString());
-                    }
+                    ret = StatusCode(StatusCodes.Status200OK, entity);
+                }
+                else
+                {
+                    ret = StatusCode(StatusCodes.Status404NotFound,
+                        "Can't Find Address: " + id.ToString());
                 }
             }
             catch (Exception ex)
@@ -93,17 +87,14 @@ namespace TreasurersApp.Controllers
                 {
                     try
                     {
-                        using (var db = new BTAContext())
+                        var resultAddress = Context.PhoneType.Add(request.Data);
+                        Context.SaveChanges();
+                        var entity = resultAddress.Entity;
+                        if (entity != null)
                         {
-                            var resultAddress = db.PhoneType.Add(request.Data);
-                            db.SaveChanges();
-                            var entity = resultAddress.Entity;
-                            if (entity != null)
-                            {
-                                returnResult.Success = true;
-                                returnResult.StatusMessages.Add("Successfully added phone type.");
-                                returnResult.Data = entity;
-                            }
+                            returnResult.Success = true;
+                            returnResult.StatusMessages.Add("Successfully added phone type.");
+                            returnResult.Data = entity;
                         }
                     }
                     catch (Exception e)
@@ -140,25 +131,22 @@ namespace TreasurersApp.Controllers
                 {
                     try
                     {
-                        using (var db = new BTAContext())
+                        var resultPhoneType = Context.PhoneType.SingleOrDefault(x => x.PhoneTypeId == request.Data.PhoneTypeId);
+                        if (resultPhoneType != null)
                         {
-                            var resultPhoneType = db.PhoneType.SingleOrDefault(x => x.PhoneTypeId == request.Data.PhoneTypeId);
-                            if (resultPhoneType != null)
-                            {
-                                resultPhoneType.Name = request.Data.Name;
-                                resultPhoneType.Description = request.Data.Description;
-                                resultPhoneType.Active = request.Data.Active;
-                                db.SaveChanges();
-                                returnResult.Success = true;
-                                returnResult.Data = resultPhoneType;
-                                returnResult.StatusMessages.Add("Successfully updated phone type.");
-                            }
-                            else
-                            {
-                                returnResult.Success = false;
-                                returnResult.StatusMessages.Add(string.Format("Unable to locate phone type for index: {0}", request.Data.PhoneTypeId));
-                                returnResult.Data = null;
-                            }
+                            resultPhoneType.Name = request.Data.Name;
+                            resultPhoneType.Description = request.Data.Description;
+                            resultPhoneType.Active = request.Data.Active;
+                            Context.SaveChanges();
+                            returnResult.Success = true;
+                            returnResult.Data = resultPhoneType;
+                            returnResult.StatusMessages.Add("Successfully updated phone type.");
+                        }
+                        else
+                        {
+                            returnResult.Success = false;
+                            returnResult.StatusMessages.Add(string.Format("Unable to locate phone type for index: {0}", request.Data.PhoneTypeId));
+                            returnResult.Data = null;
                         }
                     }
                     catch (Exception e)
@@ -187,21 +175,18 @@ namespace TreasurersApp.Controllers
             var returnResult = new PhoneTypeActionResult(false, new List<string>(), null);
             try
             {
-                using (var db = new BTAContext())
+                if (Context.PhoneType.Any(x => x.PhoneTypeId == id) == false)
                 {
-                    if (db.PhoneType.Any(x => x.PhoneTypeId == id) == false)
-                    {
-                        returnResult.StatusMessages.Add("Attempted to delete a nonexisting phone type.");
-                    }
-                    else
-                    {
-                        var resultPhoneType = db.PhoneType.Single(x => x.PhoneTypeId == id);
-                        db.PhoneType.Remove(resultPhoneType);
-                        db.SaveChanges();
-                        returnResult.Success = true;
-                        returnResult.Data = resultPhoneType;
-                        returnResult.StatusMessages.Add("Successfully deleted phone type.");
-                    }
+                    returnResult.StatusMessages.Add("Attempted to delete a nonexisting phone type.");
+                }
+                else
+                {
+                    var resultPhoneType = Context.PhoneType.Single(x => x.PhoneTypeId == id);
+                    Context.PhoneType.Remove(resultPhoneType);
+                    Context.SaveChanges();
+                    returnResult.Success = true;
+                    returnResult.Data = resultPhoneType;
+                    returnResult.StatusMessages.Add("Successfully deleted phone type.");
                 }
             }
             catch (Exception e)

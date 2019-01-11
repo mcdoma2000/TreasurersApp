@@ -18,8 +18,8 @@ namespace TreasurersApp.Controllers
     [Route("api/[controller]")]
     public class AddressController : BaseController
     {
-        public AddressController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
-            : base(config, logger, env, memoryCache)
+        public AddressController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache, BTAContext context) 
+            : base(config, logger, env, memoryCache, context)
         {
         }
 
@@ -31,18 +31,15 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BTAContext())
+                if (Context.Address.Count() > 0)
                 {
-                    if (db.Address.Count() > 0)
-                    {
-                        list = db.Address
-                            .OrderBy(r => r.State)
-                            .ThenBy(r => r.City)
-                            .ThenBy(r => r.PostalCode)
-                            .ToList();
-                    }
-                    ret = StatusCode(StatusCodes.Status200OK, list);
+                    list = Context.Address
+                        .OrderBy(r => r.State)
+                        .ThenBy(r => r.City)
+                        .ThenBy(r => r.PostalCode)
+                        .ToList();
                 }
+                ret = StatusCode(StatusCodes.Status200OK, list);
             }
             catch (Exception ex)
             {
@@ -60,18 +57,15 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BTAContext())
+                entity = Context.Address.Find(id);
+                if (entity != null)
                 {
-                    entity = db.Address.Find(id);
-                    if (entity != null)
-                    {
-                        ret = StatusCode(StatusCodes.Status200OK, entity);
-                    }
-                    else
-                    {
-                        ret = StatusCode(StatusCodes.Status404NotFound, 
-                            "Can't Find Address: " + id.ToString());
-                    }
+                    ret = StatusCode(StatusCodes.Status200OK, entity);
+                }
+                else
+                {
+                    ret = StatusCode(StatusCodes.Status404NotFound,
+                        "Can't Find Address: " + id.ToString());
                 }
             }
             catch (Exception ex)
@@ -97,17 +91,14 @@ namespace TreasurersApp.Controllers
                 {
                     try
                     {
-                        using (var db = new BTAContext())
+                        var resultAddress = Context.Address.Add(request.Data);
+                        Context.SaveChanges();
+                        var entity = resultAddress.Entity;
+                        if (entity != null)
                         {
-                            var resultAddress = db.Address.Add(request.Data);
-                            db.SaveChanges();
-                            var entity = resultAddress.Entity;
-                            if (entity != null)
-                            {
-                                returnResult.Success = true;
-                                returnResult.StatusMessages.Add("Successfully added address.");
-                                returnResult.Data = entity;
-                            }
+                            returnResult.Success = true;
+                            returnResult.StatusMessages.Add("Successfully added address.");
+                            returnResult.Data = entity;
                         }
                     }
                     catch (Exception e)
@@ -144,28 +135,25 @@ namespace TreasurersApp.Controllers
                 {
                     try
                     {
-                        using (var db = new BTAContext())
+                        var resultAddress = Context.Address.SingleOrDefault(x => x.AddressId == request.Data.AddressId);
+                        if (resultAddress != null)
                         {
-                            var resultAddress = db.Address.SingleOrDefault(x => x.AddressId == request.Data.AddressId);
-                            if (resultAddress != null)
-                            {
-                                resultAddress.AddressLine1 = request.Data.AddressLine1;
-                                resultAddress.AddressLine2 = request.Data.AddressLine2;
-                                resultAddress.AddressLine3 = request.Data.AddressLine3;
-                                resultAddress.City = request.Data.City;
-                                resultAddress.State = request.Data.State;
-                                resultAddress.PostalCode = request.Data.PostalCode;
-                                db.SaveChanges();
-                                returnResult.Success = true;
-                                returnResult.Data = resultAddress;
-                                returnResult.StatusMessages.Add("Successfully updated address.");
-                            }
-                            else
-                            {
-                                returnResult.Success = false;
-                                returnResult.StatusMessages.Add(string.Format("Unable to locate address for index: {0}", request.Data.AddressId));
-                                returnResult.Data = null;
-                            }
+                            resultAddress.AddressLine1 = request.Data.AddressLine1;
+                            resultAddress.AddressLine2 = request.Data.AddressLine2;
+                            resultAddress.AddressLine3 = request.Data.AddressLine3;
+                            resultAddress.City = request.Data.City;
+                            resultAddress.State = request.Data.State;
+                            resultAddress.PostalCode = request.Data.PostalCode;
+                            Context.SaveChanges();
+                            returnResult.Success = true;
+                            returnResult.Data = resultAddress;
+                            returnResult.StatusMessages.Add("Successfully updated address.");
+                        }
+                        else
+                        {
+                            returnResult.Success = false;
+                            returnResult.StatusMessages.Add(string.Format("Unable to locate address for index: {0}", request.Data.AddressId));
+                            returnResult.Data = null;
                         }
                     }
                     catch (Exception e)
@@ -194,21 +182,18 @@ namespace TreasurersApp.Controllers
             var returnResult = new AddressActionResult(false, new List<string>(), null);
             try
             {
-                using (var db = new BTAContext())
+                if (Context.Address.Any(x => x.AddressId == id) == false)
                 {
-                    if (db.Address.Any(x => x.AddressId == id) == false)
-                    {
-                        returnResult.StatusMessages.Add("Attempted to delete a nonexisting address.");
-                    }
-                    else
-                    {
-                        var resultAddress = db.Address.Single(x => x.AddressId == id);
-                        db.Address.Remove(resultAddress);
-                        db.SaveChanges();
-                        returnResult.Success = true;
-                        returnResult.Data = resultAddress;
-                        returnResult.StatusMessages.Add("Successfully deleted address.");
-                    }
+                    returnResult.StatusMessages.Add("Attempted to delete a nonexisting address.");
+                }
+                else
+                {
+                    var resultAddress = Context.Address.Single(x => x.AddressId == id);
+                    Context.Address.Remove(resultAddress);
+                    Context.SaveChanges();
+                    returnResult.Success = true;
+                    returnResult.Data = resultAddress;
+                    returnResult.StatusMessages.Add("Successfully deleted address.");
                 }
             }
             catch (Exception e)

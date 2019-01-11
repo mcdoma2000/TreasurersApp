@@ -16,8 +16,8 @@ namespace TreasurersApp.Controllers
     {
         private readonly JwtSettings _settings;
 
-        public SecurityController(JwtSettings settings, IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache)
-            : base(config, logger, env, memoryCache)
+        public SecurityController(JwtSettings settings, IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache, BTAContext context)
+            : base(config, logger, env, memoryCache, context)
         {
             _settings = settings;
         }
@@ -27,7 +27,7 @@ namespace TreasurersApp.Controllers
         {
             IActionResult ret = null;
             SecurityUserAuth auth = new SecurityUserAuth();
-            SecurityManager mgr = new SecurityManager(_settings, DatabasePath);
+            SecurityManager mgr = new SecurityManager(_settings, Context);
 
             auth = mgr.ValidateUser(user);
             if (auth.IsAuthenticated)

@@ -5,9 +5,6 @@ namespace TreasurersApp.Database
 {
     public partial class BTAContext : DbContext
     {
-        private static readonly string HOME_CONNECTION_STRING = "Server=(localdb)\\MSSQLLocalDB;Database=BTA;AttachDbFilename=H:\\Source\\Repos\\TreasurersApp\\TreasurersApp\\wwwroot\\Content\\Database\\BTA.mdf;MultipleActiveResultSets=true";
-        private static readonly string WORK_CONNECTION_STRING = "Server=(localdb)\\MSSQLLocalDB;Database=BTA;AttachDbFilename=F:\\R_D\\mcdoma2000\\TreasurersApp\\TreasurersApp\\wwwroot\\Content\\Database\\BTA.mdf;MultipleActiveResultSets=true";
-
         public BTAContext()
         {
             this.ChangeTracker.LazyLoadingEnabled = false;
@@ -42,8 +39,6 @@ namespace TreasurersApp.Database
         {
             if (!optionsBuilder.IsConfigured)
             {
-                //optionsBuilder.UseSqlServer(HOME_CONNECTION_STRING);
-                optionsBuilder.UseSqlServer(WORK_CONNECTION_STRING);
             }
         }
 

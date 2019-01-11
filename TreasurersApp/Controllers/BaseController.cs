@@ -16,29 +16,24 @@ namespace TreasurersApp.Controllers
         private readonly IConfiguration _config;
         private readonly IHostingEnvironment _env;
         private readonly IMemoryCache _memoryCache;
-        private readonly string _databasePath;
+        private readonly BTAContext _context;
         private readonly string _region;
 
         protected ILogger Logger { get { return _logger; } private set { } }
         protected IConfiguration Config { get { return _config; } private set { } }
         protected IHostingEnvironment Env { get { return _env; } private set { } }
         protected IMemoryCache MemoryCache { get { return _memoryCache;  } private set { } }
-        protected string DatabasePath { get { return _databasePath; } private set { } }
+        protected BTAContext Context { get { return _context; } set { } }
         protected string Region { get { return _region; } private set { } }
 
-        public BaseController(IConfiguration config, ILogger logger, IHostingEnvironment env, IMemoryCache memoryCache)
+        public BaseController(IConfiguration config, ILogger logger, IHostingEnvironment env, IMemoryCache memoryCache, BTAContext context)
         {
             _env = env;
             _config = config;
             _logger = logger;
             _memoryCache = memoryCache;
             _region = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            string dbLoc = string.Format("Database:{0}:DatabaseDirectory", Region);
-            _databasePath = Config[dbLoc] ?? "";
-            if (string.IsNullOrEmpty(_databasePath))
-            {
-                throw new InvalidDataException("Database path is missing.");
-            }
+            _context = context;
         }
 
         protected IActionResult HandleException(Exception ex, string msg)

@@ -13,17 +13,17 @@ namespace TreasurersApp.Utilities.Security
     public class SecurityManager
     {
         private JwtSettings _settings = null;
-        private readonly string _dbPath;
-        public string DbPath
+        private readonly BTAContext _context;
+        public BTAContext Context
         {
-            get { return _dbPath; }
+            get { return _context; }
             set { }
         }
 
-        public SecurityManager(JwtSettings settings, string dbPath)
+        public SecurityManager(JwtSettings settings, BTAContext context)
         {
             _settings = settings;
-            _dbPath = dbPath;
+            _context = context;
         }
 
         public SecurityUserAuth ValidateUser(User user)
@@ -31,17 +31,14 @@ namespace TreasurersApp.Utilities.Security
             SecurityUserAuth ret = new SecurityUserAuth();
             User authUser = null;
 
-            using (var db = new BTAContext())
+            // Attempt to validate user
+            authUser = Context.User.FirstOrDefault(u => u.UserName.ToLower() == user.UserName.ToLower() && u.Password == user.Password);
+            if (authUser != null)
             {
-                // Attempt to validate user
-                authUser = db.User.FirstOrDefault(u => u.UserName.ToLower() == user.UserName.ToLower() && u.Password == user.Password);
-                if (authUser != null)
+                Context.Entry(authUser).Collection(x => x.UserClaims).Load();
+                foreach (var uc in authUser.UserClaims)
                 {
-                    db.Entry(authUser).Collection(x => x.UserClaims).Load();
-                    foreach (var uc in authUser.UserClaims)
-                    {
-                        db.Entry(uc).Reference(x => x.Claim).Load();
-                    }
+                    Context.Entry(uc).Reference(x => x.Claim).Load();
                 }
             }
 

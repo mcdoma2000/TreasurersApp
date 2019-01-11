@@ -18,8 +18,8 @@ namespace TreasurersApp.Controllers
     [Route("api/[controller]")]
     public class PhoneController : BaseController
     {
-        public PhoneController(IConfiguration config, ILogger<PhoneController> logger, IHostingEnvironment env, IMemoryCache memoryCache) 
-            : base(config, logger, env, memoryCache)
+        public PhoneController(IConfiguration config, ILogger<PhoneController> logger, IHostingEnvironment env, IMemoryCache memoryCache, BTAContext context) 
+            : base(config, logger, env, memoryCache, context)
         {
         }
 
@@ -31,14 +31,11 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BTAContext())
+                if (Context.PhoneNumber.Count() > 0)
                 {
-                    if (db.PhoneNumber.Count() > 0)
-                    {
-                        list = db.PhoneNumber.ToList();
-                    }
-                    ret = StatusCode(StatusCodes.Status200OK, list);
+                    list = Context.PhoneNumber.ToList();
                 }
+                ret = StatusCode(StatusCodes.Status200OK, list);
             }
             catch (Exception ex)
             {
@@ -56,18 +53,15 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BTAContext())
+                entity = Context.PhoneNumber.Find(id);
+                if (entity != null)
                 {
-                    entity = db.PhoneNumber.Find(id);
-                    if (entity != null)
-                    {
-                        ret = StatusCode(StatusCodes.Status200OK, entity);
-                    }
-                    else
-                    {
-                        ret = StatusCode(StatusCodes.Status404NotFound, 
-                            "Can't Find Address: " + id.ToString());
-                    }
+                    ret = StatusCode(StatusCodes.Status200OK, entity);
+                }
+                else
+                {
+                    ret = StatusCode(StatusCodes.Status404NotFound,
+                        "Can't Find Address: " + id.ToString());
                 }
             }
             catch (Exception ex)
@@ -93,17 +87,14 @@ namespace TreasurersApp.Controllers
                 {
                     try
                     {
-                        using (var db = new BTAContext())
+                        var resultAddress = Context.PhoneNumber.Add(request.Data);
+                        Context.SaveChanges();
+                        var entity = resultAddress.Entity;
+                        if (entity != null)
                         {
-                            var resultAddress = db.PhoneNumber.Add(request.Data);
-                            db.SaveChanges();
-                            var entity = resultAddress.Entity;
-                            if (entity != null)
-                            {
-                                returnResult.Success = true;
-                                returnResult.StatusMessages.Add("Successfully added phone.");
-                                returnResult.Data = entity;
-                            }
+                            returnResult.Success = true;
+                            returnResult.StatusMessages.Add("Successfully added phone.");
+                            returnResult.Data = entity;
                         }
                     }
                     catch (Exception e)
@@ -140,23 +131,20 @@ namespace TreasurersApp.Controllers
                 {
                     try
                     {
-                        using (var db = new BTAContext())
+                        var resultPhone = Context.PhoneNumber.SingleOrDefault(x => x.PhoneNumberId == request.Data.PhoneNumberId);
+                        if (resultPhone != null)
                         {
-                            var resultPhone = db.PhoneNumber.SingleOrDefault(x => x.PhoneNumberId == request.Data.PhoneNumberId);
-                            if (resultPhone != null)
-                            {
-                                resultPhone.PhoneNumber_ = request.Data.PhoneNumber_;
-                                db.SaveChanges();
-                                returnResult.Success = true;
-                                returnResult.Data = resultPhone;
-                                returnResult.StatusMessages.Add("Successfully updated address.");
-                            }
-                            else
-                            {
-                                returnResult.Success = false;
-                                returnResult.StatusMessages.Add(string.Format("Unable to locate phone number for index: {0}", request.Data.PhoneNumberId));
-                                returnResult.Data = null;
-                            }
+                            resultPhone.PhoneNumber_ = request.Data.PhoneNumber_;
+                            Context.SaveChanges();
+                            returnResult.Success = true;
+                            returnResult.Data = resultPhone;
+                            returnResult.StatusMessages.Add("Successfully updated address.");
+                        }
+                        else
+                        {
+                            returnResult.Success = false;
+                            returnResult.StatusMessages.Add(string.Format("Unable to locate phone number for index: {0}", request.Data.PhoneNumberId));
+                            returnResult.Data = null;
                         }
                     }
                     catch (Exception e)
@@ -185,21 +173,18 @@ namespace TreasurersApp.Controllers
             var returnResult = new PhoneNumberActionResult(false, new List<string>(), null);
             try
             {
-                using (var db = new BTAContext())
+                if (Context.PhoneNumber.Any(x => x.PhoneNumberId == id) == false)
                 {
-                    if (db.PhoneNumber.Any(x => x.PhoneNumberId == id) == false)
-                    {
-                        returnResult.StatusMessages.Add("Attempted to delete a nonexisting phone number.");
-                    }
-                    else
-                    {
-                        var resultPhoneNumber = db.PhoneNumber.Single(x => x.PhoneNumberId == id);
-                        db.PhoneNumber.Remove(resultPhoneNumber);
-                        db.SaveChanges();
-                        returnResult.Success = true;
-                        returnResult.Data = resultPhoneNumber;
-                        returnResult.StatusMessages.Add("Successfully deleted phone number.");
-                    }
+                    returnResult.StatusMessages.Add("Attempted to delete a nonexisting phone number.");
+                }
+                else
+                {
+                    var resultPhoneNumber = Context.PhoneNumber.Single(x => x.PhoneNumberId == id);
+                    Context.PhoneNumber.Remove(resultPhoneNumber);
+                    Context.SaveChanges();
+                    returnResult.Success = true;
+                    returnResult.Data = resultPhoneNumber;
+                    returnResult.StatusMessages.Add("Successfully deleted phone number.");
                 }
             }
             catch (Exception e)

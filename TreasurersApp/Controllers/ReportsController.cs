@@ -19,8 +19,8 @@ namespace TreasurersApp.Controllers
     [Route("api/[controller]")]
     public class ReportsController : BaseController
     {
-        public ReportsController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache)
-            : base(config, logger, env, memoryCache)
+        public ReportsController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache, BTAContext context)
+            : base(config, logger, env, memoryCache, context)
         {
         }
 
@@ -32,17 +32,14 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BTAContext())
+                if (Context.Report.Count() > 0)
                 {
-                    if (db.Report.Count() > 0)
-                    {
-                        list = db.Report.Where(r => r.Active ?? false).OrderBy(r => r.DisplayOrder).ToList();
-                        ret = StatusCode(StatusCodes.Status200OK, list);
-                    }
-                    else
-                    {
-                        ret = StatusCode(StatusCodes.Status404NotFound, "Can't Find Reports");
-                    }
+                    list = Context.Report.Where(r => r.Active ?? false).OrderBy(r => r.DisplayOrder).ToList();
+                    ret = StatusCode(StatusCodes.Status200OK, list);
+                }
+                else
+                {
+                    ret = StatusCode(StatusCodes.Status404NotFound, "Can't Find Reports");
                 }
             }
             catch (Exception ex)
@@ -61,18 +58,15 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BTAContext())
+                entity = Context.Report.Find(id);
+                if (entity != null)
                 {
-                    entity = db.Report.Find(id);
-                    if (entity != null)
-                    {
-                        ret = StatusCode(StatusCodes.Status200OK, entity);
-                    }
-                    else
-                    {
-                        ret = StatusCode(StatusCodes.Status404NotFound,
-                                        "Can't Find Report: " + id.ToString());
-                    }
+                    ret = StatusCode(StatusCodes.Status200OK, entity);
+                }
+                else
+                {
+                    ret = StatusCode(StatusCodes.Status404NotFound,
+                                    "Can't Find Report: " + id.ToString());
                 }
             }
             catch (Exception ex)
@@ -89,17 +83,14 @@ namespace TreasurersApp.Controllers
             ExcelPackage excel = new ExcelPackage();
             excel.Workbook.Worksheets.Add(reportParameters.ReportName);
 
-            using (var db = new BTAContext())
+            var rpt = Context.Report.SingleOrDefault(x => x.Name == reportParameters.ReportName);
+            if (rpt == null)
             {
-                var rpt = db.Report.SingleOrDefault(x => x.Name == reportParameters.ReportName);
-                if (rpt == null)
-                {
-                    throw new ArgumentException("An invalid report name was passed", "Report Name");
-                }
-                var rptFactory = new ReportFactory(db);
-                var rptHandler = rptFactory.Create(reportParameters.ReportName);
-                rptHandler.ProcessReport(excel, reportParameters, db);
+                throw new ArgumentException("An invalid report name was passed", "Report Name");
             }
+            var rptFactory = new ReportFactory(Context);
+            var rptHandler = rptFactory.Create(reportParameters.ReportName);
+            rptHandler.ProcessReport(excel, reportParameters, Context);
 
             string fileName = string.Format("{0}_{1:yyyyMMdd_hhmmss}.xlsx", reportParameters.ReportName, DateTime.Now);
             var mstream = new MemoryStream();

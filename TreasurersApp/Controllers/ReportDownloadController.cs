@@ -18,8 +18,8 @@ namespace TreasurersApp.Controllers
     [Route("api/[controller]")]
     public class ReportDownloadController : BaseController
     {
-        public ReportDownloadController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache)
-            : base(config, logger, env, memoryCache)
+        public ReportDownloadController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache, BTAContext context)
+            : base(config, logger, env, memoryCache, context)
         {
         }
 
@@ -30,17 +30,14 @@ namespace TreasurersApp.Controllers
             ExcelPackage excel = new ExcelPackage();
             excel.Workbook.Worksheets.Add(reportParms.ReportName);
 
-            using (var db = new BTAContext())
+            var rpt = Context.Report.SingleOrDefault(x => x.Name == reportParms.ReportName);
+            if (rpt == null)
             {
-                var rpt = db.Report.SingleOrDefault(x => x.Name == reportParms.ReportName);
-                if (rpt == null)
-                {
-                    throw new ArgumentException("An invalid report name was passed", "Report Name");
-                }
-                var rptFactory = new ReportFactory(db);
-                var rptHandler = rptFactory.Create(reportParms.ReportName);
-                rptHandler.ProcessReport(excel, reportParms, db);
+                throw new ArgumentException("An invalid report name was passed", "Report Name");
             }
+            var rptFactory = new ReportFactory(Context);
+            var rptHandler = rptFactory.Create(reportParms.ReportName);
+            rptHandler.ProcessReport(excel, reportParms, Context);
             string fileName = string.Format("{0}_{1:yyyyMMdd_hhmmss}.xlsx", reportParms.ReportName, DateTime.Now);
             string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
             var mstream = new MemoryStream();

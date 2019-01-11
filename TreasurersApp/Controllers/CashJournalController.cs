@@ -17,8 +17,8 @@ namespace TreasurersApp.Controllers
     [Route("api/[controller]")]
     public class CashJournalController : BaseController
     {
-        public CashJournalController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache)
-            : base(config, logger, env, memoryCache)
+        public CashJournalController(IConfiguration config, ILogger<AddressController> logger, IHostingEnvironment env, IMemoryCache memoryCache, BTAContext context)
+            : base(config, logger, env, memoryCache, context)
         {
         }
 
@@ -30,17 +30,14 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BTAContext())
+                if (Context.CashJournal.Count() > 0)
                 {
-                    if (db.CashJournal.Count() > 0)
-                    {
-                        list = db.CashJournal.OrderBy(p => p.CreatedDate).ToList();
-                        ret = StatusCode(StatusCodes.Status200OK, list);
-                    }
-                    else
-                    {
-                        ret = StatusCode(StatusCodes.Status404NotFound, "Can't Find Cash Journal Entries");
-                    }
+                    list = Context.CashJournal.OrderBy(p => p.CreatedDate).ToList();
+                    ret = StatusCode(StatusCodes.Status200OK, list);
+                }
+                else
+                {
+                    ret = StatusCode(StatusCodes.Status404NotFound, "Can't Find Cash Journal Entries");
                 }
             }
             catch (Exception ex)
@@ -59,18 +56,15 @@ namespace TreasurersApp.Controllers
 
             try
             {
-                using (var db = new BTAContext())
+                entity = Context.CashJournal.Find(id);
+                if (entity != null)
                 {
-                    entity = db.CashJournal.Find(id);
-                    if (entity != null)
-                    {
-                        ret = StatusCode(StatusCodes.Status200OK, entity);
-                    }
-                    else
-                    {
-                        ret = StatusCode(StatusCodes.Status404NotFound,
-                                    "Can't Find Cash Journal Entry: " + id.ToString());
-                    }
+                    ret = StatusCode(StatusCodes.Status200OK, entity);
+                }
+                else
+                {
+                    ret = StatusCode(StatusCodes.Status404NotFound,
+                                "Can't Find Cash Journal Entry: " + id.ToString());
                 }
             }
             catch (Exception ex)
@@ -91,12 +85,9 @@ namespace TreasurersApp.Controllers
             {
                 if (request != null && request.Data != null)
                 {
-                    using (var db = new BTAContext())
-                    {
-                        db.CashJournal.Add(request.Data);
-                        db.SaveChanges();
-                        ret = StatusCode(StatusCodes.Status201Created, request.Data);
-                    }
+                    Context.CashJournal.Add(request.Data);
+                    Context.SaveChanges();
+                    ret = StatusCode(StatusCodes.Status201Created, request.Data);
                 }
                 else
                 {
@@ -120,12 +111,9 @@ namespace TreasurersApp.Controllers
             {
                 if (request != null && request.Data != null)
                 {
-                    using (var db = new BTAContext())
-                    {
-                        db.Update(request.Data);
-                        db.SaveChanges();
-                        ret = StatusCode(StatusCodes.Status200OK, request);
-                    }
+                    Context.Update(request.Data);
+                    Context.SaveChanges();
+                    ret = StatusCode(StatusCodes.Status200OK, request);
                 }
                 else
                 {
