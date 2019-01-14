@@ -80,7 +80,7 @@ namespace TreasurersApp
                 );
 
             string whereWorking = Configuration["DevelopmentLocation"] ?? "Home";
-            string environment = "Development"; // TODO: fix this to read the ASPNETCORE_ENVIRONMENT value
+            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             string key = string.Format("ConnectionStrings:{0}:{1}", environment, whereWorking);
             string connectionStringToUse = Configuration[key];
             services.AddDbContext<BTAContext>(options =>
