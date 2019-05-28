@@ -1,4 +1,7 @@
 import { CashJournal } from './CashJournal';
+import { ContributorAddress } from './ContributorAddress';
+import { ContributorEmailAddress } from './ContributorEmailAddress';
+import { ContributorPhoneNumber } from './ContributorPhoneNumber';
 
 export class ContributorViewModel {
   id: number = null;
@@ -7,12 +10,9 @@ export class ContributorViewModel {
   lastName: string = null;
   bahaiId: string = null;
   contributions: CashJournal[] = [];
-  addressId: number = null;
-  addressText: string = null;
-  emailAddressId: number = null;
-  emailAddress: string = null;
-  phoneNumberId: number = null;
-  phoneNumber: string = null;
+  addresses: ContributorAddress[] = [];
+  emails: ContributorEmailAddress[] = [];
+  phoneNumbers: ContributorPhoneNumber[] = [];
   createdBy: string = null;
   createdDate: Date = null;
   lastModifiedBy: string = null;
@@ -24,12 +24,9 @@ export class ContributorViewModel {
               lastName: string,
               bahaiId?: string,
               contributions?: CashJournal[],
-              addressId?: number,
-              addressText?: string,
-              emailAddressId?: number,
-              emailAddress?: string,
-              phoneNumberId?: number,
-              phoneNumber?: string,
+              addresses?: ContributorAddress[],
+              emails?: ContributorEmailAddress[],
+              phoneNumbers?: ContributorPhoneNumber[],
               createdBy?: string,
               createdDate?: Date,
               lastModifiedBy?: string,
@@ -40,12 +37,9 @@ export class ContributorViewModel {
     this.lastName = lastName;
     this.bahaiId = bahaiId;
     this.contributions = contributions;
-    this.addressId = addressId;
-    this.addressText = addressText;
-    this.emailAddressId = emailAddressId;
-    this.emailAddress = emailAddress;
-    this.phoneNumberId = phoneNumberId;
-    this.phoneNumber = phoneNumber;
+    this.addresses = addresses;
+    this.emails = emails;
+    this.phoneNumbers = phoneNumbers;
     this.createdBy = createdBy;
     this.createdDate = createdDate;
     this.lastModifiedBy = lastModifiedBy;

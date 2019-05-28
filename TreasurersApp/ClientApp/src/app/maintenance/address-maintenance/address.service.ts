@@ -45,6 +45,9 @@ export class AddressService {
     return this.http.get<Address>(ADDRESS_API_URL + '/getbyid', options);
   }
 
+  // getContributorAddressViewModel(id: number): Observable<ContributorAddressViewModel> {
+  // }
+
   validateAddress(address: Address): boolean {
     if (!address.addressLine1 || !address.city || !address.state || !address.postalCode) {
       return false;

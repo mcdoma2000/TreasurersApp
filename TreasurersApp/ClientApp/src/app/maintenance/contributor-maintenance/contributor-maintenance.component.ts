@@ -4,12 +4,22 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 
 import { ContributorViewModel } from '../../models/ContributorViewModel';
 import { ContributorService } from './contributor.service';
-import { AddressService } from '../address-maintenance/address.service';
 import { ConfirmationMessage } from '../../models/ConfirmationMessage';
 import { DxDataGridComponent } from 'devextreme-angular/ui/data-grid';
 import { SelectItem } from 'primeng/api';
 import { ContributorRequest } from 'src/app/models/ContributorRequest';
 import { SecurityService } from 'src/app/security/security.service';
+import { EmailService } from '../email-maintenance/email.service';
+import { PhoneService } from '../phone-maintenance/phone.service';
+import { AddressService } from '../address-maintenance/address.service';
+
+import { Address } from '../../models/Address';
+import { EmailAddress } from 'src/app/models/EmailAddress';
+import { PhoneNumber } from '../../models/PhoneNumber';
+
+import { EmailAddressRequest } from 'src/app/models/EmailAddressRequest';
+import { PhoneNumberRequest } from '../../models/PhoneNumberRequest';
+import { AddressRequest } from '../../models/AddressRequest';
 
 @Component({
   selector: 'app-contributor-maintenance',
@@ -29,9 +39,14 @@ export class ContributorMaintenanceComponent implements OnInit {
   contributorToEdit = this.contributorService.newViewModel();
   displayEdit = false;
   displayAdd = false;
+  newEmailAddress: string = null;
+  newPhoneNumber: string = null;
+  newAddress: Address = null;
 
   constructor(private contributorService: ContributorService,
     private addressService: AddressService,
+    private emailService: EmailService,
+    private phoneService: PhoneService,
     private securityService: SecurityService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService) {
@@ -59,7 +74,9 @@ export class ContributorMaintenanceComponent implements OnInit {
     this.contributorToEdit.firstName = this.selectedContributor.firstName;
     this.contributorToEdit.middleName = this.selectedContributor.middleName;
     this.contributorToEdit.lastName = this.selectedContributor.lastName;
-    this.contributorToEdit.addressId = this.selectedContributor.addressId;
+    this.contributorToEdit.addresses = this.selectedContributor.addresses;
+    this.contributorToEdit.emails = this.selectedContributor.emails;
+    this.contributorToEdit.phoneNumbers = this.selectedContributor.phoneNumbers;
     this.displayEdit = true;
   }
 
@@ -68,7 +85,9 @@ export class ContributorMaintenanceComponent implements OnInit {
     this.contributorToEdit.firstName = this.selectedContributor.firstName;
     this.contributorToEdit.middleName = this.selectedContributor.middleName;
     this.contributorToEdit.lastName = this.selectedContributor.lastName;
-    this.contributorToEdit.addressId = this.selectedContributor.addressId;
+    this.contributorToEdit.addresses = this.selectedContributor.addresses;
+    this.contributorToEdit.emails = this.selectedContributor.emails;
+    this.contributorToEdit.phoneNumbers = this.selectedContributor.phoneNumbers;
     this.confirmDelete();
   }
 
@@ -265,10 +284,13 @@ export class ContributorMaintenanceComponent implements OnInit {
     const firstNameChanged = this.selectedContributor.firstName !== this.contributorToEdit.firstName;
     const middleNameChanged = this.selectedContributor.middleName !== this.contributorToEdit.middleName;
     const lastNameChanged = this.selectedContributor.lastName !== this.contributorToEdit.lastName;
-    const addressIdChanged = this.selectedContributor.addressId !== this.contributorToEdit.addressId;
+    // const addressesChanged = _.difference(
+    //   _.union(this.selectedContributor.addresses, this.contributorToEdit.addresses),
+    //   _.intersection(this.selectedContributor.addresses, this.contributorToEdit.addresses)
+    // );
 
     if (contribIsValid) {
-        if (firstNameChanged || middleNameChanged || lastNameChanged || addressIdChanged) {
+        if (firstNameChanged || middleNameChanged || lastNameChanged) {
           save = true;
         }
     } else {

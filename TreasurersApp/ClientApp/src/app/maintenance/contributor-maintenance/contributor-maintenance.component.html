@@ -56,33 +56,70 @@
   <div class="row">&nbsp;</div>
   <p-toast></p-toast>
   <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle" width="425"></p-confirmDialog>
-  <p-dialog header="Edit Contributor" [(visible)]="displayEdit" [style]='{"width": "600px","height":"600px"}'>
-    <div class="row" style="padding-bottom: 5px;">
-      <div class="col-md-3">First Name</div>
-      <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="contributorToEdit.firstName" required />
-      </div>
-    </div>
-    <div class="row" style="padding-bottom: 5px;">
-      <div class="col-md-3">Middle Name</div>
-      <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="contributorToEdit.middleName" />
-      </div>
-    </div>
-    <div class="row" style="padding-bottom: 5px;">
-      <div class="col-md-3">Last Name</div>
-      <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="contributorToEdit.lastName" required />
-      </div>
-    </div>
-    <div class="row" style="padding-bottom: 5px;">
-      <div class="col-md-3">Address ID</div>
-      <div class="col-md-9">
-        <p-dropdown
-          [options]="addresses"
-          placeholder="Select an Address"
-          [(ngModel)]="contributorToEdit.addressId">
-        </p-dropdown>
+  <p-dialog header="Edit Contributor" [(visible)]="displayEdit" [style]='{"min-width": "800px", "min-height":"800px"}'>
+    <div class="row">
+      <div class="col-md-12">
+        <p-tabView [style]="{width: '700px',height: '400px'}">
+          <p-tabPanel header="Main" leftIcon="pi pi-user">
+            <div class="row" style="padding-bottom: 5px;">
+                <div class="col-md-3">First Name</div>
+                <div class="col-md-9">
+                  <input type="text" pInputText [(ngModel)]="contributorToEdit.firstName" required />
+                </div>
+              </div>
+              <div class="row" style="padding-bottom: 5px;">
+                <div class="col-md-3">Middle Name</div>
+                <div class="col-md-9">
+                  <input type="text" pInputText [(ngModel)]="contributorToEdit.middleName" />
+                </div>
+              </div>
+              <div class="row" style="padding-bottom: 5px;">
+                <div class="col-md-3">Last Name</div>
+                <div class="col-md-9">
+                  <input type="text" pInputText [(ngModel)]="contributorToEdit.lastName" required />
+                </div>
+            </div>
+          </p-tabPanel>
+          <p-tabPanel header="Address" leftIcon="pi pi-envelope">
+            <div class="row" style="padding-bottom: 5px;">
+              <div class="col-md-3">Address ID</div>
+              <div class="col-md-9">
+                <p-dropdown
+                  [options]="addresses"
+                  placeholder="Select an Address"
+                  [(ngModel)]="contributorToEdit.addressId"
+                  >
+                </p-dropdown>
+              </div>
+            </div>
+          </p-tabPanel>
+          <p-tabPanel header="Phone" leftIcon="pi pi-mobile">
+            <div class="row" style="padding-bottom: 5px;">
+              <div class="col-md-3">Phone ID</div>
+              <div class="col-md-9">
+                <p-dropdown
+                  [options]="addresses"
+                  placeholder="Select an Address"
+                  [(ngModel)]="contributorToEdit.addressId"
+                  >
+                </p-dropdown>
+              </div>
+            </div>
+          </p-tabPanel>
+          <p-tabPanel header="Email" leftIcon="pi pi-inbox">
+              <div class="row" style="padding-bottom: 5px;">
+                <div class="col-md-3">Email ID</div>
+                <div class="col-md-9">
+                  <p-dropdown
+                    [options]="addresses"
+                    placeholder="Select an Address"
+                    [(ngModel)]="contributorToEdit.addressId"
+                    >
+                  </p-dropdown>
+                </div>
+              </div>
+            </p-tabPanel>
+        </p-tabView>
       </div>
     </div>
     <p-footer>
@@ -98,34 +135,70 @@
       </div>
     </p-footer>
   </p-dialog>
-  <p-dialog header="Add Contributor" [(visible)]="displayAdd" [style]="{width:'800px',height:'800px'}">
-    <div class="row" style="padding-bottom: 5px;">
-      <div class="col-md-3">First Name</div>
-      <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="contributorToEdit.firstName" required />
-      </div>
-    </div>
-    <div class="row" style="padding-bottom: 5px;">
-      <div class="col-md-3">Middle Name</div>
-      <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="contributorToEdit.middleName" />
-      </div>
-    </div>
-    <div class="row" style="padding-bottom: 5px;">
-      <div class="col-md-3">Last Name</div>
-      <div class="col-md-9">
-        <input type="text" pInputText [(ngModel)]="contributorToEdit.lastName" required />
-      </div>
-    </div>
-    <div class="row" style="padding-bottom: 5px;">
-      <div class="col-md-3">Address ID</div>
-      <div class="col-md-9">
-        <p-dropdown
-          [options]="addresses"
-          placeholder="Select an Address"
-          [(ngModel)]="contributorToEdit.addressId"
-          >
-        </p-dropdown>
+  <p-dialog header="Add Contributor" [(visible)]="displayAdd">
+    <div class="row">
+      <div class="col-md-12">
+        <p-tabView [style]="{width: '700px',height: '400px'}">
+          <p-tabPanel header="Main" leftIcon="pi pi-user">
+            <div class="row" style="padding-bottom: 5px;">
+                <div class="col-md-3">First Name</div>
+                <div class="col-md-9">
+                  <input type="text" pInputText [(ngModel)]="contributorToEdit.firstName" required />
+                </div>
+              </div>
+              <div class="row" style="padding-bottom: 5px;">
+                <div class="col-md-3">Middle Name</div>
+                <div class="col-md-9">
+                  <input type="text" pInputText [(ngModel)]="contributorToEdit.middleName" />
+                </div>
+              </div>
+              <div class="row" style="padding-bottom: 5px;">
+                <div class="col-md-3">Last Name</div>
+                <div class="col-md-9">
+                  <input type="text" pInputText [(ngModel)]="contributorToEdit.lastName" required />
+                </div>
+            </div>
+          </p-tabPanel>
+          <p-tabPanel header="Address" leftIcon="pi pi-envelope">
+            <div class="row" style="padding-bottom: 5px;">
+              <div class="col-md-3">Address</div>
+              <div class="col-md-9">
+                <p-dropdown
+                  [options]="addresses"
+                  placeholder="Select an Address"
+                  [(ngModel)]="contributorToEdit.addressId"
+                  >
+                </p-dropdown>
+              </div>
+            </div>
+          </p-tabPanel>
+          <p-tabPanel header="Phone" leftIcon="pi pi-mobile">
+            <div class="row" style="padding-bottom: 5px;">
+              <div class="col-md-3">Phone Number</div>
+              <div class="col-md-9">
+                <p-dropdown
+                  [options]="addresses"
+                  placeholder="Select a Phone Number"
+                  [(ngModel)]="contributorToEdit.addressId"
+                  >
+                </p-dropdown>
+              </div>
+            </div>
+          </p-tabPanel>
+          <p-tabPanel header="Email" leftIcon="pi pi-inbox">
+              <div class="row" style="padding-bottom: 5px;">
+                  <div class="col-md-3">Email Address</div>
+                  <div class="col-md-9">
+                    <p-dropdown
+                      [options]="addresses"
+                      placeholder="Select an Email Address"
+                      [(ngModel)]="contributorToEdit.addressId"
+                      >
+                    </p-dropdown>
+                  </div>
+                </div>
+              </p-tabPanel>
+        </p-tabView>
       </div>
     </div>
     <p-footer>
