@@ -7,7 +7,7 @@ import { CalendarModule } from 'primeng/calendar';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { MenubarModule } from 'primeng/menubar';
 import { InputMaskModule } from 'primeng/inputmask';
-import { InputTextModule } from 'primeng/inputtext'
+import { InputTextModule } from 'primeng/inputtext';
 import { DialogModule } from 'primeng/dialog';
 import { SliderModule } from 'primeng/slider';
 import { DataViewModule } from 'primeng/dataview';
