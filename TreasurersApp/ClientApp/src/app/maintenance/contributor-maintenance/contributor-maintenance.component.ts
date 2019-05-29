@@ -14,6 +14,7 @@ import { PhoneService } from '../phone-maintenance/phone.service';
 import { AddressService } from '../address-maintenance/address.service';
 
 import { Address } from '../../models/Address';
+import { ContributorAddress } from '../../models/ContributorAddress';
 import { EmailAddress } from 'src/app/models/EmailAddress';
 import { PhoneNumber } from '../../models/PhoneNumber';
 

@@ -14,6 +14,7 @@ import { DataViewModule } from 'primeng/dataview';
 import { DataGridModule } from 'primeng/datagrid';
 import { ButtonModule } from 'primeng/button';
 import { BlockUIModule } from 'primeng/blockui';
+import { PickListModule } from 'primeng/picklist';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
@@ -103,6 +104,7 @@ import { EmailTypeMaintenanceComponent } from './maintenance/email-type-maintena
     DropdownModule,
     CheckboxModule,
     TabViewModule,
+    PickListModule,
     BrowserAnimationsModule
   ],
   providers: [
