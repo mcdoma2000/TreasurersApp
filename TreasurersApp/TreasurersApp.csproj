@@ -15,7 +15,7 @@
   <ItemGroup>
     <PackageReference Include="DevExtreme.Web" Version="18.2.3" />
     <PackageReference Include="EPPlus" Version="4.5.2.1" />
-    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="log4net" Version="2.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="2.1.1" />
